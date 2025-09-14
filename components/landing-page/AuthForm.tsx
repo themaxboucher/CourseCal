@@ -9,15 +9,23 @@ import { Form } from "../ui/form";
 import FormAlert from "../FormAlert";
 import { Button } from "../ui/button";
 import { TextField } from "../form-fields/TextField";
+import { useRouter } from "next/navigation";
+import { sendMagicLink } from "@/lib/actions/users.actions";
 
 const formSchema = z.object({
-  email: z.string().email({ message: "Invalid email" }),
+  email: z
+    .string()
+    .trim()
+    .email({ message: "Invalid email" })
+    .refine((value) => value.toLowerCase().endsWith("@ucalgary.ca"), {
+      message: "Email must be a ucalgary.ca address",
+    }),
 });
 
 export default function AuthForm() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [success, setSuccess] = useState<boolean>(false);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -28,7 +36,14 @@ export default function AuthForm() {
 
   async function onSubmitHandler(data: z.infer<typeof formSchema>) {
     setLoading(true);
-    console.log(data);
+    try {
+      await sendMagicLink(data.email);
+      router.push("/check-email");
+    } catch (error) {
+      setError("An unknown error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
   return (
     <Form {...form}>
@@ -50,12 +65,6 @@ export default function AuthForm() {
           </Button>
         </div>
         {error && <FormAlert message={error} type="error" />}
-        {success && (
-          <FormAlert
-            message="Check your email for a login link."
-            type="success"
-          />
-        )}
       </form>
     </Form>
   );

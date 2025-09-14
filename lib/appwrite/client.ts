@@ -1,0 +1,38 @@
+"use client";
+
+import { Account, Client, ID } from "appwrite";
+
+const client = new Client()
+  .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
+  .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID!);
+
+const account = new Account(client);
+
+export async function loginWithMagicLink(userId: string, secret: string) {
+  try {
+    const user = await account.createSession(userId, secret);
+    return user;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function logout() {
+  try {
+    const result = await account.deleteSession({ sessionId: "current" });
+    return result;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function getUser() {
+  try {
+    const result = await account.get();
+    return result;
+  } catch (error) {
+    return false;
+  }
+}

@@ -1,11 +1,29 @@
+"use client"; // TODO: Move client component further up the tree
+
 import { ThemeSelector } from "@/components/ThemeSelector";
 import { Button } from "@/components/ui/button";
+import { logout } from "@/lib/appwrite/client";
+import { useRouter } from "next/navigation";
 
 export default function SettingsPage() {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push("/");
+    } catch (error) {
+      console.error(error); // TODO: Remove this
+    }
+  };
+
   return (
     <>
       <section className="flex flex-col gap-2 max-w-[75rem] mx-auto px-8 py-16">
         <h1 className="heading-3">Settings</h1>
+        <Button variant="outline" onClick={handleLogout}>
+          Logout
+        </Button>
         <h2 className="text-lg font-medium">Profile</h2>
         <h2 className="text-lg font-medium">Theme</h2>
         <div>
