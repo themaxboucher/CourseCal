@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/landing-page/Navbar";
+import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/landing-page/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
