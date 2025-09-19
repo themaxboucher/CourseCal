@@ -3,10 +3,11 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { loginWithMagicLink } from "@/lib/appwrite/client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Loading from "@/components/Loading";
+import { createUser, getUser } from "@/lib/actions/users.actions";
+import { loginWithMagicLink, checkActiveSession } from "@/lib/appwrite/client";
 
 // Separate component that uses useSearchParams() - must be wrapped in Suspense
 // This is required in Next.js 15 to handle client-side rendering bailout properly
@@ -21,6 +22,12 @@ function VerifyContent() {
   useEffect(() => {
     const handleVerification = async () => {
       try {
+        // First, check if there's already an active session
+        const activeUser = await checkActiveSession();
+        if (activeUser) {
+          console.log("Active session found:", activeUser);
+        }
+
         const userId = searchParams.get("userId");
         const secret = searchParams.get("secret");
 
@@ -29,14 +36,35 @@ function VerifyContent() {
           setError("Invalid login link. Please request a new one.");
           return;
         }
+        console.log("userId:", userId, "secret:", secret);
 
-        await loginWithMagicLink(userId, secret);
+        // Check if the user is authenticated
+        const authUser = await loginWithMagicLink(userId, secret);
+        console.log(authUser);
+        if (!authUser) {
+          setStatus("error");
+          setError("Invalid login link. Please request a new one.");
+          return;
+        }
+
+        // Create a user document if it doesn't exist
+        const user = await getUser(authUser.$id);
+        console.log("user:", user);
+        if (!user) {
+          await createUser({
+            userId: authUser.$id,
+            email: authUser.email,
+            hasCompletedOnboarding: false,
+            hasBeenWelcomed: false,
+          });
+        }
+
         setStatus("success");
 
         // Add a small delay to ensure the session is properly established
         // This prevents flashing of the homepage during redirect
         setTimeout(() => {
-          router.push("/schedule");
+          router.push("/onboarding/profile");
         }, 300);
       } catch (err) {
         setStatus("error");

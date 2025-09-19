@@ -1,6 +1,10 @@
 import { Navbar } from "@/components/Navbar";
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default async function AppLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <main>
       <Navbar isApp={true} />
