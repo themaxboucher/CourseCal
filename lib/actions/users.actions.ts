@@ -144,7 +144,7 @@ export const updateUser = async ({
   }
 
   try {
-    const { database, user: users } = await createAdminClient();
+    const { database, user } = await createAdminClient();
     // Find the user document
     const userDoc = await database.listDocuments(
       DATABASE_ID!,
@@ -157,13 +157,14 @@ export const updateUser = async ({
     // Get current values from the user document
     const currentEmail = userDoc.documents[0]?.email;
     const currentName = userDoc.documents[0]?.name;
+
     // Update the Appwrite Auth user (name and email) only if changed
     try {
       if (currentName !== name) {
-        await users.updateName(id, name);
+        await user.updateName(id, name);
       }
       if (currentEmail !== email) {
-        await users.updateEmail(id, email);
+        await user.updateEmail(id, email);
       }
     } catch (authError: any) {
       console.error("Error updating Appwrite Auth user:", authError);

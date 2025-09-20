@@ -11,7 +11,11 @@ import { TextField } from "../form-fields/TextField";
 import { LoaderCircle, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { updateUser } from "@/lib/actions/users.actions";
-import { uploadAvatar, deleteAvatar } from "@/lib/appwrite/client";
+import {
+  uploadAvatar,
+  deleteAvatar,
+  extractFileIdFromUrl,
+} from "@/lib/actions/avatars.actions";
 
 const profileSchema = z.object({
   avatar: z.string().optional(),
@@ -22,7 +26,9 @@ const profileSchema = z.object({
 type ProfileFormData = z.infer<typeof profileSchema>;
 
 export default function ProfileForm({ user }: { user: User }) {
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(
+    user.avatar || null
+  );
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -31,9 +37,9 @@ export default function ProfileForm({ user }: { user: User }) {
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      avatar: undefined,
-      name: "",
-      major: "",
+      avatar: user.avatar || undefined,
+      name: user.name || "",
+      major: user.major || "",
     },
   });
 
@@ -66,16 +72,16 @@ export default function ProfileForm({ user }: { user: User }) {
     try {
       let avatarUrl;
       let oldAvatarFileId: string | null = null;
+
       if (user.avatar) {
         // Extract fileId from the old avatar URL
-        const match = user.avatar.match(/files\/([^/]+)\/preview/);
-        if (match) {
-          oldAvatarFileId = match[1];
-        }
+        oldAvatarFileId = await extractFileIdFromUrl(user.avatar);
       }
+
       if (avatarFile) {
         // Upload new avatar
         avatarUrl = await uploadAvatar(avatarFile);
+        console.log("avatarUrl:", avatarUrl);
         // Delete old avatar if it exists
         if (oldAvatarFileId) {
           try {
@@ -85,12 +91,13 @@ export default function ProfileForm({ user }: { user: User }) {
           }
         }
       }
+
       await updateUser({
-        id: user.$id,
+        id: user.userId,
         name: data.name,
         major: data.major,
         email: user.email,
-        avatar: avatarUrl,
+        avatar: avatarUrl || user.avatar,
       });
       router.push("/onboarding/upload");
     } catch (error: any) {
