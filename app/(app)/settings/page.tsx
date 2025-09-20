@@ -2,7 +2,7 @@
 
 import { ThemeSelector } from "@/components/ThemeSelector";
 import { Button } from "@/components/ui/button";
-import { logout } from "@/lib/appwrite/client";
+import { logout } from "@/lib/actions/users.actions";
 import { useRouter } from "next/navigation";
 
 export default function SettingsPage() {

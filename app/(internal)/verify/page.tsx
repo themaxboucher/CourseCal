@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Loading from "@/components/Loading";
 import { createUser, getUser } from "@/lib/actions/users.actions";
-import { loginWithMagicLink, checkActiveSession } from "@/lib/appwrite/client";
+import { loginWithMagicLink } from "@/lib/actions/users.actions";
 
 // Separate component that uses useSearchParams() - must be wrapped in Suspense
 // This is required in Next.js 15 to handle client-side rendering bailout properly
@@ -22,12 +22,6 @@ function VerifyContent() {
   useEffect(() => {
     const handleVerification = async () => {
       try {
-        // First, check if there's already an active session
-        const activeUser = await checkActiveSession();
-        if (activeUser) {
-          console.log("Active session found:", activeUser);
-        }
-
         const userId = searchParams.get("userId");
         const secret = searchParams.get("secret");
 
@@ -36,11 +30,9 @@ function VerifyContent() {
           setError("Invalid login link. Please request a new one.");
           return;
         }
-        console.log("userId:", userId, "secret:", secret);
 
         // Check if the user is authenticated
         const authUser = await loginWithMagicLink(userId, secret);
-        console.log(authUser);
         if (!authUser) {
           setStatus("error");
           setError("Invalid login link. Please request a new one.");
@@ -49,7 +41,6 @@ function VerifyContent() {
 
         // Create a user document if it doesn't exist
         const user = await getUser(authUser.$id);
-        console.log("user:", user);
         if (!user) {
           await createUser({
             userId: authUser.$id,

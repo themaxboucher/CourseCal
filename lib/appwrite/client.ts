@@ -1,45 +1,12 @@
 "use client";
 
-import { Account, Client, ID, Storage } from "appwrite";
+import { Client, ID, Storage } from "appwrite";
 
 const client = new Client()
   .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
   .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID!);
 
-const account = new Account(client);
 const storage = new Storage(client);
-
-export async function checkActiveSession() {
-  try {
-    const user = await account.get();
-    return user;
-  } catch (error) {
-    // No active session
-    return false;
-  }
-}
-
-export async function loginWithMagicLink(userId: string, secret: string) {
-  try {
-    await account.updateMagicURLSession(userId, secret);
-    const user = await account.get();
-    return user;
-  } catch (error) {
-    console.error(error);
-    return false;
-  }
-}
-
-export async function logout() {
-  try {
-    await account.deleteSession({ sessionId: "current" });
-
-    return true;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-}
 
 export async function uploadAvatar(file: File): Promise<string> {
   try {

@@ -1,6 +1,6 @@
 "use server";
 
-import { Account, Client, ID, Query } from "node-appwrite";
+import { ID, Query } from "node-appwrite";
 import { createAdminClient, createSessionClient } from "../appwrite/server";
 import { parseStringify } from "../utils";
 import { cookies } from "next/headers";
@@ -32,6 +32,39 @@ export async function sendMagicLink(email: string) {
   }
 }
 
+export async function loginWithMagicLink(userId: string, secret: string) {
+  try {
+    const { account } = await createAdminClient();
+    const session = await account.updateMagicURLSession(userId, secret);
+
+    // Set the session cookie
+    (await cookies()).set("appwrite-session", session.secret, {
+      path: "/",
+      httpOnly: true,
+      sameSite: "strict",
+      secure: true,
+    });
+
+    const user = await getAuthUser();
+    return user;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+}
+
+export async function logout() {
+  try {
+    const { account } = await createSessionClient();
+    await account.deleteSession({ sessionId: "current" });
+    (await cookies()).delete("appwrite-session");
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+}
+
 export async function getAuthUser() {
   try {
     const { account } = await createSessionClient();
@@ -49,7 +82,7 @@ export async function getLoggedInUser() {
     const userAccount = await account.get();
     const userDocument = await getUser(userAccount.$id);
 
-    return parseStringify(userDocument);
+    return userDocument;
   } catch (error) {
     console.error(error);
     return false;
