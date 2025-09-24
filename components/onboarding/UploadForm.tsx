@@ -51,24 +51,28 @@ export default function UploadForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="ics-file">.ics Calendar File</Label>
-        <Input
-          id="ics-file"
-          type="file"
-          accept=".ics"
-          onChange={handleFileChange}
-          disabled={isLoading}
-        />
-        {file && (
-          <p className="text-sm text-muted-foreground">Selected: {file.name}</p>
-        )}
-      </div>
+    <div>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="ics-file">.ics Calendar File</Label>
+          <Input
+            id="ics-file"
+            type="file"
+            accept=".ics"
+            onChange={handleFileChange}
+            disabled={isLoading}
+          />
+          {file && (
+            <p className="text-sm text-muted-foreground">
+              Selected: {file.name}
+            </p>
+          )}
+        </div>
 
-      <Button type="submit" className="w-full" disabled={!file || isLoading}>
-        {isLoading ? "Parsing..." : "Upload and Parse"}
-      </Button>
-    </form>
+        <Button type="submit" className="w-full" disabled={!file || isLoading}>
+          {isLoading ? "Parsing..." : "Upload and Parse"}
+        </Button>
+      </form>
+    </div>
   );
 }
