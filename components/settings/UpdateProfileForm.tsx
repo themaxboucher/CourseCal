@@ -16,6 +16,7 @@ import {
   deleteAvatar,
   extractFileIdFromUrl,
 } from "@/lib/actions/avatars.actions";
+import { Label } from "../ui/label";
 
 const profileSchema = z.object({
   avatar: z.string().optional(),
@@ -98,7 +99,6 @@ export default function ProfileForm({ user }: { user: User }) {
         email: user.email,
         avatar: avatarUrl || user.avatar,
       });
-      router.push("/onboarding/upload");
     } catch (error: any) {
       let errorMessage = "Error updating personal details";
       if (error?.message?.includes("already exists")) {
@@ -117,21 +117,35 @@ export default function ProfileForm({ user }: { user: User }) {
         className="space-y-4 max-w-sm w-full"
       >
         <div className="space-y-2">
-          <div className="flex flex-col items-center gap-2 mb-2">
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              className="flex flex-col items-center gap-2 cursor-pointer"
-            >
-              <Avatar className="size-24 border border-border">
-                <AvatarImage
-                  className="object-cover shadow-inner"
-                  src={avatarPreview || undefined}
+          <div className="flex flex-col gap-2 mb-2">
+            <div className="space-y-2">
+              <Label>Your avatar</Label>
+              <div className="flex items-center gap-2">
+                <Avatar className="size-12 border border-border">
+                  <AvatarImage
+                    className="object-cover shadow-inner"
+                    src={avatarPreview || undefined}
+                  />
+                  <AvatarFallback className="font-bold text-primary bg-primary/20">
+                    {user.name.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  Pick an image
+                </Button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/png, image/jpeg"
+                  onChange={handleAvatarChange}
+                  className="hidden"
                 />
-                <AvatarFallback className="bg-muted text-muted-foreground">
-                  <UserRound className="size-10" />
-                </AvatarFallback>
-              </Avatar>
-              <div className="text-sm underline">Pick an image</div>
+              </div>
             </div>
 
             <input
@@ -156,9 +170,9 @@ export default function ProfileForm({ user }: { user: User }) {
           placeholder="e.g. Mechanical Engineering"
         />
 
-        <Button type="submit" disabled={loading} className="mt-2 w-full">
+        <Button type="submit" disabled={loading} className="mt-2">
           {loading && <LoaderCircle className="size-4 animate-spin" />}
-          {!loading && "Continue"}
+          {!loading && "Update"}
         </Button>
       </form>
     </Form>

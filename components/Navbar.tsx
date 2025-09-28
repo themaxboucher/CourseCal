@@ -1,4 +1,4 @@
-import { Bell, CircleUserRound, House, Search } from "lucide-react";
+import { Bell, House, Search, Settings } from "lucide-react";
 import { Logo } from "./Logo";
 import { Button } from "./ui/button";
 import Link from "next/link";
@@ -39,7 +39,7 @@ export function Navbar({ isApp = false }: NavbarProps) {
               <li>
                 <Button variant="ghost" size="icon" asChild>
                   <Link href="/settings">
-                    <CircleUserRound className="size-4.5" />
+                    <Settings className="size-4.5" />
                   </Link>
                 </Button>
               </li>
