@@ -8,7 +8,7 @@ import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useState, useRef } from "react";
 import { TextField } from "../form-fields/TextField";
-import { LoaderCircle, UserRound } from "lucide-react";
+import { CircleCheck, LoaderCircle, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { updateUser } from "@/lib/actions/users.actions";
 import {
@@ -17,6 +17,7 @@ import {
   extractFileIdFromUrl,
 } from "@/lib/actions/avatars.actions";
 import { Label } from "../ui/label";
+import { toast } from "sonner";
 
 const profileSchema = z.object({
   avatar: z.string().optional(),
@@ -98,6 +99,9 @@ export default function ProfileForm({ user }: { user: User }) {
         major: data.major,
         email: user.email,
         avatar: avatarUrl || user.avatar,
+      });
+      toast("Profile updated", {
+        icon: <CircleCheck className="text-green-500 size-5" />,
       });
     } catch (error: any) {
       let errorMessage = "Error updating personal details";

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Fredoka } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 const fredoka = Fredoka({
   variable: "--font-fredoka",
@@ -28,6 +29,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
