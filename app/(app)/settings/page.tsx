@@ -1,7 +1,7 @@
+import DeleteAccount from "@/components/settings/DeleteAccount";
 import { LogoutButton } from "@/components/settings/LogoutButton";
 import UpdateProfileForm from "@/components/settings/UpdateProfileForm";
 import { ThemeSelector } from "@/components/ThemeSelector";
-import { Button } from "@/components/ui/button";
 import { getLoggedInUser } from "@/lib/actions/users.actions";
 
 export default async function SettingsPage() {
@@ -49,7 +49,7 @@ export default async function SettingsPage() {
               </p>
             </div>
 
-            <Button variant="destructive">Delete account</Button>
+            <DeleteAccount user={user} />
           </div>
         </div>
       </section>

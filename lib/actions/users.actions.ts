@@ -184,3 +184,10 @@ export const updateUser = async ({
     throw error;
   }
 };
+
+export async function deleteAccount(authUserId: string, docUserId: string) {
+  // Delete the users events
+  // Delete the users avatar
+  // Delete the user document
+  // Delete the user from the auth users table
+}
