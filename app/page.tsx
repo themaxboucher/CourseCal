@@ -3,8 +3,15 @@ import { Footer } from "@/components/landing-page/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import AuthForm from "@/components/landing-page/AuthForm";
+import { getAuthUser } from "@/lib/actions/users.actions";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+export default async function Home() {
+  const user = await getAuthUser();
+  if (user) {
+    redirect("/schedule");
+  }
+
   return (
     <>
       <Navbar />
