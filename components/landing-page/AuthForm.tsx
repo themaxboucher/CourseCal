@@ -61,7 +61,7 @@ export default function AuthForm() {
             disabled={loading}
           >
             {loading && <LoaderCircle className="h-4 w-4 animate-spin" />}
-            {!loading && "Get started!"}
+            {!loading && "Get started"}
           </Button>
         </div>
         {error && <FormAlert message={error} type="error" />}
