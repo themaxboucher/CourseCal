@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { parseICSFile, type ParsedEvent } from "@/lib/ics";
+import { createEvent } from "@/lib/actions/events.actions";
+import { getLoggedInUser } from "@/lib/actions/users.actions";
 
 export default function UploadForm() {
   const [file, setFile] = useState<File | null>(null);
@@ -32,14 +34,40 @@ export default function UploadForm() {
 
     try {
       const fileContent = await file.text();
-      const events: ParsedEvent[] = parseICSFile(fileContent);
+      const parsedEvents: ParsedEvent[] = parseICSFile(fileContent);
 
-      console.log(`Found ${events.length} events in the calendar file`);
-      console.log(events);
+      console.log(`Found ${parsedEvents.length} events in the calendar file`);
 
-      alert(
-        `Successfully parsed ${events.length} events! Check the console for details.`
-      );
+      // Create a default course for imported events
+      const defaultCourse: Course = {
+        subjectCode: "IMPORT",
+        subject: "Imported Events",
+        catalogNumber: 0,
+        title: "Imported Calendar Events",
+        description: "Events imported from calendar file",
+        units: 0,
+        instructionalComponents: "lecture",
+      };
+
+      const user = await getLoggedInUser();
+
+      for (const parsedEvent of parsedEvents) {
+        try {
+          const calendarEvent: CalendarEvent = {
+            user: user.$id,
+            course: defaultCourse,
+            location: parsedEvent.location || "",
+            startTime: parsedEvent.startTime,
+            endTime: parsedEvent.endTime,
+            recurrence: parsedEvent.recurrence,
+            exclusions: parsedEvent.exclusions,
+          };
+
+          await createEvent(calendarEvent);
+        } catch (error) {
+          console.error("Error creating event:", error);
+        }
+      }
     } catch (error) {
       console.error("Error parsing ICS file:", error);
       alert(

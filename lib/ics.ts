@@ -1,3 +1,5 @@
+import { parseISO, format } from "date-fns";
+
 // Only the properties that are needed for the app are included
 export interface ParsedEvent {
   summary: string;
@@ -53,19 +55,20 @@ export function parseICSFile(icsContent: string): ParsedEvent[] {
           currentEvent.location = value;
           break;
         case "DTSTART":
-          currentEvent.startTime = value;
+          currentEvent.startTime = formatTime(value);
           break;
         case "DTEND":
-          currentEvent.endTime = value;
+          currentEvent.endTime = formatTime(value);
           break;
         case "RRULE":
-          currentEvent.recurrence = value;
+          // Parse RRULE and convert any dates to ISO format
+          currentEvent.recurrence = formatRecurrenceRule(value);
           break;
         case "EXDATE":
           if (!currentEvent.exclusions) {
             currentEvent.exclusions = [];
           }
-          currentEvent.exclusions.push(value);
+          currentEvent.exclusions.push(formatDate(value));
           break;
       }
     }
@@ -75,14 +78,47 @@ export function parseICSFile(icsContent: string): ParsedEvent[] {
 }
 
 export function formatDateTime(icsDateTime: string): Date {
-  // Handle ICS datetime format: YYYYMMDDTHHMMSS or YYYYMMDDTHHMMSSZ
+  // Convert ICS datetime format to ISO format for date-fns parsing
+  // ICS format: YYYYMMDDTHHMMSS or YYYYMMDDTHHMMSSZ
+  // Convert to: YYYY-MM-DDTHH:MM:SS
   const dateStr = icsDateTime.replace(/[TZ]/g, "");
-  const year = parseInt(dateStr.substring(0, 4));
-  const month = parseInt(dateStr.substring(4, 6)) - 1; // Month is 0-indexed
-  const day = parseInt(dateStr.substring(6, 8));
-  const hour = parseInt(dateStr.substring(8, 10)) || 0;
-  const minute = parseInt(dateStr.substring(10, 12)) || 0;
-  const second = parseInt(dateStr.substring(12, 14)) || 0;
+  const year = dateStr.substring(0, 4);
+  const month = dateStr.substring(4, 6);
+  const day = dateStr.substring(6, 8);
+  const hour = dateStr.substring(8, 10) || "00";
+  const minute = dateStr.substring(10, 12) || "00";
+  const second = dateStr.substring(12, 14) || "00";
 
-  return new Date(year, month, day, hour, minute, second);
+  const isoString = `${year}-${month}-${day}T${hour}:${minute}:${second}`;
+  return parseISO(isoString);
+}
+
+export function formatTime(icsDateTime: string): string {
+  // Extract time portion from ICS datetime format using date-fns
+  const date = formatDateTime(icsDateTime);
+  return format(date, "HH:mm:ss");
+}
+
+export function formatDate(icsDateTime: string): string {
+  // Extract date portion from ICS datetime format using date-fns
+  const date = formatDateTime(icsDateTime);
+  return format(date, "yyyy-MM-dd");
+}
+
+export function formatRecurrenceRule(rrule: string): string {
+  // Parse RRULE and convert any dates to date-only format using date-fns
+  // RRULE format: FREQ=WEEKLY;BYDAY=MO,WE,FR;UNTIL=20251231T235959Z
+  const parts = rrule.split(";");
+  const formattedParts = parts.map((part) => {
+    if (part.startsWith("UNTIL=")) {
+      const dateValue = part.substring(6);
+      // Convert the date part to date-only format using date-fns
+      const date = formatDateTime(dateValue);
+      const dateOnly = format(date, "yyyy-MM-dd");
+      return `UNTIL=${dateOnly}`;
+    }
+    return part;
+  });
+
+  return formattedParts.join(";");
 }

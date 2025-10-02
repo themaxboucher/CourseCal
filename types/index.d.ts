@@ -1,3 +1,5 @@
+declare type Override<T, R> = Omit<T, keyof R> & R;
+
 declare interface User {
   userId: string;
   email: string;
@@ -6,15 +8,12 @@ declare interface User {
   avatar: string;
   hasCompletedOnboarding: boolean;
   hasBeenWelcomed: boolean;
-  $id: string;
-  $createdAt: string;
-  $updatedAt: string;
+  $id?: string;
+  $createdAt?: string;
+  $updatedAt?: string;
 }
 
 declare interface Course {
-  $id: string;
-  $createdAt: string;
-  $updatedAt: string;
   subjectCode: string;
   subject: string;
   catalogNumber: number;
@@ -22,22 +21,28 @@ declare interface Course {
   description: string;
   units: number;
   instructionalComponents: "lecture" | "tutorial" | "laboratory" | "seminar";
+  $id?: string;
+  $createdAt?: string;
+  $updatedAt?: string;
 }
 
 declare interface Major {
-  $id: string;
-  $createdAt: string;
-  $updatedAt: string;
   major: string;
   degreeType: string;
+  $id?: string;
+  $createdAt?: string;
+  $updatedAt?: string;
 }
 
 declare interface CalendarEvent {
-  id: string;
+  user: User;
   course: Course;
   location: string;
   startTime: string;
   endTime: string;
   recurrence?: string;
   exclusions?: string[];
+  $id?: string;
+  $createdAt?: string;
+  $updatedAt?: string;
 }
