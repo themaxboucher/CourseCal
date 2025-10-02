@@ -38,24 +38,14 @@ export default function UploadForm() {
 
       console.log(`Found ${parsedEvents.length} events in the calendar file`);
 
-      // Create a default course for imported events
-      const defaultCourse: Course = {
-        subjectCode: "IMPORT",
-        subject: "Imported Events",
-        catalogNumber: 0,
-        title: "Imported Calendar Events",
-        description: "Events imported from calendar file",
-        units: 0,
-        instructionalComponents: "lecture",
-      };
-
       const user = await getLoggedInUser();
 
       for (const parsedEvent of parsedEvents) {
         try {
           const calendarEvent: CalendarEvent = {
             user: user.$id,
-            course: defaultCourse,
+            course: null,
+            summary: parsedEvent.summary,
             location: parsedEvent.location || "",
             startTime: parsedEvent.startTime,
             endTime: parsedEvent.endTime,

@@ -36,7 +36,8 @@ declare interface Major {
 
 declare interface CalendarEvent {
   user: User;
-  course: Course;
+  course: Course | null;
+  summary?: string;
   location: string;
   startTime: string;
   endTime: string;
