@@ -1,4 +1,5 @@
 import UploadForm from "@/components/onboarding/UploadForm";
+import { CourseSelect } from "@/components/CourseSelect";
 
 export default function UploadPage() {
   return (
@@ -6,6 +7,9 @@ export default function UploadPage() {
       <div className="flex flex-col items-center gap-8">
         <h1 className="heading-3">Upload your UCalgary schedule</h1>
         <UploadForm />
+      </div>
+      <div className="flex flex-col items-center gap-8">
+        <CourseSelect />
       </div>
     </section>
   );
