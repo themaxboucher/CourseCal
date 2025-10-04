@@ -1,27 +1,19 @@
 import Schedule from "@/components/Schedule";
-import { sampleEvents } from "@/constants";
+import { getEvents } from "@/lib/actions/events.actions";
+import { getLoggedInUser } from "@/lib/actions/users.actions";
 
-export default function SchedulePage() {
+export default async function SchedulePage() {
+  const user = await getLoggedInUser();
+  const events = await getEvents(user.$id);
+
   return (
     <>
       <section className="flex flex-col gap-2 max-w-[90rem] mx-auto px-8 py-16">
-        <div className="flex flex-col gap-8">
-          <div className="flex flex-col gap-4">
-            <h2 className="text-lg font-medium">Friends</h2>
-            <div className="flex items-center gap-4">
-              <div className="size-12 rounded-full bg-muted"></div>
-              <div className="size-12 rounded-full bg-muted"></div>
-              <div className="size-12 rounded-full bg-muted"></div>
-              <div className="size-12 rounded-full bg-muted"></div>
-              <div className="size-12 rounded-full bg-muted"></div>
-              <div className="size-12 rounded-full bg-muted"></div>
-              <div className="size-12 rounded-full bg-muted"></div>
-            </div>
-          </div>
-          <div className="flex flex-col gap-4">
-            <h2 className="text-lg font-medium">Schedule</h2>
-            <div className="h-[800px] max-w-[70rem]">
-              <Schedule events={sampleEvents} />
+        <h1 className="heading-3">Fall 2025</h1>
+        <div className="flex flex-col items-center gap-8">
+          <div className="flex flex-col items-center gap-4 w-full">
+            <div className="h-[800px] max-w-[70rem] w-full">
+              <Schedule events={events} />
             </div>
           </div>
         </div>

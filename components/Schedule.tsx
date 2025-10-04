@@ -1,279 +1,143 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { cn } from "@/lib/utils";
-import { Button } from "./ui/button";
 import Event from "./Event";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface ScheduleProps {
   events: CalendarEvent[];
-  currentDate?: Date;
-  className?: string;
+  onEventClick?: (event: CalendarEvent) => void;
 }
 
-interface TimeBreakdown {
-  lecture: number;
-  laboratory: number;
-  tutorial: number;
-  seminar: number;
-}
+const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+const timeSlots = [
+  "8:00 AM",
+  "9:00 AM",
+  "10:00 AM",
+  "11:00 AM",
+  "12:00 PM",
+  "1:00 PM",
+  "2:00 PM",
+  "3:00 PM",
+  "4:00 PM",
+  "5:00 PM",
+  "6:00 PM",
+];
 
-export default function Schedule({
-  events,
-  currentDate = new Date(),
-  className,
-}: ScheduleProps) {
-  const [selectedDate, setSelectedDate] = useState(currentDate);
-
-  const handleEventClick = (event: CalendarEvent) => {
-    console.log("Event clicked:", event);
+// Helper function to get day of week from recurrence rule
+const getDayOfWeek = (recurrence: string): number => {
+  // Extract day from recurrence rule (e.g., "BYDAY=MO" -> Monday = 1)
+  const dayMap: Record<string, number> = {
+    MO: 1,
+    TU: 2,
+    WE: 3,
+    TH: 4,
+    FR: 5,
+    SA: 6,
+    SU: 0,
   };
 
-  const handleDateChange = (date: Date) => {
-    console.log("Date changed:", date);
-  };
+  const byDayMatch = recurrence.match(/BYDAY=([A-Z,]+)/);
+  if (byDayMatch) {
+    const days = byDayMatch[1].split(",");
+    // Return the first day found (for simplicity, we'll use the first day)
+    return dayMap[days[0]] || 1;
+  }
 
-  // Calendar navigation
-  const goToPreviousWeek = () => {
-    const newDate = new Date(selectedDate);
-    newDate.setDate(newDate.getDate() - 7);
-    setSelectedDate(newDate);
-    handleDateChange(newDate);
-  };
+  return 1; // Default to Monday if no day found
+};
 
-  const goToNextWeek = () => {
-    const newDate = new Date(selectedDate);
-    newDate.setDate(newDate.getDate() + 7);
-    setSelectedDate(newDate);
-    handleDateChange(newDate);
-  };
+// Helper function to convert time to minutes from midnight
+const timeToMinutes = (timeString: string): number => {
+  // Handle time strings like "16:00:00" or "16:00"
+  const [hours, minutes] = timeString.split(":").map(Number);
+  return hours * 60 + (minutes || 0);
+};
 
-  const goToToday = () => {
-    const today = new Date();
-    setSelectedDate(today);
-    handleDateChange(today);
-  };
+// Helper function to get position and height for event
+const getEventPosition = (event: CalendarEvent) => {
+  const startMinutes = timeToMinutes(event.startTime);
+  const endMinutes = timeToMinutes(event.endTime);
+  const duration = endMinutes - startMinutes;
 
-  // Get week dates
-  const weekDates = useMemo(() => {
-    const dates = [];
-    const startOfWeek = new Date(selectedDate);
-    const day = startOfWeek.getDay();
-    const diff = startOfWeek.getDate() - day;
-    startOfWeek.setDate(diff);
+  // Convert to pixels (assuming 60px per hour)
+  const top = (startMinutes - 8 * 60) * (60 / 60); // Start from 8 AM
+  const height = duration * (60 / 60);
 
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(startOfWeek);
-      date.setDate(startOfWeek.getDate() + i);
-      dates.push(date);
-    }
+  return { top, height };
+};
 
-    return dates;
-  }, [selectedDate]);
+export default function Schedule({ events, onEventClick }: ScheduleProps) {
+  // Group events by day of week (1 = Monday, 2 = Tuesday, etc.)
+  const eventsByDay = events.reduce((acc, event) => {
+    const dayOfWeek = getDayOfWeek(event.recurrence || "");
+    // Convert Sunday=0 to Monday=1, Tuesday=2, etc.
+    const weekdayIndex = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
 
-  // Time slots (24 hours in 12-hour format)
-  const timeSlots = useMemo(() => {
-    const slots = [];
-    for (let hour = 0; hour < 24; hour++) {
-      const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-      const period = hour < 12 ? "AM" : "PM";
-      slots.push(`${hour12} ${period}`);
-    }
-    return slots;
-  }, []);
-
-  // Filter events for current week
-  const weekEvents = useMemo(() => {
-    const startOfWeek = weekDates[0];
-    const endOfWeek = new Date(weekDates[6]);
-    endOfWeek.setHours(23, 59, 59, 999);
-
-    return events.filter((event) => {
-      const eventStart = new Date(event.startTime);
-      return eventStart >= startOfWeek && eventStart <= endOfWeek;
-    });
-  }, [events, weekDates]);
-
-  // Calculate time breakdown
-  const timeBreakdown = useMemo(() => {
-    const breakdown: TimeBreakdown = {
-      lecture: 0,
-      laboratory: 0,
-      tutorial: 0,
-      seminar: 0,
-    };
-
-    weekEvents.forEach((event) => {
-      const startTime = new Date(event.startTime);
-      const endTime = new Date(event.endTime);
-      const duration =
-        (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
-      const component = event.course.instructionalComponents;
-      if (component) {
-        breakdown[component] += duration;
+    if (weekdayIndex >= 0 && weekdayIndex < 5) {
+      // Only Monday-Friday
+      if (!acc[weekdayIndex]) {
+        acc[weekdayIndex] = [];
       }
-    });
+      acc[weekdayIndex].push(event);
+    }
 
-    return breakdown;
-  }, [weekEvents]);
-
-  // Get events for a specific day
-  const getEventsForDay = (date: Date) => {
-    const dayStart = new Date(date);
-    dayStart.setHours(0, 0, 0, 0);
-    const dayEnd = new Date(date);
-    dayEnd.setHours(23, 59, 59, 999);
-
-    return weekEvents.filter((event) => {
-      const eventStart = new Date(event.startTime);
-      return eventStart >= dayStart && eventStart <= dayEnd;
-    });
-  };
-
-  // Calculate event position and height
-  const getEventStyle = (event: CalendarEvent, dayDate: Date) => {
-    const startTime = new Date(event.startTime);
-    const endTime = new Date(event.endTime);
-
-    const startHour = startTime.getHours();
-    const startMinute = startTime.getMinutes();
-    const endHour = endTime.getHours();
-    const endMinute = endTime.getMinutes();
-
-    const startPosition = (startHour + startMinute / 60) * 60; // 60px per hour
-    const duration =
-      (endHour + endMinute / 60 - (startHour + startMinute / 60)) * 60;
-
-    return {
-      top: `${startPosition}px`,
-      height: `${Math.max(duration, 30)}px`, // Minimum height of 30px
-      zIndex: 10,
-    };
-  };
-
-  const formatMonth = (date: Date) => {
-    return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
-  };
-
-  const formatDay = (date: Date) => {
-    return date.getDate().toString();
-  };
-
-  const formatDayName = (date: Date) => {
-    return date.toLocaleDateString("en-US", { weekday: "short" });
-  };
-
-  const isToday = (date: Date) => {
-    const today = new Date();
-    return date.toDateString() === today.toDateString();
-  };
-
-  const upcomingEvents = weekEvents
-    .filter((event) => new Date(event.startTime) > new Date())
-    .sort(
-      (a, b) =>
-        new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
-    )
-    .slice(0, 3);
+    return acc;
+  }, {} as Record<number, CalendarEvent[]>);
 
   return (
-    <div className={cn("flex gap-6 h-full", className)}>
-      {/* Main Calendar */}
-      <div className="flex-1 min-w-0">
-        <div className="h-full">
-          <div className=" py-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="font-semibold text-lg">
-                  {formatMonth(selectedDate)}
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" onClick={goToPreviousWeek}>
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
-                <Button variant="outline" size="sm" onClick={goToToday}>
-                  Today
-                </Button>
-                <Button variant="ghost" size="sm" onClick={goToNextWeek}>
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
+    <div className="w-full max-w-6xl mx-auto">
+      {/* Schedule grid */}
+      <div
+        className="grid grid-cols-6  overflow-hidden"
+        style={{ gridTemplateColumns: "auto 1fr 1fr 1fr 1fr 1fr" }}
+      >
+        <div className="text-sm font-medium text-muted-foreground p-2"></div>{" "}
+        {/* Time column header */}
+        {weekdays.map((day) => (
+          <div
+            key={day}
+            className="text-sm text-muted-foreground font-medium p-4 bg-muted text-center uppercase border-l border-t relative z-20"
+          >
+            {day.slice(0, 3)}
           </div>
-
-          <div className="flex h-[40rem] overflow-auto">
-            {/* Time column */}
-            <div className="w-16 flex-shrink-0 relative">
-              <div className="h-16 bg-background sticky top-0 z-30"></div>
-              {timeSlots.map((time) => (
-                <div
-                  key={time}
-                  className="h-[60px] text-xs font-medium px-2 py-1 flex items-start justify-end"
-                >
-                  {time}
-                </div>
-              ))}
+        ))}
+        {/* Time column */}
+        <div>
+          {timeSlots.map((time) => (
+            <div
+              key={time}
+              className="h-15 p-2 text-xs font-medium text-muted-foreground"
+            >
+              {time}
             </div>
-
-            {/* Days columns */}
-            <div className="flex-1 grid grid-cols-7 min-w-0">
-              {weekDates.map((date, dayIndex) => (
-                <div
-                  key={dayIndex}
-                  className={cn(
-                    "border-l last:border-r relative",
-                    isToday(date) && "bg-muted/50"
-                  )}
-                >
-                  {/* Day header */}
-                  <div
-                    className={cn(
-                      "h-16 border-b flex flex-col justify-center px-4 sticky top-0 z-30 bg-background",
-                      isToday(date) && "bg-primary text-primary-foreground"
-                    )}
-                  >
-                    <div className="text-xs font-medium uppercase">
-                      {formatDayName(date)}
-                    </div>
-                    <div
-                      className={cn(
-                        "text-xl font-semibold",
-                        isToday(date)
-                          ? "text-primary-foreground"
-                          : "text-foreground"
-                      )}
-                    >
-                      {formatDay(date)}
-                    </div>
-                  </div>
-
-                  {/* Day content */}
-                  <div className="relative min-h-[1440px] overflow-auto">
-                    {/* Time slots */}
-                    {timeSlots.map((time) => (
-                      <div
-                        key={time}
-                        className="h-[60px] border-b relative group"
-                      ></div>
-                    ))}
-
-                    {/* Events */}
-                    {getEventsForDay(date).map((event) => (
-                      <Event
-                        key={event.id}
-                        event={event}
-                        onClick={handleEventClick}
-                        style={getEventStyle(event, date)}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          ))}
         </div>
+        {/* Day columns */}
+        {weekdays.map((day, dayIndex) => (
+          <div key={day} className=" relative">
+            {/* Time slot lines */}
+            {timeSlots.map((time) => (
+              <div key={time} className="h-15 border-t border-l"></div>
+            ))}
+
+            {/* Events for this day */}
+            {eventsByDay[dayIndex]?.map((event, eventIndex) => {
+              const { top, height } = getEventPosition(event);
+              return (
+                <Event
+                  key={`${event.$id || eventIndex}`}
+                  event={event}
+                  onClick={onEventClick}
+                  style={{
+                    position: "absolute",
+                    top: `${top}px`,
+                    height: `${height}px`,
+                    zIndex: 10,
+                  }}
+                />
+              );
+            })}
+          </div>
+        ))}
       </div>
     </div>
   );
