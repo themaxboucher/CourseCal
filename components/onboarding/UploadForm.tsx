@@ -7,6 +7,7 @@ import { parseICSFile, type ParsedEvent } from "@/lib/ics";
 import { createEvent } from "@/lib/actions/events.actions";
 import { getLoggedInUser } from "@/lib/actions/users.actions";
 import { LoaderCircle } from "lucide-react";
+import { getCourseFromTitle } from "@/lib/actions/courses.actions";
 
 export default function UploadForm() {
   const [file, setFile] = useState<File | null>(null);
@@ -40,9 +41,11 @@ export default function UploadForm() {
 
       for (const parsedEvent of parsedEvents) {
         try {
+          const course = await getCourseFromTitle(parsedEvent.summary);
+
           const calendarEvent: CalendarEvent = {
             user: user.$id,
-            course: null, // TODO: Find course from Appwrite database based on summary
+            course: course ? course.$id : null,
             summary: parsedEvent.summary,
             location: parsedEvent.location || "",
             startTime: parsedEvent.startTime,

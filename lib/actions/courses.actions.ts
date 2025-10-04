@@ -38,3 +38,24 @@ export async function getCourses(limit: number = 10, search?: string) {
     throw error;
   }
 }
+
+export async function getCourseFromTitle(title: string) {
+  try {
+    const { database } = await createAdminClient();
+    const course = await database.listDocuments(
+      DATABASE_ID!,
+      COURSES_TABLE_ID!,
+      [Query.equal("title", [title])]
+    );
+
+    // Return null if no course found, otherwise parse the first document
+    if (!course.documents || course.documents.length === 0) {
+      return null;
+    }
+
+    return parseStringify(course.documents[0]);
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
