@@ -17,27 +17,6 @@ export function Navbar({ isApp = false }: NavbarProps) {
             <ul className="flex items-center">
               <li>
                 <Button variant="ghost" size="icon" asChild>
-                  <Link href="/schedule">
-                    <House className="size-4.5" />
-                  </Link>
-                </Button>
-              </li>
-              <li>
-                <Button variant="ghost" size="icon" asChild>
-                  <Link href="/search">
-                    <Search className="size-4.5" />
-                  </Link>
-                </Button>
-              </li>
-              <li>
-                <Button variant="ghost" size="icon" asChild>
-                  <Link href="/notifications">
-                    <Bell className="size-4.5" />
-                  </Link>
-                </Button>
-              </li>
-              <li>
-                <Button variant="ghost" size="icon" asChild>
                   <Link href="/settings">
                     <Settings className="size-4.5" />
                   </Link>

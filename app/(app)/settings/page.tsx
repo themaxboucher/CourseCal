@@ -1,18 +1,30 @@
+import { Navbar } from "@/components/Navbar";
 import DeleteAccount from "@/components/settings/DeleteAccount";
 import { LogoutButton } from "@/components/settings/LogoutButton";
 import UpdateProfileForm from "@/components/settings/UpdateProfileForm";
 import { ThemeSelector } from "@/components/ThemeSelector";
+import { Button } from "@/components/ui/button";
 import { getLoggedInUser } from "@/lib/actions/users.actions";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 export default async function SettingsPage() {
   const user = await getLoggedInUser();
 
   return (
     <>
+      <Navbar />
       <section className="flex flex-col gap-2 max-w-[45rem] mx-auto px-8 py-16">
         <div className="space-y-8">
           <div className="space-y-2">
-            <h1 className="heading-3">Settings</h1>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" asChild>
+                <Link href="/schedule">
+                  <ArrowLeft className="size-6" />
+                </Link>
+              </Button>
+              <h1 className="heading-3">Settings</h1>
+            </div>
             <p className="text-muted-foreground">
               💬 Got feedback? Send questions, feature requests, bug reports,
               love letters, or hate mail to{" "}

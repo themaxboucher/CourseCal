@@ -12,10 +12,5 @@ export default async function AppLayout({
     redirect("/");
   }
 
-  return (
-    <main>
-      <Navbar isApp={true} />
-      {children}
-    </main>
-  );
+  return <main>{children}</main>;
 }

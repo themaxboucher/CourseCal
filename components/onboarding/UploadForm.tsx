@@ -8,10 +8,12 @@ import { createEvent } from "@/lib/actions/events.actions";
 import { getLoggedInUser } from "@/lib/actions/users.actions";
 import { LoaderCircle } from "lucide-react";
 import { getCourseFromTitle } from "@/lib/actions/courses.actions";
+import { useRouter } from "next/navigation";
 
 export default function UploadForm() {
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
@@ -59,6 +61,7 @@ export default function UploadForm() {
           console.error("Error creating event:", error);
         }
       }
+      router.push("/schedule");
     } catch (error) {
       console.error("Error parsing ICS file:", error);
       alert(
