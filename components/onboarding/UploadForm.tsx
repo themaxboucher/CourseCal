@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { parseICSFile, type ParsedEvent } from "@/lib/ics";
 import { createEvent } from "@/lib/actions/events.actions";
 import { getLoggedInUser } from "@/lib/actions/users.actions";
+import { LoaderCircle } from "lucide-react";
 
 export default function UploadForm() {
   const [file, setFile] = useState<File | null>(null);
@@ -36,15 +36,13 @@ export default function UploadForm() {
       const fileContent = await file.text();
       const parsedEvents: ParsedEvent[] = parseICSFile(fileContent);
 
-      console.log(`Found ${parsedEvents.length} events in the calendar file`);
-
       const user = await getLoggedInUser();
 
       for (const parsedEvent of parsedEvents) {
         try {
           const calendarEvent: CalendarEvent = {
             user: user.$id,
-            course: null,
+            course: null, // TODO: Find course from Appwrite database based on summary
             summary: parsedEvent.summary,
             location: parsedEvent.location || "",
             startTime: parsedEvent.startTime,
@@ -72,7 +70,6 @@ export default function UploadForm() {
     <div>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="ics-file">.ics Calendar File</Label>
           <Input
             id="ics-file"
             type="file"
@@ -80,15 +77,11 @@ export default function UploadForm() {
             onChange={handleFileChange}
             disabled={isLoading}
           />
-          {file && (
-            <p className="text-sm text-muted-foreground">
-              Selected: {file.name}
-            </p>
-          )}
         </div>
 
         <Button type="submit" className="w-full" disabled={!file || isLoading}>
-          {isLoading ? "Parsing..." : "Upload and Parse"}
+          {isLoading && <LoaderCircle className="h-4 w-4 animate-spin" />}
+          {!isLoading && "Upload"}
         </Button>
       </form>
     </div>
