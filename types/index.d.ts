@@ -38,6 +38,7 @@ declare interface CalendarEvent {
   user: User;
   course: Course | null;
   summary?: string;
+  type: "lecture" | "tutorial" | "lab" | "seminar" | null;
   location: string;
   startTime: string;
   endTime: string;

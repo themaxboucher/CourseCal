@@ -75,8 +75,9 @@ export default function Event({
             ) : (
               <div className="font-semibold truncate">{event.summary}</div>
             )}
-
-            <div className="text-xs opacity-75 capitalize">Lecture</div>
+            {event.type && (
+              <div className="text-xs opacity-75 capitalize">{event.type}</div>
+            )}
           </div>
           <div className="text-xs opacity-75">
             {formatTime(event.startTime)} - {formatTime(event.endTime)}

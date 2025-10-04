@@ -50,6 +50,7 @@ export default function UploadForm() {
             course: course ? course.$id : null,
             summary: parsedEvent.summary,
             location: parsedEvent.location || "",
+            type: null,
             startTime: parsedEvent.startTime,
             endTime: parsedEvent.endTime,
             recurrence: parsedEvent.recurrence,
