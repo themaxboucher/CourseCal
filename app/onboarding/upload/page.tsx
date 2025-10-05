@@ -1,7 +1,16 @@
 import UploadForm from "@/components/onboarding/UploadForm";
+import { getTerms } from "@/lib/actions/terms.actions";
+import { getLoggedInUser } from "@/lib/actions/users.actions";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 
-export default function UploadPage() {
+export default async function UploadPage() {
+  const user = await getLoggedInUser();
+  if (!user) {
+    redirect("/");
+  }
+  const terms = await getTerms();
+
   return (
     <section className="flex flex-col gap-2 max-w-[75rem] mx-auto px-8 py-16">
       <div className="flex flex-col items-center gap-8">
@@ -21,7 +30,7 @@ export default function UploadPage() {
           className="shadow-lg rounded-xl border-2"
         />
 
-        <UploadForm />
+        <UploadForm terms={terms} user={user} />
       </div>
     </section>
   );

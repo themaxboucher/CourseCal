@@ -14,7 +14,7 @@ export default async function SettingsPage() {
   return (
     <>
       <Navbar />
-      <section className="flex flex-col gap-2 max-w-[45rem] mx-auto px-8 py-16">
+      <section className="flex flex-col gap-2 max-w-[45rem] mx-auto px-8 py-12">
         <div className="space-y-8">
           <div className="space-y-2">
             <div className="flex items-center gap-2">

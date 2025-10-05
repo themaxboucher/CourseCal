@@ -34,8 +34,18 @@ declare interface Major {
   $updatedAt?: string;
 }
 
+declare interface Term {
+  year: number;
+  season: "winter" | "spring" | "summer" | "fall";
+  startDate: string;
+  endDate: string;
+  $id?: string;
+  $createdAt?: string;
+  $updatedAt?: string;
+}
+
 declare interface CalendarEvent {
-  user: User;
+  user: string;
   course: Course | null;
   summary?: string;
   type: "lecture" | "tutorial" | "lab" | "seminar" | null;
@@ -44,6 +54,7 @@ declare interface CalendarEvent {
   endTime: string;
   recurrence?: string;
   exclusions?: string[];
+  term: string;
   $id?: string;
   $createdAt?: string;
   $updatedAt?: string;
