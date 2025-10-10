@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { MapPin } from "lucide-react";
 
 interface EventProps {
   event: CalendarEvent;
@@ -9,13 +10,13 @@ interface EventProps {
 }
 
 const colorPalette = [
-  "bg-red-100 dark:bg-red-900 border-red-200 dark:border-red-900 text-red-800 dark:text-red-200",
-  "bg-orange-100 dark:bg-orange-900 border-orange-200 dark:border-orange-900 text-orange-800 dark:text-orange-200",
-  "bg-yellow-100 dark:bg-yellow-900 border-yellow-200 dark:border-yellow-900 text-yellow-800 dark:text-yellow-200",
-  "bg-green-100 dark:bg-green-900 border-green-200 dark:border-green-900 text-green-800 dark:text-green-200",
-  "bg-blue-100 dark:bg-blue-900 border-blue-200 dark:border-blue-900 text-blue-800 dark:text-blue-200",
-  "bg-purple-100 dark:bg-purple-900 border-purple-200 dark:border-purple-900 text-purple-800 dark:text-purple-200",
-  "bg-pink-100 dark:bg-pink-900 border-pink-200 dark:border-pink-900 text-pink-800 dark:text-pink-200",
+  "bg-red-500  border-red-300 dark:bg-red-700 dark:border-red-900 text-white",
+  "bg-orange-500  border-orange-300 dark:bg-orange-700 dark:border-orange-900 text-white",
+  "bg-yellow-400 border-yellow-300 dark:bg-yellow-500 dark:border-yellow-700 text-white",
+  "bg-green-500  border-green-300 dark:bg-green-700 dark:border-green-900 text-white",
+  "bg-blue-500  border-blue-300 dark:bg-blue-700 dark:border-blue-900 text-white",
+  "bg-purple-500  border-purple-300 dark:bg-purple-700 dark:border-purple-900 text-white",
+  "bg-pink-500  border-pink-300 dark:bg-pink-700 dark:border-pink-900 text-white",
 ];
 
 // Simple hash function to consistently assign colors to course titles
@@ -57,7 +58,7 @@ export default function Event({
   return (
     <div
       className={cn(
-        "absolute left-0 right-0 m-0.5 rounded-lg border-[1.5px] p-2 cursor-pointer hover:shadow-sm transition-shadow",
+        "absolute left-0 right-0 my-1 mx-0.5 rounded-lg border-[1.5px] p-2 cursor-pointer hover:shadow-sm transition-shadow",
         "text-xs font-medium overflow-hidden z-20",
         subjectColor,
         className
@@ -83,8 +84,11 @@ export default function Event({
             {formatTime(event.startTime)} - {formatTime(event.endTime)}
           </div>
           {event.location && (
-            <div className="text-xs opacity-75 truncate">
-              📍 {event.location}
+            <div className="flex items-center gap-1">
+              <MapPin className="size-3 min-w-3" />
+              <div className="text-xs opacity-75 truncate">
+                {event.location}
+              </div>
             </div>
           )}
         </div>

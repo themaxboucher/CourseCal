@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "./ui/select";
 import { seasonColors, seasonIcons } from "@/constants";
-import { getCurrentTerm } from "@/lib/utils";
+import { getCurrentTerm, cn } from "@/lib/utils";
 
 interface ScheduleProps {
   events: CalendarEvent[];
@@ -117,7 +117,7 @@ export default function Schedule({
 
   return (
     <>
-      <div className="flex items-center justify-between pb-4">
+      <div className="flex items-center justify-between pb-4 ml-16">
         <Select value={selectedTermId} onValueChange={setSelectedTermId}>
           <SelectTrigger className="capitalize">
             <SelectValue placeholder="Select a term">
@@ -167,12 +167,16 @@ export default function Schedule({
           className="grid grid-cols-6  overflow-hidden"
           style={{ gridTemplateColumns: "auto 1fr 1fr 1fr 1fr 1fr" }}
         >
-          <div className="text-sm font-medium text-muted-foreground p-2"></div>{" "}
+          <div />
           {/* Time column header */}
-          {weekdays.map((day) => (
+          {weekdays.map((day, index) => (
             <div
               key={day}
-              className="text-sm text-muted-foreground font-medium p-4 bg-muted text-center uppercase border-l border-t relative z-20"
+              className={cn(
+                "text-sm text-muted-foreground font-medium p-4 bg-muted/50 text-center uppercase border-l-2 border-t-2 relative z-20",
+                index === 0 && "rounded-tl-xl",
+                index === weekdays.length - 1 && "border-r-2 rounded-tr-xl"
+              )}
             >
               {day.slice(0, 3)}
             </div>
@@ -190,10 +194,17 @@ export default function Schedule({
           </div>
           {/* Day columns */}
           {weekdays.map((day, dayIndex) => (
-            <div key={day} className=" relative">
+            <div
+              key={day}
+              className={cn(
+                "relative border-l-2 border-b-2",
+                dayIndex === 0 && "rounded-bl-xl",
+                dayIndex === weekdays.length - 1 && "border-r-2 rounded-br-xl"
+              )}
+            >
               {/* Time slot lines */}
               {timeSlots.map((time) => (
-                <div key={time} className="h-15 border-t border-l"></div>
+                <div key={time} className="h-15 border-t-2"></div>
               ))}
 
               {/* Events for this day */}
