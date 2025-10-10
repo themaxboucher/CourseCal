@@ -9,7 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { Snowflake, Sun, Leaf, Sprout, GraduationCap } from "lucide-react";
+import { seasonColors, seasonIcons } from "@/constants";
+import { getCurrentTerm } from "@/lib/utils";
 
 interface ScheduleProps {
   events: CalendarEvent[];
@@ -75,59 +76,6 @@ const getEventPosition = (event: CalendarEvent) => {
   return { top, height };
 };
 
-// Helper function to get seasonal icon
-const getSeasonIcon = (season: string) => {
-  switch (season.toLowerCase()) {
-    case "winter":
-      return Snowflake;
-    case "spring":
-      return Sprout;
-    case "summer":
-      return Sun;
-    case "fall":
-      return Leaf;
-    default:
-      return GraduationCap;
-  }
-};
-
-// Helper function to get seasonal color
-const getSeasonColor = (season: string) => {
-  switch (season.toLowerCase()) {
-    case "winter":
-      return "text-blue-500";
-    case "spring":
-      return "text-green-500";
-    case "summer":
-      return "text-yellow-500";
-    case "fall":
-      return "text-orange-500";
-    default:
-      return "text-gray-500";
-  }
-};
-
-// Helper function to determine the current term based on date
-const getCurrentTerm = (terms: Term[]): Term | null => {
-  const now = new Date();
-  const currentDate = now.toISOString().split("T")[0]; // YYYY-MM-DD format
-
-  // Sort terms by start date to find the most recent one that has started
-  const sortedTerms = [...terms].sort(
-    (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
-  );
-
-  // Find the term where current date is between start and end date
-  for (const term of sortedTerms.reverse()) {
-    if (currentDate >= term.startDate && currentDate <= term.endDate) {
-      return term;
-    }
-  }
-
-  // If no current term found, return the most recent term
-  return sortedTerms.length > 0 ? sortedTerms[0] : null;
-};
-
 export default function Schedule({
   events,
   terms,
@@ -179,8 +127,8 @@ export default function Schedule({
                     (term) => term.$id === selectedTermId
                   );
                   if (selectedTerm) {
-                    const IconComponent = getSeasonIcon(selectedTerm.season);
-                    const colorClass = getSeasonColor(selectedTerm.season);
+                    const IconComponent = seasonIcons[selectedTerm.season];
+                    const colorClass = seasonColors[selectedTerm.season];
                     return (
                       <div className="flex items-center gap-2">
                         <IconComponent className={`h-4 w-4 ${colorClass}`} />
@@ -194,8 +142,8 @@ export default function Schedule({
           </SelectTrigger>
           <SelectContent>
             {terms.map((term: Term) => {
-              const IconComponent = getSeasonIcon(term.season);
-              const colorClass = getSeasonColor(term.season);
+              const IconComponent = seasonIcons[term.season];
+              const colorClass = seasonColors[term.season];
 
               return (
                 <SelectItem

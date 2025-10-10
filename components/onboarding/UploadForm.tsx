@@ -6,14 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { parseICSFile, type ParsedEvent } from "@/lib/ics";
 import { createEvent } from "@/lib/actions/events.actions";
-import {
-  LoaderCircle,
-  Snowflake,
-  Sun,
-  Leaf,
-  Sprout,
-  GraduationCap,
-} from "lucide-react";
 import { getCourseFromTitle } from "@/lib/actions/courses.actions";
 import { useRouter } from "next/navigation";
 import {
@@ -25,6 +17,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { SelectField } from "@/components/form-fields/SelectField";
+import { seasonColors, seasonIcons } from "@/constants";
+import { getCurrentTerm } from "@/lib/utils";
+import { LoaderCircle } from "lucide-react";
 
 interface UploadFormProps {
   terms: Term[];
@@ -40,37 +35,10 @@ export default function UploadForm({ terms, user }: UploadFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  // Function to get the default term based on current date
-  const getDefaultTerm = () => {
-    const now = new Date();
-    const currentDate = now.toISOString().split("T")[0]; // YYYY-MM-DD format
-
-    // Find the term that contains the current date
-    const currentTerm = terms.find((term) => {
-      const startDate = new Date(term.startDate);
-      const endDate = new Date(term.endDate);
-      return now >= startDate && now <= endDate;
-    });
-
-    // If no current term found, find the next upcoming term
-    if (!currentTerm) {
-      const upcomingTerms = terms
-        .filter((term) => new Date(term.startDate) > now)
-        .sort(
-          (a, b) =>
-            new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
-        );
-
-      return upcomingTerms[0]?.$id || terms[0]?.$id || "";
-    }
-
-    return currentTerm.$id || "";
-  };
-
   const form = useForm<UploadFormData>({
     defaultValues: {
       file: undefined,
-      term: getDefaultTerm(),
+      term: getCurrentTerm(terms)?.$id || "",
     },
   });
 
@@ -130,46 +98,14 @@ export default function UploadForm({ terms, user }: UploadFormProps) {
     }
   };
 
-  // Function to get seasonal icon
-  const getSeasonIcon = (season: string) => {
-    switch (season.toLowerCase()) {
-      case "winter":
-        return Snowflake;
-      case "spring":
-        return Sprout;
-      case "summer":
-        return Sun;
-      case "fall":
-        return Leaf;
-      default:
-        return GraduationCap;
-    }
-  };
-
-  // Function to get seasonal color
-  const getSeasonColor = (season: string) => {
-    switch (season.toLowerCase()) {
-      case "winter":
-        return "text-blue-500";
-      case "spring":
-        return "text-green-500";
-      case "summer":
-        return "text-yellow-500";
-      case "fall":
-        return "text-orange-500";
-      default:
-        return "text-gray-500";
-    }
-  };
-
   // Prepare term options for the select field
   const termOptions = terms.map((term) => ({
     value: term.$id || "",
     label: `${term.season.charAt(0).toUpperCase() + term.season.slice(1)} ${
       term.year
     }`,
-    icon: getSeasonIcon(term.season),
-    color: getSeasonColor(term.season),
+    icon: seasonIcons[term.season],
+    color: seasonColors[term.season],
   }));
 
   return (
