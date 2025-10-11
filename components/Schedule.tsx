@@ -33,6 +33,20 @@ const timeSlots = [
   "6:00 PM",
 ];
 
+const timeSlotsShort = [
+  "8 AM",
+  "9 AM",
+  "10 AM",
+  "11 AM",
+  "12 PM",
+  "1 PM",
+  "2 PM",
+  "3 PM",
+  "4 PM",
+  "5 PM",
+  "6 PM",
+];
+
 // Helper function to get day of week from recurrence rule
 const getDayOfWeek = (recurrence: string): number => {
   // Extract day from recurrence rule (e.g., "BYDAY=MO" -> Monday = 1)
@@ -69,9 +83,9 @@ const getEventPosition = (event: CalendarEvent) => {
   const endMinutes = timeToMinutes(event.endTime);
   const duration = endMinutes - startMinutes;
 
-  // Convert to pixels (assuming 60px per hour)
-  const top = (startMinutes - 8 * 60) * (60 / 60); // Start from 8 AM
-  const height = duration * (60 / 60);
+  // Convert to pixels (assuming 64px per hour)
+  const top = (startMinutes - 8 * 60) * (64 / 60); // Start from 8 AM
+  const height = duration * (64 / 60);
 
   return { top, height };
 };
@@ -173,7 +187,7 @@ export default function Schedule({
             <div
               key={day}
               className={cn(
-                "text-sm text-muted-foreground font-medium p-4 bg-muted/50 text-center uppercase border-l-2 border-t-2 relative z-20",
+                "md:text-sm text-xs text-muted-foreground font-medium p-4 bg-muted/50 text-center uppercase border-l-2 border-t-2 relative z-20",
                 index === 0 && "rounded-tl-xl",
                 index === weekdays.length - 1 && "border-r-2 rounded-tr-xl"
               )}
@@ -182,11 +196,21 @@ export default function Schedule({
             </div>
           ))}
           {/* Time column */}
-          <div>
+          <div className="hidden md:block">
             {timeSlots.map((time) => (
               <div
                 key={time}
-                className="h-15 p-2 text-xs font-medium text-muted-foreground"
+                className="h-16 px-2 py-1 text-xs font-medium text-muted-foreground"
+              >
+                {time}
+              </div>
+            ))}
+          </div>
+          <div className="md:hidden">
+            {timeSlotsShort.map((time) => (
+              <div
+                key={time}
+                className="h-16 py-0.5 pr-0.5 text-xxxs font-medium text-muted-foreground"
               >
                 {time}
               </div>
@@ -204,7 +228,7 @@ export default function Schedule({
             >
               {/* Time slot lines */}
               {timeSlots.map((time) => (
-                <div key={time} className="h-15 border-t-2"></div>
+                <div key={time} className="h-16 border-t-2"></div>
               ))}
 
               {/* Events for this day */}

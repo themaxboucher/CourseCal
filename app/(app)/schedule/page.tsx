@@ -12,7 +12,7 @@ export default async function SchedulePage() {
   return (
     <>
       <Navbar isApp={true} />
-      <section className="flex flex-col gap-2 max-w-[90rem] mx-auto px-8 py-12">
+      <section className="flex flex-col gap-2 max-w-[90rem] mx-auto md:px-8 px-2 md:py-12 py-4">
         <div className="flex flex-col items-center gap-8">
           <div className="flex flex-col items-center gap-4 w-full">
             <div className="h-[800px] max-w-[70rem] w-full">

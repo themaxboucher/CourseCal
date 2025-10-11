@@ -140,4 +140,10 @@
   .heading-6 {
     @apply font-medium m-0 text-xs;
   }
+  .text-xxs {
+    @apply text-[10px] leading-tight;
+  }
+  .text-xxxs {
+    @apply text-[8px] leading-tight;
+  }
 }
