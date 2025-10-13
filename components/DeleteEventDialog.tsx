@@ -10,29 +10,42 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "./ui/alert-dialog";
-import { LoaderCircle } from "lucide-react";
+import { CircleX, LoaderCircle } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { deleteEvent } from "@/lib/actions/events.actions";
 
 interface DeleteEventDialogProps {
   eventId: string;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  onTransactionDeleted?: () => void;
+  onEventDeleted?: () => void;
 }
 
 export default function DeleteEventDialog({
   eventId,
   open,
   onOpenChange,
-  onTransactionDeleted,
+  onEventDeleted,
 }: DeleteEventDialogProps) {
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
 
   const handleDelete = async () => {
-    console.log("delete event:", eventId);
+    setDeleting(true);
+    try {
+      await deleteEvent(eventId);
+      onEventDeleted?.();
+      router.refresh();
+    } catch (error) {
+      toast("Error deleting class", {
+        icon: <CircleX className="text-destructive size-5" />,
+      });
+      console.error(error);
+    } finally {
+      setDeleting(false);
+    }
   };
 
   return (

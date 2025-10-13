@@ -238,6 +238,7 @@ export default function Event({
         eventId={event.$id || ""}
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
+        onEventDeleted={() => setIsDeleteDialogOpen(false)}
       />
     </>
   );

@@ -71,3 +71,13 @@ export async function getEvents(userId: string) {
     throw error;
   }
 }
+
+export async function deleteEvent(eventId: string) {
+  try {
+    const { database } = await createAdminClient();
+    await database.deleteDocument(DATABASE_ID!, EVENTS_TABLE_ID!, eventId);
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
