@@ -60,8 +60,6 @@ export default function Event({
   style,
   className,
 }: EventProps) {
-  console.log("event.days", event.days);
-
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
