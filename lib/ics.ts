@@ -6,7 +6,8 @@ export interface ParsedEvent {
   location?: string;
   startTime: string;
   endTime: string;
-  recurrence?: string;
+  days?: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday")[];
+  recurrence?: "weekly" | "biweekly";
   exclusions?: string[];
 }
 
@@ -61,8 +62,10 @@ export function parseICSFile(icsContent: string): ParsedEvent[] {
           currentEvent.endTime = formatTime(value);
           break;
         case "RRULE":
-          // Parse RRULE and convert any dates to ISO format
-          currentEvent.recurrence = formatRecurrenceRule(value);
+          // Parse RRULE to extract days and recurrence
+          const { days, recurrence } = parseRecurrenceRule(value);
+          currentEvent.days = days;
+          currentEvent.recurrence = recurrence;
           break;
         case "EXDATE":
           if (!currentEvent.exclusions) {
@@ -105,20 +108,56 @@ export function formatDate(icsDateTime: string): string {
   return format(date, "yyyy-MM-dd");
 }
 
-export function formatRecurrenceRule(rrule: string): string {
-  // Parse RRULE and convert any dates to date-only format using date-fns
+export function parseRecurrenceRule(rrule: string): {
+  days: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday")[];
+  recurrence: "weekly" | "biweekly";
+} {
+  // Parse RRULE to extract days and recurrence type
   // RRULE format: FREQ=WEEKLY;BYDAY=MO,WE,FR;UNTIL=20251231T235959Z
   const parts = rrule.split(";");
-  const formattedParts = parts.map((part) => {
-    if (part.startsWith("UNTIL=")) {
-      const dateValue = part.substring(6);
-      // Convert the date part to date-only format using date-fns
-      const date = formatDateTime(dateValue);
-      const dateOnly = format(date, "yyyy-MM-dd");
-      return `UNTIL=${dateOnly}`;
-    }
-    return part;
-  });
 
-  return formattedParts.join(";");
+  let days: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday")[] = [];
+  let recurrence: "weekly" | "biweekly" = "weekly";
+
+  for (const part of parts) {
+    if (part.startsWith("BYDAY=")) {
+      const dayValues = part.substring(6).split(",");
+      days = dayValues
+        .map((day) => {
+          switch (day) {
+            case "MO":
+              return "monday";
+            case "TU":
+              return "tuesday";
+            case "WE":
+              return "wednesday";
+            case "TH":
+              return "thursday";
+            case "FR":
+              return "friday";
+            default:
+              return null;
+          }
+        })
+        .filter(
+          (
+            day
+          ): day is
+            | "monday"
+            | "tuesday"
+            | "wednesday"
+            | "thursday"
+            | "friday" => day !== null
+        );
+    } else if (part.startsWith("FREQ=")) {
+      const freq = part.substring(5);
+      if (freq === "WEEKLY") {
+        recurrence = "weekly";
+      } else if (freq === "BIWEEKLY") {
+        recurrence = "biweekly";
+      }
+    }
+  }
+
+  return { days, recurrence };
 }

@@ -30,7 +30,7 @@ interface CourseSelectProps {
 export function CourseSelect({
   value,
   onValueChange,
-  placeholder = "Select course...",
+  placeholder = "Select a course",
   className,
 }: CourseSelectProps) {
   const [open, setOpen] = React.useState(false);
@@ -73,11 +73,14 @@ export function CourseSelect({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={className}
+          className={cn(
+            "active:scale-100 font-normal normal-case justify-between",
+            className
+          )}
           disabled={loading}
         >
           {loading
-            ? "Loading courses..."
+            ? "Loading courses"
             : selectedCourse
             ? `${selectedCourse.subjectCode} ${selectedCourse.catalogNumber} - ${selectedCourse.title}`
             : placeholder}
@@ -87,13 +90,13 @@ export function CourseSelect({
       <PopoverContent className="w-[300px] p-0">
         <Command shouldFilter={false}>
           <CommandInput
-            placeholder="Search courses..."
+            placeholder="Search course"
             value={searchQuery}
             onValueChange={setSearchQuery}
           />
           <CommandList>
             <CommandEmpty>
-              {loading ? "Loading courses..." : "No course found."}
+              {loading ? "Loading courses" : "No course found."}
             </CommandEmpty>
             <CommandGroup>
               {courses.map((course) => (
@@ -106,12 +109,6 @@ export function CourseSelect({
                     setOpen(false);
                   }}
                 >
-                  <CheckIcon
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === course.$id ? "opacity-100" : "opacity-0"
-                    )}
-                  />
                   <div className="flex flex-col">
                     <span className="font-medium">
                       {course.subjectCode} {course.catalogNumber}
@@ -120,6 +117,12 @@ export function CourseSelect({
                       {course.title}
                     </span>
                   </div>
+                  <CheckIcon
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      value === course.$id ? "opacity-100" : "opacity-0"
+                    )}
+                  />
                 </CommandItem>
               ))}
             </CommandGroup>

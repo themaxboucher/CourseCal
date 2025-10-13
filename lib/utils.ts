@@ -31,3 +31,49 @@ export function getCurrentTerm(terms: Term[]): Term | null {
 
   return upcomingTerms[0] || terms[0] || null;
 }
+
+export function getReadableRecurrence(
+  recurrence: "weekly" | "biweekly" | undefined,
+  days:
+    | ("monday" | "tuesday" | "wednesday" | "thursday" | "friday")[]
+    | undefined
+): string {
+  if (!recurrence || !days || days.length === 0) {
+    return "No recurrence";
+  }
+
+  // Convert day names to readable format
+  const dayNames = days.map((day) => {
+    switch (day) {
+      case "monday":
+        return "Monday";
+      case "tuesday":
+        return "Tuesday";
+      case "wednesday":
+        return "Wednesday";
+      case "thursday":
+        return "Thursday";
+      case "friday":
+        return "Friday";
+      default:
+        return day;
+    }
+  });
+
+  // Create readable day string
+  let dayString: string;
+  if (dayNames.length === 1) {
+    dayString = dayNames[0];
+  } else if (dayNames.length === 2) {
+    dayString = `${dayNames[0]} and ${dayNames[1]}`;
+  } else {
+    const lastDay = dayNames.pop();
+    dayString = `${dayNames.join(", ")}, and ${lastDay}`;
+  }
+
+  // Create recurrence string
+  const recurrenceString =
+    recurrence === "biweekly" ? "Every other week" : "Weekly";
+
+  return `${recurrenceString} on ${dayString}`;
+}

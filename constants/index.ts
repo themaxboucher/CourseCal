@@ -5,6 +5,8 @@ import {
   Leaf,
   Sprout,
   GraduationCap,
+  Book,
+  FlaskConical,
 } from "lucide-react";
 
 export const icons = {
@@ -30,4 +32,12 @@ export const seasonIcons = {
   summer: Sun,
   fall: Leaf,
   default: GraduationCap,
+};
+
+export const classTypeIcons = {
+  lecture: Book,
+  tutorial: Book,
+  lab: FlaskConical,
+  seminar: Book,
+  default: Book,
 };

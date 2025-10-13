@@ -11,6 +11,7 @@ import {
 } from "./ui/select";
 import { seasonColors, seasonIcons } from "@/constants";
 import { getCurrentTerm, cn } from "@/lib/utils";
+import { AddEventButton } from "./AddEventButton";
 
 interface ScheduleProps {
   events: CalendarEvent[];
@@ -47,27 +48,16 @@ const timeSlotsShort = [
   "6 PM",
 ];
 
-// Helper function to get day of week from recurrence rule
-const getDayOfWeek = (recurrence: string): number => {
-  // Extract day from recurrence rule (e.g., "BYDAY=MO" -> Monday = 1)
+// Helper function to convert day name to weekday index
+const getWeekdayIndex = (dayName: string): number => {
   const dayMap: Record<string, number> = {
-    MO: 1,
-    TU: 2,
-    WE: 3,
-    TH: 4,
-    FR: 5,
-    SA: 6,
-    SU: 0,
+    monday: 0,
+    tuesday: 1,
+    wednesday: 2,
+    thursday: 3,
+    friday: 4,
   };
-
-  const byDayMatch = recurrence.match(/BYDAY=([A-Z,]+)/);
-  if (byDayMatch) {
-    const days = byDayMatch[1].split(",");
-    // Return the first day found (for simplicity, we'll use the first day)
-    return dayMap[days[0]] || 1;
-  }
-
-  return 1; // Default to Monday if no day found
+  return dayMap[dayName] ?? 0;
 };
 
 // Helper function to convert time to minutes from midnight
@@ -112,18 +102,21 @@ export default function Schedule({
     (event) => event.term === selectedTermId
   );
 
-  // Group events by day of week (1 = Monday, 2 = Tuesday, etc.)
+  // Group events by day of week using the days array
   const eventsByDay = filteredEvents.reduce((acc, event) => {
-    const dayOfWeek = getDayOfWeek(event.recurrence || "");
-    // Convert Sunday=0 to Monday=1, Tuesday=2, etc.
-    const weekdayIndex = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    if (event.days && event.days.length > 0) {
+      // For each day the event occurs on
+      event.days.forEach((dayName) => {
+        const weekdayIndex = getWeekdayIndex(dayName);
 
-    if (weekdayIndex >= 0 && weekdayIndex < 5) {
-      // Only Monday-Friday
-      if (!acc[weekdayIndex]) {
-        acc[weekdayIndex] = [];
-      }
-      acc[weekdayIndex].push(event);
+        if (weekdayIndex >= 0 && weekdayIndex < 5) {
+          // Only Monday-Friday
+          if (!acc[weekdayIndex]) {
+            acc[weekdayIndex] = [];
+          }
+          acc[weekdayIndex].push(event);
+        }
+      });
     }
 
     return acc;
@@ -174,6 +167,7 @@ export default function Schedule({
             })}
           </SelectContent>
         </Select>
+        <AddEventButton />
       </div>
       <div className="w-full max-w-6xl mx-auto">
         {/* Schedule grid */}
@@ -228,7 +222,10 @@ export default function Schedule({
             >
               {/* Time slot lines */}
               {timeSlots.map((time) => (
-                <div key={time} className="h-16 border-t-2"></div>
+                <div
+                  key={time}
+                  className="h-16 border-t-2 hover:bg-muted/50 cursor-pointer"
+                ></div>
               ))}
 
               {/* Events for this day */}

@@ -52,7 +52,8 @@ declare interface CalendarEvent {
   location: string;
   startTime: string;
   endTime: string;
-  recurrence?: string;
+  days?: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday")[];
+  recurrence?: "weekly" | "biweekly";
   exclusions?: string[];
   term: string;
   $id?: string;

@@ -1,11 +1,26 @@
-import { cn } from "@/lib/utils";
+"use client";
+
+import { cn, getReadableRecurrence } from "@/lib/utils";
 import { format } from "date-fns";
-import { MapPin } from "lucide-react";
+import {
+  Clock,
+  MapPin,
+  Pen,
+  RefreshCw,
+  Trash2,
+  TriangleAlert,
+} from "lucide-react";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
+import { Button } from "./ui/button";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { classTypeIcons } from "@/constants";
+import { useState } from "react";
+import EventDialog from "./EventDialog";
+import DeleteEventDialog from "./DeleteEventDialog";
 
 interface EventProps {
   event: CalendarEvent;
@@ -45,7 +60,19 @@ export default function Event({
   style,
   className,
 }: EventProps) {
-  console.log(event.course);
+  console.log("event.days", event.days);
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  function handleEditDialog() {
+    setIsDialogOpen(true);
+  }
+
+  function handleDeleteDialog() {
+    setIsDeleteDialogOpen(true);
+  }
+
   const formatTime = (timeString: string) => {
     // Handle time strings like "16:00:00" or "16:00"
     const [hours, minutes] = timeString.split(":").map(Number);
@@ -61,75 +88,157 @@ export default function Event({
     : "bg-gray-100 border-gray-200 text-gray-800";
 
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <div
-          className={cn(
-            "absolute left-0 right-0 my-[0.2rem] mx-[0.08rem] md:my-1 md:mx-0.5 rounded-lg border-[1.5px] p-[0.3rem] sm:p-2 cursor-pointer hover:opacity-95 transition-opacity",
-            "text-xs font-medium z-20 relative",
-            subjectColor,
-            className
-          )}
-          style={style}
-          onClick={() => onClick?.(event)}
-        >
-          <div className="flex items-start justify-between gap-1">
-            <div className="space-y-0.5 md:space-y-1 w-full">
-              <div className="w-full flex items-center justify-between gap-2">
-                {event.course?.subjectCode && event.course?.catalogNumber ? (
-                  <div className="font-semibold truncate text-xxs md:text-xs">
-                    {event.course.subjectCode} {event.course.catalogNumber}
-                  </div>
-                ) : (
-                  <div className="font-semibold truncate text-xxs md:text-xs">
-                    {event.summary}
-                  </div>
-                )}
-                {event.type && (
-                  <div className="text-xxs md:text-xs opacity-75 capitalize">
-                    {event.type}
-                  </div>
-                )}
-              </div>
-              <div className="text-xxs md:text-xs opacity-75 flex items-center gap-0.5 flex-wrap">
-                <span>{formatTime(event.startTime)} - </span>
-                <span>{formatTime(event.endTime)}</span>
+    <>
+      <Popover>
+        <PopoverTrigger asChild>
+          <div
+            className={cn(
+              "absolute left-0 right-0 my-[0.2rem] mx-[0.08rem] md:my-1 md:mx-0.5 rounded-lg border-[1.5px] p-[0.3rem] sm:p-2 cursor-pointer hover:opacity-95 transition-opacity",
+              "text-xs font-medium z-20 relative",
+              subjectColor,
+              className
+            )}
+            style={style}
+            onClick={() => onClick?.(event)}
+          >
+            <div className="flex items-start justify-between gap-1">
+              <div className="space-y-0.5 md:space-y-1 w-full">
+                <div className="w-full flex items-center justify-between gap-2">
+                  {event.course?.subjectCode && event.course?.catalogNumber ? (
+                    <div className="font-semibold truncate text-xxs md:text-xs">
+                      {event.course.subjectCode} {event.course.catalogNumber}
+                    </div>
+                  ) : (
+                    <div className="font-semibold truncate text-xxs md:text-xs">
+                      {event.summary}
+                    </div>
+                  )}
+                  {event.type && (
+                    <div className="text-xxs md:text-xs opacity-75 capitalize">
+                      {event.type}
+                    </div>
+                  )}
+                </div>
+                <div className="text-xxs md:text-xs opacity-75 flex items-center gap-0.5 flex-wrap">
+                  <span>{formatTime(event.startTime)} - </span>
+                  <span>{formatTime(event.endTime)}</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </PopoverTrigger>
-      <PopoverContent side="left" align="center">
-        <div className="flex items-start justify-between gap-1">
-          <div className="space-y-1 w-full">
-            <div className="w-full flex items-center justify-between gap-2">
-              {event.course?.subjectCode && event.course?.catalogNumber ? (
-                <div className="font-semibold truncate">
-                  {event.course.subjectCode} {event.course.catalogNumber}
+        </PopoverTrigger>
+        <PopoverContent
+          side="left"
+          align="start"
+          sideOffset={10}
+          alignOffset={-25}
+          className="border-[1.5px] space-y-4"
+        >
+          <div className="flex gap-3">
+            <div
+              className={cn("min-h-full w-1.5 rounded-[0.2rem]", subjectColor)}
+            />
+            <div>
+              <div className="w-full flex items-center justify-between gap-2">
+                <div>
+                  {event.course?.subjectCode && event.course?.catalogNumber ? (
+                    <div className="font-semibold truncate">
+                      {event.course.subjectCode} {event.course.catalogNumber}
+                    </div>
+                  ) : (
+                    <div className="font-semibold truncate">
+                      {event.summary}
+                    </div>
+                  )}
+                  <div className="text-sm opacity-75 text-muted-foreground">
+                    {event.course?.title || event.summary}
+                  </div>
                 </div>
-              ) : (
-                <div className="font-semibold truncate">{event.summary}</div>
-              )}
-              {event.type && (
-                <div className="text-xs opacity-75 capitalize">
-                  {event.type}
-                </div>
-              )}
+              </div>
             </div>
-            <div className="text-xs opacity-75">
-              {formatTime(event.startTime)} - {formatTime(event.endTime)}
+          </div>
+
+          <div className="space-y-2 w-full">
+            <div className="flex items-center gap-1">
+              {event.type &&
+                (() => {
+                  const IconComponent =
+                    classTypeIcons[event.type] || classTypeIcons.default;
+                  return (
+                    <div className="p-1.5 bg-muted/50 rounded-full">
+                      <IconComponent className="size-3 min-w-3" />
+                    </div>
+                  );
+                })()}
+              <div className="text-sm capitalize">{event.type}</div>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="p-1.5 bg-muted/50 rounded-full">
+                <Clock className="size-3 min-w-3" />
+              </div>
+              <div className="text-sm">
+                {formatTime(event.startTime)} - {formatTime(event.endTime)}
+              </div>
             </div>
             {event.location && (
               <div className="flex items-center gap-1">
-                <MapPin className="size-3 min-w-3" />
-                <div className="text-xs opacity-75 truncate">
-                  {event.location}
+                <div className="p-1.5 bg-muted/50 rounded-full">
+                  <MapPin className="size-3 min-w-3" />
                 </div>
+                <div className="text-sm truncate">{event.location}</div>
               </div>
             )}
+            <div className="flex items-center gap-1">
+              <div className="p-1.5 bg-muted/50 rounded-full">
+                <RefreshCw className="size-3 min-w-3" />
+              </div>
+              {event && event.recurrence && (
+                <div className="text-sm truncate">
+                  {getReadableRecurrence(event.recurrence, event.days)}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </PopoverContent>
-    </Popover>
+          {(!event.course || !event.type) && (
+            <Alert className="border-[1.5px] bg-yellow-100 border-yellow-400 dark:bg-yellow-800/20 text-yellow-600">
+              <TriangleAlert className="size-3" />
+              <AlertTitle>Incomplete details</AlertTitle>
+              <AlertDescription className="text-yellow-600">
+                Edit this class to add missing details.
+              </AlertDescription>
+            </Alert>
+          )}
+          <div className="flex gap-0.5">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs text-muted-foreground"
+              onClick={handleEditDialog}
+            >
+              <Pen className="size-3.5" /> Edit
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs text-muted-foreground"
+              onClick={handleDeleteDialog}
+            >
+              <Trash2 className="size-3.5" /> Delete
+            </Button>
+          </div>
+        </PopoverContent>
+      </Popover>
+
+      <EventDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        eventToEdit={event}
+      />
+      <DeleteEventDialog
+        eventId={event.$id || ""}
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      />
+    </>
   );
 }

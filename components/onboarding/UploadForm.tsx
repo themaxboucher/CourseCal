@@ -77,6 +77,7 @@ export default function UploadForm({ terms, user }: UploadFormProps) {
             type: null,
             startTime: parsedEvent.startTime,
             endTime: parsedEvent.endTime,
+            days: parsedEvent.days,
             recurrence: parsedEvent.recurrence,
             exclusions: parsedEvent.exclusions,
             term: data.term,
