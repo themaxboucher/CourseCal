@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "./ui/button";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
-import { classTypeIcons } from "@/constants";
+import { classTypeIcons, eventColors } from "@/constants";
 import { useState } from "react";
 import EventDialog from "./EventDialog";
 import DeleteEventDialog from "./DeleteEventDialog";
@@ -28,16 +28,6 @@ interface EventProps {
   style?: React.CSSProperties;
   className?: string;
 }
-
-const colorPalette = [
-  "bg-red-500  border-red-300 dark:bg-red-700 dark:border-red-900 text-white",
-  "bg-orange-500  border-orange-300 dark:bg-orange-700 dark:border-orange-900 text-white",
-  "bg-yellow-400 border-yellow-300 dark:bg-yellow-500 dark:border-yellow-700 text-white",
-  "bg-green-500  border-green-300 dark:bg-green-700 dark:border-green-900 text-white",
-  "bg-blue-500  border-blue-300 dark:bg-blue-700 dark:border-blue-900 text-white",
-  "bg-purple-500  border-purple-300 dark:bg-purple-700 dark:border-purple-900 text-white",
-  "bg-pink-500  border-pink-300 dark:bg-pink-700 dark:border-pink-900 text-white",
-];
 
 // Simple hash function to consistently assign colors to course titles
 const getSubjectColor = (title: string): string => {
@@ -50,8 +40,8 @@ const getSubjectColor = (title: string): string => {
     hash = hash & hash; // Convert to 32-bit integer
   }
 
-  const index = Math.abs(hash) % colorPalette.length;
-  return colorPalette[index];
+  const index = Math.abs(hash) % eventColors.length;
+  return eventColors[index];
 };
 
 export default function Event({

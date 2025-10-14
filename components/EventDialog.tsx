@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import EventForm from "./EventForm";
-
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 interface EventDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -14,10 +14,12 @@ export default function EventDialog({
 }: EventDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[400px]">
+      <VisuallyHidden>
         <DialogHeader>
-          <DialogTitle>{eventToEdit ? "Edit Class" : "Add Class"}</DialogTitle>
+          <DialogTitle>{eventToEdit ? "Edit Class" : "New Class"}</DialogTitle>
         </DialogHeader>
+      </VisuallyHidden>
+      <DialogContent className="sm:max-w-[400px] pt-12">
         <EventForm
           eventToEdit={eventToEdit}
           onCancel={() => onOpenChange(false)}

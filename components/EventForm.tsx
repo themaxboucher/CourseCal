@@ -6,29 +6,28 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { FormFieldWrapper } from "./form-fields/FormFieldWrapper";
 import { TextField } from "./form-fields/TextField";
 import { SelectField } from "./form-fields/SelectField";
 import { LoaderCircle } from "lucide-react";
-import { Input } from "./ui/input";
-import { classTypeIcons } from "@/constants";
+import { classTypeIcons, eventColors } from "@/constants";
 import { CheckboxesField } from "./form-fields/CheckboxesField";
 import { ColorField } from "./form-fields/ColorField";
-import { CourseSelect } from "./CourseSelect";
-import { SwitchField } from "./form-fields/SwitchField";
+import { CourseField } from "./form-fields/CourseField";
 import TimeField from "./form-fields/TimeField";
+import { RadioGroupField } from "./form-fields/RadioGroupField";
 
 // Form validation schema
 const eventFormSchema = z.object({
-  courseId: z.string().optional(),
-  type: z.enum(["lecture", "tutorial", "lab", "seminar"]).optional(),
+  courseId: z.string().min(1, "Course is required"),
+  type: z.enum(["lecture", "tutorial", "lab", "seminar"]),
   days: z
     .array(z.enum(["monday", "tuesday", "wednesday", "thursday", "friday"]))
-    .optional(),
-  recurrence: z.string().optional(),
+    .min(1, "You must select at least one day"),
+  recurrence: z.string(),
   startTime: z.string().min(1, "Start time is required"),
   endTime: z.string().min(1, "End time is required"),
-  location: z.string().optional(),
+  location: z.string().min(1, "Location is required"),
+  color: z.string().optional(),
 });
 
 type EventFormData = z.infer<typeof eventFormSchema>;
@@ -46,10 +45,12 @@ export default function EventForm({ eventToEdit, onCancel }: EventFormProps) {
     defaultValues: {
       courseId: eventToEdit?.course?.$id || "none",
       type: eventToEdit?.type || undefined,
+      days: eventToEdit?.days || [],
       recurrence: eventToEdit?.recurrence || "none",
       startTime: eventToEdit?.startTime || "",
       endTime: eventToEdit?.endTime || "",
       location: eventToEdit?.location || "",
+      color: eventColors[0],
     },
   });
 
@@ -67,9 +68,9 @@ export default function EventForm({ eventToEdit, onCancel }: EventFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <div className="flex items-center gap-4">
-          <ColorField />
-          <CourseSelect className="w-full" />
+        <div className="flex items-center gap-2">
+          <ColorField form={form} name="color" />
+          <CourseField form={form} name="courseId" className="flex-grow" />
         </div>
         <SelectField
           form={form}
@@ -91,14 +92,15 @@ export default function EventForm({ eventToEdit, onCancel }: EventFormProps) {
             { value: "friday", label: "Friday" },
           ]}
         />
-        <SwitchField
+
+        <RadioGroupField
           form={form}
           name="recurrence"
-          label={
-            form.watch("recurrence") === "every other week"
-              ? "Every other week"
-              : "Every week"
-          }
+          label="Recurrence"
+          options={[
+            { value: "weekly", label: "Every week" },
+            { value: "biweekly", label: "Every other week" },
+          ]}
         />
 
         <div className="grid grid-cols-2 gap-4">

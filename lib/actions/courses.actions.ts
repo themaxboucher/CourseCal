@@ -16,13 +16,11 @@ export async function getCourses(limit: number = 10, search?: string) {
     let queries = [Query.limit(limit)];
 
     if (search && search.trim()) {
-      // Search in subjectCode, subject, title, and description
+      // Search in subjectCode, subject, and title
       queries.push(
         Query.or([
           Query.contains("subjectCode", search),
           Query.contains("subject", search),
-          Query.contains("title", search),
-          Query.contains("description", search),
         ])
       );
     }
