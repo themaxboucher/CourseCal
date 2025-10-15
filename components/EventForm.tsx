@@ -29,8 +29,12 @@ const eventFormSchema = z
       .nullable()
       .refine((val) => val !== null, "Select a course"),
     type: z
-      .enum(["lecture", "tutorial", "lab", "seminar"])
-      .refine((val) => val !== undefined, "Select a class type"),
+      .string()
+      .min(1, "Select a class type")
+      .refine(
+        (val) => ["lecture", "tutorial", "lab", "seminar"].includes(val),
+        "Select a class type"
+      ),
     days: z
       .array(z.enum(["monday", "tuesday", "wednesday", "thursday", "friday"]))
       .min(1, "Select at least one day for your class"),
@@ -79,7 +83,7 @@ export default function EventForm({ eventToEdit, onCancel }: EventFormProps) {
             title: eventToEdit.course.title,
           }
         : null,
-      type: eventToEdit?.type || undefined,
+      type: eventToEdit?.type || "",
       days: eventToEdit?.days || [],
       recurrence: eventToEdit?.recurrence || "none",
       startTime: eventToEdit?.startTime || "",

@@ -64,7 +64,7 @@ export function SelectField({
           (option) => option.value === field.value
         );
         return (
-          <Select value={field.value} onValueChange={field.onChange}>
+          <Select value={field.value || ""} onValueChange={field.onChange}>
             <SelectTrigger
               className={cn(
                 "w-full disabled:opacity-100",

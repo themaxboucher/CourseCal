@@ -7,6 +7,8 @@ import {
   GraduationCap,
   Book,
   FlaskConical,
+  Presentation,
+  Users,
 } from "lucide-react";
 
 export const icons = {
@@ -35,10 +37,10 @@ export const seasonIcons = {
 };
 
 export const classTypeIcons = {
-  lecture: Book,
+  lecture: Presentation,
   tutorial: Book,
   lab: FlaskConical,
-  seminar: Book,
+  seminar: Users,
   default: Book,
 };
 
