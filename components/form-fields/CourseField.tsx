@@ -1,8 +1,7 @@
 "use client";
 
-import * as React from "react";
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
-
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +19,7 @@ import {
 } from "@/components/ui/popover";
 import { getCourses } from "@/lib/actions/courses.actions";
 import { FormFieldWrapper } from "./FormFieldWrapper";
-import { UseFormReturn, ControllerRenderProps } from "react-hook-form";
+import { UseFormReturn } from "react-hook-form";
 
 interface CourseSelectProps {
   form: UseFormReturn<any>;
@@ -39,37 +38,47 @@ export function CourseField({
   placeholder = "Select a course",
   className,
 }: CourseSelectProps) {
-  const [open, setOpen] = React.useState(false);
-  const [courses, setCourses] = React.useState<Course[]>([]);
-  const [loading, setLoading] = React.useState(false);
-  const [searchQuery, setSearchQuery] = React.useState("");
+  const [open, setOpen] = useState(false);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const hasError = form.formState.errors[name];
 
-  const fetchCourses = React.useCallback(async (query: string = "") => {
+  const fetchCourses = async (query: string = "") => {
     try {
-      setLoading(true);
-      const coursesData = await getCourses(7, query);
+      const coursesData = await getCourses(10, query);
       setCourses(coursesData.documents || []);
     } catch (error) {
       console.error("Failed to fetch courses:", error);
-    } finally {
-      setLoading(false);
     }
+  };
+
+  // Fetch courses on mount
+  useEffect(() => {
+    const initializeCourses = async () => {
+      // Fetch initial courses
+      await fetchCourses();
+
+      // If there's a selected course, add it to the list
+      const fieldValue = form.getValues(name);
+      if (fieldValue) {
+        setCourses((prev) => {
+          const exists = prev.some((c) => c.$id === fieldValue.$id);
+          return exists ? prev : [...prev, fieldValue];
+        });
+      }
+    };
+
+    initializeCourses();
   }, []);
 
-  // Fetch initial courses when component mounts
-  React.useEffect(() => {
-    fetchCourses();
-  }, [fetchCourses]);
-
   // Debounced search
-  React.useEffect(() => {
+  useEffect(() => {
     const timeoutId = setTimeout(() => {
       fetchCourses(searchQuery);
-    }, 200);
+    }, 100);
 
     return () => clearTimeout(timeoutId);
-  }, [searchQuery, fetchCourses]);
+  }, [searchQuery]);
 
   return (
     <FormFieldWrapper
@@ -79,10 +88,8 @@ export function CourseField({
       description={description}
       className={className}
     >
-      {({ field }: { field: ControllerRenderProps<any, string> }) => {
-        const selectedCourse = courses.find(
-          (course) => course.$id === field.value
-        );
+      {({ field }: { field: any }) => {
+        const selectedCourse = field.value;
 
         return (
           <Popover open={open} onOpenChange={setOpen}>
@@ -96,18 +103,15 @@ export function CourseField({
                   selectedCourse && "font-medium",
                   hasError && "border-destructive focus:ring-destructive"
                 )}
-                disabled={loading}
                 aria-invalid={hasError ? "true" : "false"}
               >
-                {loading
-                  ? "Loading courses"
-                  : selectedCourse
+                {selectedCourse
                   ? `${selectedCourse.subjectCode} ${selectedCourse.catalogNumber}`
                   : placeholder}
                 <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[300px] p-0">
+            <PopoverContent className="p-0 w-[var(--radix-popover-trigger-width)]">
               <Command shouldFilter={false}>
                 <CommandInput
                   placeholder="Search course"
@@ -115,33 +119,35 @@ export function CourseField({
                   onValueChange={setSearchQuery}
                 />
                 <CommandList>
-                  <CommandEmpty>
-                    {loading ? "Loading courses" : "No course found."}
-                  </CommandEmpty>
+                  <CommandEmpty>No courses found.</CommandEmpty>
                   <CommandGroup>
                     {courses.map((course) => (
                       <CommandItem
                         key={course.$id}
                         value={course.$id}
-                        onSelect={(currentValue) => {
-                          const newValue =
-                            currentValue === field.value ? "" : currentValue;
-                          field.onChange(newValue);
+                        onSelect={() => {
+                          field.onChange({
+                            $id: course.$id!,
+                            subjectCode: course.subjectCode,
+                            catalogNumber: course.catalogNumber,
+                            title: course.title,
+                          });
                           setOpen(false);
                         }}
+                        className="flex items-center justify-between gap-2"
                       >
                         <div className="flex flex-col">
                           <span className="font-medium">
                             {course.subjectCode} {course.catalogNumber}
                           </span>
-                          <span className="text-sm text-muted-foreground">
+                          <span className="text-xs text-muted-foreground truncate">
                             {course.title}
                           </span>
                         </div>
                         <CheckIcon
                           className={cn(
-                            "mr-2 h-4 w-4",
-                            field.value === course.$id
+                            "mr-2 size-4",
+                            field.value?.$id === course.$id
                               ? "opacity-100"
                               : "opacity-0"
                           )}

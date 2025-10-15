@@ -129,13 +129,9 @@ export default function Event({
             <div>
               <div className="w-full flex items-center justify-between gap-2">
                 <div>
-                  {event.course?.subjectCode && event.course?.catalogNumber ? (
+                  {event.course?.subjectCode && event.course?.catalogNumber && (
                     <div className="font-semibold truncate">
                       {event.course.subjectCode} {event.course.catalogNumber}
-                    </div>
-                  ) : (
-                    <div className="font-semibold truncate">
-                      {event.summary}
                     </div>
                   )}
                   <div className="text-sm opacity-75 text-muted-foreground">

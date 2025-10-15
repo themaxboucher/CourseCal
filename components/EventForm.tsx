@@ -19,10 +19,15 @@ import { RadioGroupField } from "./form-fields/RadioGroupField";
 // Form validation schema
 const eventFormSchema = z
   .object({
-    courseId: z
-      .string()
-      .min(1, "Select a course")
-      .refine((val) => val !== "none", "Select a course"),
+    course: z
+      .object({
+        $id: z.string(),
+        subjectCode: z.string(),
+        catalogNumber: z.number(),
+        title: z.string(),
+      })
+      .nullable()
+      .refine((val) => val !== null, "Select a course"),
     type: z
       .enum(["lecture", "tutorial", "lab", "seminar"])
       .refine((val) => val !== undefined, "Select a class type"),
@@ -66,7 +71,14 @@ export default function EventForm({ eventToEdit, onCancel }: EventFormProps) {
   const form = useForm<EventFormData>({
     resolver: zodResolver(eventFormSchema),
     defaultValues: {
-      courseId: eventToEdit?.course?.$id || "none",
+      course: eventToEdit?.course
+        ? {
+            $id: eventToEdit.course.$id!,
+            subjectCode: eventToEdit.course.subjectCode,
+            catalogNumber: eventToEdit.course.catalogNumber,
+            title: eventToEdit.course.title,
+          }
+        : null,
       type: eventToEdit?.type || undefined,
       days: eventToEdit?.days || [],
       recurrence: eventToEdit?.recurrence || "none",
@@ -79,6 +91,7 @@ export default function EventForm({ eventToEdit, onCancel }: EventFormProps) {
 
   async function onSubmit(data: EventFormData) {
     console.log("Event form data:", data);
+    console.log("Course ID:", data.course?.$id);
   }
 
   const classTypeOptions = [
@@ -93,7 +106,7 @@ export default function EventForm({ eventToEdit, onCancel }: EventFormProps) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <div className="flex items-center gap-2">
           <ColorField form={form} name="color" />
-          <CourseField form={form} name="courseId" className="flex-grow" />
+          <CourseField form={form} name="course" className="flex-grow" />
         </div>
         <SelectField
           form={form}

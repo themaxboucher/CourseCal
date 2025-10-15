@@ -16,13 +16,27 @@ export async function getCourses(limit: number = 10, search?: string) {
     let queries = [Query.limit(limit)];
 
     if (search && search.trim()) {
-      // Search in subjectCode, subject, and title
-      queries.push(
-        Query.or([
-          Query.contains("subjectCode", search),
-          Query.contains("subject", search),
-        ])
-      );
+      const hasNumbers = /\d+/.test(search);
+
+      if (hasNumbers) {
+        // Search by both subjectCode and catalog number when numbers are present
+        const numberMatch = search.match(/\d+/);
+        if (numberMatch) {
+          const catalogNum = parseInt(numberMatch[0]);
+          queries.push(
+            Query.or([
+              Query.contains("subjectCode", search),
+              Query.equal("catalogNumber", catalogNum),
+            ])
+          );
+        } else {
+          // Fallback to subjectCode only if no valid number found
+          queries.push(Query.contains("subjectCode", search));
+        }
+      } else {
+        // Search by subjectCode only when no numbers are present
+        queries.push(Query.contains("subjectCode", search));
+      }
     }
 
     const courses = await database.listDocuments(
