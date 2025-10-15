@@ -17,18 +17,41 @@ import TimeField from "./form-fields/TimeField";
 import { RadioGroupField } from "./form-fields/RadioGroupField";
 
 // Form validation schema
-const eventFormSchema = z.object({
-  courseId: z.string().min(1, "Course is required"),
-  type: z.enum(["lecture", "tutorial", "lab", "seminar"]),
-  days: z
-    .array(z.enum(["monday", "tuesday", "wednesday", "thursday", "friday"]))
-    .min(1, "You must select at least one day"),
-  recurrence: z.string(),
-  startTime: z.string().min(1, "Start time is required"),
-  endTime: z.string().min(1, "End time is required"),
-  location: z.string().min(1, "Location is required"),
-  color: z.string().optional(),
-});
+const eventFormSchema = z
+  .object({
+    courseId: z
+      .string()
+      .min(1, "Select a course")
+      .refine((val) => val !== "none", "Select a course"),
+    type: z
+      .enum(["lecture", "tutorial", "lab", "seminar"])
+      .refine((val) => val !== undefined, "Select a class type"),
+    days: z
+      .array(z.enum(["monday", "tuesday", "wednesday", "thursday", "friday"]))
+      .min(1, "Select at least one day for your class"),
+    recurrence: z.string().min(1, "Select how often this class repeats"),
+    startTime: z.string().min(1, "Select a start time for your class"),
+    endTime: z.string().min(1, "Select an end time for your class"),
+    location: z
+      .string()
+      .min(1, "Enter a location for your class")
+      .min(2, "Location must be at least 2 characters long"),
+    color: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.startTime && data.endTime) {
+        const start = new Date(`2000-01-01T${data.startTime}`);
+        const end = new Date(`2000-01-01T${data.endTime}`);
+        return end > start;
+      }
+      return true;
+    },
+    {
+      message: "End time must be after start time",
+      path: ["endTime"],
+    }
+  );
 
 type EventFormData = z.infer<typeof eventFormSchema>;
 

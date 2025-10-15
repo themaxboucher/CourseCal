@@ -39,6 +39,8 @@ export function SelectField({
   className,
   disabled = false,
 }: SelectFieldProps) {
+  const hasError = form.formState.errors[name];
+
   // Group options if group is provided
   const groupedOptions = options.reduce<Record<string, SelectFieldOption[]>>(
     (acc, option) => {
@@ -64,8 +66,12 @@ export function SelectField({
         return (
           <Select value={field.value} onValueChange={field.onChange}>
             <SelectTrigger
-              className="w-full disabled:opacity-100"
+              className={cn(
+                "w-full disabled:opacity-100",
+                hasError && "border-destructive focus:ring-destructive"
+              )}
               disabled={disabled}
+              aria-invalid={hasError ? "true" : "false"}
             >
               <SelectValue
                 placeholder={placeholder}

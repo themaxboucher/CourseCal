@@ -43,6 +43,7 @@ export function CourseField({
   const [courses, setCourses] = React.useState<Course[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
+  const hasError = form.formState.errors[name];
 
   const fetchCourses = React.useCallback(async (query: string = "") => {
     try {
@@ -92,9 +93,11 @@ export function CourseField({
                 aria-expanded={open}
                 className={cn(
                   "active:scale-100 font-normal normal-case justify-between",
-                  selectedCourse && "font-medium"
+                  selectedCourse && "font-medium",
+                  hasError && "border-destructive focus:ring-destructive"
                 )}
                 disabled={loading}
+                aria-invalid={hasError ? "true" : "false"}
               >
                 {loading
                   ? "Loading courses"

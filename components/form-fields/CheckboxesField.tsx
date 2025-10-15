@@ -2,6 +2,7 @@ import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
 import { FormFieldWrapper } from "./FormFieldWrapper";
 import { UseFormReturn, ControllerRenderProps } from "react-hook-form";
+import { cn } from "@/lib/utils";
 
 interface CheckboxesFieldProps {
   form: UseFormReturn<any>;
@@ -18,6 +19,8 @@ export function CheckboxesField({
   options,
   description,
 }: CheckboxesFieldProps) {
+  const hasError = form.formState.errors[name];
+
   return (
     <FormFieldWrapper
       form={form}
@@ -33,7 +36,10 @@ export function CheckboxesField({
             return (
               <Label
                 key={option.value}
-                className="flex items-center space-x-2 cursor-pointer"
+                className={cn(
+                  "flex items-center space-x-2 cursor-pointer",
+                  hasError && "text-destructive"
+                )}
               >
                 <Checkbox
                   checked={isChecked}

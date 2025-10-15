@@ -2,6 +2,7 @@ import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Label } from "../ui/label";
 import { FormFieldWrapper } from "./FormFieldWrapper";
 import { UseFormReturn, ControllerRenderProps } from "react-hook-form";
+import { cn } from "@/lib/utils";
 
 interface RadioGroupFieldProps {
   form: UseFormReturn<any>;
@@ -18,6 +19,8 @@ export function RadioGroupField({
   options,
   description,
 }: RadioGroupFieldProps) {
+  const hasError = form.formState.errors[name];
+
   return (
     <FormFieldWrapper
       form={form}
@@ -34,7 +37,10 @@ export function RadioGroupField({
           {options.map((option) => (
             <Label
               key={option.value}
-              className="flex items-center space-x-2 cursor-pointer"
+              className={cn(
+                "flex items-center space-x-2 cursor-pointer",
+                hasError && "text-destructive"
+              )}
             >
               <RadioGroupItem value={option.value} />
               <span className="font-normal">{option.label}</span>
