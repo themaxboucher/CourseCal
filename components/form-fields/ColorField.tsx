@@ -4,8 +4,24 @@ import { eventColors } from "@/constants";
 import { FormFieldWrapper } from "./FormFieldWrapper";
 import { UseFormReturn } from "react-hook-form";
 import { cn } from "@/lib/utils";
-import { Check } from "lucide-react";
 import { useState } from "react";
+
+// Color names corresponding to eventColors array
+const colorNames = [
+  "red",
+  "orange",
+  "yellow",
+  "green",
+  "blue",
+  "purple",
+  "pink",
+];
+
+// Create mapping from color names to CSS classes
+const colorMap = colorNames.reduce((map, colorName, index) => {
+  map[colorName] = eventColors[index];
+  return map;
+}, {} as Record<string, string>);
 
 interface ColorFieldProps {
   form: UseFormReturn<any>;
@@ -41,7 +57,9 @@ export function ColorField({
               size="sm"
               className={cn(
                 "size-8 p-0 border-2",
-                field.value || eventColors[0]
+                field.value
+                  ? colorMap[field.value as keyof typeof colorMap]
+                  : colorMap.red
               )}
             >
               <div className="w-full h-full rounded-sm" />
@@ -49,19 +67,20 @@ export function ColorField({
           </PopoverTrigger>
           <PopoverContent align="start" sideOffset={10} className="w-fit p-3">
             <div className="grid grid-cols-4 gap-2">
-              {eventColors.map((color) => (
+              {colorNames.map((colorName) => (
                 <Button
-                  key={color}
+                  key={colorName}
                   type="button"
                   size="sm"
                   variant="outline"
                   className={cn(
-                    "size-6 p-0 border-2 hover:scale-105 transition-transform",
-                    color,
-                    field.value === color && "ring-2 ring-offset-2 ring-ring"
+                    "size-6 p-0 border-2 hover:scale-103 transition-transform hover:cursor-pointer",
+                    colorMap[colorName],
+                    field.value === colorName &&
+                      "ring-2 ring-offset-2 ring-ring"
                   )}
                   onClick={() => {
-                    field.onChange(color);
+                    field.onChange(colorName);
                     setOpen(false);
                   }}
                 ></Button>
