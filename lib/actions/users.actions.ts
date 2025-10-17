@@ -4,6 +4,7 @@ import { ID, Query } from "node-appwrite";
 import { createAdminClient, createSessionClient } from "../appwrite/server";
 import { parseStringify } from "../utils";
 import { cookies } from "next/headers";
+import { deleteAvatar, extractFileIdFromUrl } from "./avatars.actions";
 
 const {
   APPWRITE_DATABASE_ID: DATABASE_ID,
@@ -185,9 +186,36 @@ export const updateUser = async ({
   }
 };
 
-export async function deleteAccount(authUserId: string, docUserId: string) {
-  // Delete the users events
-  // Delete the users avatar
-  // Delete the user document
-  // Delete the user from the auth users table
+export async function deleteAccount(
+  authUserId: string,
+  docUserId: string,
+  avatarUrl?: string
+) {
+  try {
+    const { database, user } = await createAdminClient();
+
+    // Delete the user's avatar if it exists
+    try {
+      if (avatarUrl) {
+        const avatarId = await extractFileIdFromUrl(avatarUrl);
+        if (avatarId) {
+          await deleteAvatar(avatarId);
+        }
+      }
+    } catch (avatarError) {
+      console.error("Failed to delete user avatar:", avatarError);
+      // Continue with account deletion even if avatar deletion fails
+    }
+
+    // Delete the user document
+    await database.deleteDocument(DATABASE_ID!, USERS_TABLE_ID!, docUserId);
+    // Delete the user from the auth users table
+    await user.delete(authUserId);
+
+    // Clear the session cookie since the account no longer exists
+    (await cookies()).delete("appwrite-session");
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 }

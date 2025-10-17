@@ -20,7 +20,6 @@ import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { CircleCheck, CircleX, LoaderCircle, Trash } from "lucide-react";
 import { deleteAccount } from "@/lib/actions/users.actions";
-import { logout } from "@/lib/actions/users.actions";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -50,15 +49,14 @@ export default function DeleteAccount({ user }: DeleteAccountProps) {
     try {
       const authUserId = user.userId;
       const docUserId = user.$id;
+      if (!authUserId || !docUserId) {
+        throw new Error("User not found");
+      }
+      await deleteAccount(authUserId, docUserId, user.avatar);
 
-      // TODO: Implement account deletion
-      alert("Accont deletion not implemented yet.");
-      // await deleteAccount(authUserId, docUserId);
-
-      toast("Account deleted successfully", {
+      toast("Account deleted", {
         icon: <CircleCheck className="text-green-500 size-5" />,
       });
-      await logout();
       router.push("/");
     } catch (error) {
       toast("Error deleting account", {
@@ -77,15 +75,15 @@ export default function DeleteAccount({ user }: DeleteAccountProps) {
           Delete Account
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className="sm:max-w-[375px]">
         <AlertDialogHeader className="mb-2">
           <AlertDialogTitle>
             Are you sure you want to delete your account?
           </AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and all associated data. Please type{" "}
-            <span className="font-semibold">DELETE</span> to confirm:
+            This will permanently delete your account and all associated data.
+            Please type <span className="font-semibold">DELETE</span> to
+            confirm:
           </AlertDialogDescription>
         </AlertDialogHeader>
         <Form {...deleteForm}>
