@@ -5,7 +5,13 @@ import { Button } from "./ui/button";
 import { useState } from "react";
 import EventDialog from "./EventDialog";
 
-export function AddEventButton({ term }: { term: string }) {
+export function AddEventButton({
+  term,
+  events = [],
+}: {
+  term: string;
+  events?: CalendarEvent[];
+}) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   function handleOpenDialog() {
     setIsDialogOpen(true);
@@ -25,6 +31,7 @@ export function AddEventButton({ term }: { term: string }) {
         onOpenChange={handleCloseDialog}
         eventToEdit={null}
         term={term}
+        events={events}
       />
     </>
   );

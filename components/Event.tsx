@@ -21,6 +21,7 @@ interface EventProps {
   onClick?: (event: CalendarEvent) => void;
   style?: React.CSSProperties;
   className?: string;
+  events?: CalendarEvent[];
 }
 
 export default function Event({
@@ -28,6 +29,7 @@ export default function Event({
   onClick,
   style,
   className,
+  events = [],
 }: EventProps) {
   const eventContent = (
     <div
@@ -83,7 +85,7 @@ export default function Event({
             alignOffset={-25}
             className="border-[1.5px]"
           >
-            <EventDetails event={event} />
+            <EventDetails event={event} events={events} />
           </PopoverContent>
         </Popover>
       </div>
@@ -103,7 +105,7 @@ export default function Event({
               </DrawerHeader>
             </VisuallyHidden>
             <div className="px-4 pb-4 pt-6">
-              <EventDetails event={event} />
+              <EventDetails event={event} events={events} />
             </div>
           </DrawerContent>
         </Drawer>

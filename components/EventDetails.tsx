@@ -14,7 +14,13 @@ import DeleteEventDialog from "./DeleteEventDialog";
 import EventDialog from "./EventDialog";
 import { classTypeIcons, eventColors } from "@/constants";
 
-export default function EventDetails({ event }: { event: CalendarEvent }) {
+export default function EventDetails({
+  event,
+  events = [],
+}: {
+  event: CalendarEvent;
+  events?: CalendarEvent[];
+}) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
@@ -127,6 +133,7 @@ export default function EventDetails({ event }: { event: CalendarEvent }) {
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
         eventToEdit={event}
+        events={events}
       />
       <DeleteEventDialog
         eventId={event.$id || ""}

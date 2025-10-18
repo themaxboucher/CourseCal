@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -22,74 +22,130 @@ import {
   createCourseColor,
   updateCourseColor,
 } from "@/lib/actions/courseColors.actions";
+import {
+  findOverlappingEvents,
+  isTimeInRange,
+  getOverlapErrorMessage,
+} from "@/lib/utils";
 
-// Form validation schema
-const eventFormSchema = z
-  .object({
-    course: z
-      .object({
-        $id: z.string(),
-        subjectCode: z.string(),
-        catalogNumber: z.number(),
-        title: z.string(),
-      })
-      .nullable()
-      .refine((val) => val !== null, "Select a course"),
-    type: z.enum(["lecture", "tutorial", "lab", "seminar"]),
-    days: z
-      .array(z.enum(["monday", "tuesday", "wednesday", "thursday", "friday"]))
-      .min(1, "Select at least one day for your class"),
-    recurrence: z.enum(["weekly", "biweekly"]),
-    startTime: z.string().min(1, "Select a start time for your class"),
-    endTime: z.string().min(1, "Select an end time for your class"),
-    location: z
-      .string()
-      .min(1, "Enter a location for your class")
-      .min(2, "Location must be at least 2 characters long"),
-    color: z.enum([
-      "red",
-      "orange",
-      "yellow",
-      "green",
-      "cyan",
-      "blue",
-      "purple",
-      "pink",
-    ]),
-  })
-  .refine(
-    (data) => {
-      if (data.startTime && data.endTime) {
-        const start = new Date(`2000-01-01T${data.startTime}`);
-        const end = new Date(`2000-01-01T${data.endTime}`);
-        return end > start;
+// Create dynamic schema with events context
+const createEventFormSchema = (
+  events: CalendarEvent[],
+  currentEventId?: string
+) => {
+  return z
+    .object({
+      course: z
+        .object({
+          $id: z.string(),
+          subjectCode: z.string(),
+          catalogNumber: z.number(),
+          title: z.string(),
+        })
+        .nullable()
+        .refine((val) => val !== null, "Select a course"),
+      type: z.enum(["lecture", "tutorial", "lab", "seminar"]),
+      days: z
+        .array(z.enum(["monday", "tuesday", "wednesday", "thursday", "friday"]))
+        .min(1, "Select at least one day for your class"),
+      recurrence: z.enum(["weekly", "biweekly"]),
+      startTime: z.string().min(1, "Select a start time for your class"),
+      endTime: z.string().min(1, "Select an end time for your class"),
+      location: z
+        .string()
+        .min(1, "Enter a location for your class")
+        .min(2, "Location must be at least 2 characters long"),
+      color: z.enum([
+        "red",
+        "orange",
+        "yellow",
+        "green",
+        "cyan",
+        "blue",
+        "purple",
+        "pink",
+      ]),
+    })
+    .superRefine((data, ctx) => {
+      // Early return if required fields are missing
+      if (!data.startTime || !data.endTime) {
+        return;
       }
-      return true;
-    },
-    {
-      message: "End time must be after start time",
-      path: ["endTime"],
-    }
-  );
 
-type EventFormData = z.infer<typeof eventFormSchema>;
+      // Validate end time is after start time
+      const start = new Date(`2000-01-01T${data.startTime}`);
+      const end = new Date(`2000-01-01T${data.endTime}`);
+      if (end <= start) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "End time must be after start time",
+          path: ["endTime"],
+        });
+        return;
+      }
+
+      // Validate start time is within allowed range
+      if (!isTimeInRange(data.startTime, false)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Start time must be between 8:00 AM and 7:00 PM",
+          path: ["startTime"],
+        });
+      }
+
+      // Validate end time is within allowed range
+      if (!isTimeInRange(data.endTime, true)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "End time must be between 8:00 AM and 7:00 PM",
+          path: ["endTime"],
+        });
+      }
+
+      // Validate overlaps only if we have days selected
+      if (data.days && data.days.length > 0) {
+        const overlaps = findOverlappingEvents(data, events, currentEventId);
+
+        if (overlaps.length > 0) {
+          const eventNames = getOverlapErrorMessage(overlaps);
+
+          // Add errors to both time fields
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `Overlaps with ${eventNames}`,
+            path: ["startTime"],
+          });
+
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `Overlaps with ${eventNames}`,
+            path: ["endTime"],
+          });
+        }
+      }
+    });
+};
+
+type EventFormData = z.infer<ReturnType<typeof createEventFormSchema>>;
 
 interface EventFormProps {
   eventToEdit?: CalendarEvent | null;
   onCancel?: () => void;
   term?: string;
+  events?: CalendarEvent[];
 }
 
 export default function EventForm({
   eventToEdit,
   onCancel,
   term,
+  events = [],
 }: EventFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
   const form = useForm<EventFormData>({
-    resolver: zodResolver(eventFormSchema),
+    resolver: zodResolver(createEventFormSchema(events, eventToEdit?.$id)),
     defaultValues: {
       course: eventToEdit?.course
         ? {
@@ -111,6 +167,18 @@ export default function EventForm({
 
   // Watch form values to update warnings dynamically
   const formValues = form.watch();
+
+  // Watch time fields to trigger validation on both when either changes
+  const startTime = form.watch("startTime");
+  const endTime = form.watch("endTime");
+  const days = form.watch("days");
+
+  // Trigger validation on both time fields when either changes
+  useEffect(() => {
+    if (startTime && endTime) {
+      form.trigger(["startTime", "endTime"]);
+    }
+  }, [startTime, endTime, days, form]);
 
   // Function to check for missing fields based on current form values
   const getMissingFields = () => {

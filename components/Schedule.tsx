@@ -165,7 +165,7 @@ export default function Schedule({ events, terms, user }: ScheduleProps) {
           </SelectContent>
         </Select>
         <div className="flex items-center gap-2">
-          <AddEventButton term={selectedTermId} />
+          <AddEventButton term={selectedTermId} events={filteredEvents} />
           <UploadDialog terms={terms} user={user} />
         </div>
       </div>
@@ -235,6 +235,7 @@ export default function Schedule({ events, terms, user }: ScheduleProps) {
                   <Event
                     key={`${event.$id || eventIndex}`}
                     event={event}
+                    events={filteredEvents}
                     style={{
                       position: "absolute",
                       top: `${top}px`,
