@@ -1,5 +1,15 @@
 declare type Override<T, R> = Omit<T, keyof R> & R;
 
+declare type Color =
+  | "red"
+  | "orange"
+  | "yellow"
+  | "green"
+  | "cyan"
+  | "blue"
+  | "purple"
+  | "pink";
+
 declare interface User {
   userId: string;
   email: string;
@@ -44,6 +54,22 @@ declare interface Term {
   $updatedAt?: string;
 }
 
+declare interface CourseColor {
+  course: string;
+  user: string;
+  color: Color;
+  $id: string;
+  $createdAt: string;
+  $updatedAt: string;
+}
+
+declare interface CourseColorDB {
+  course: string;
+  user: string;
+  color: Color;
+  $id: string;
+}
+
 declare interface CalendarEvent {
   user: string;
   course: Course | null;
@@ -56,6 +82,7 @@ declare interface CalendarEvent {
   recurrence?: "weekly" | "biweekly";
   exclusions?: string[];
   term: string;
+  courseColor: CourseColor;
   $id?: string;
   $createdAt?: string;
   $updatedAt?: string;

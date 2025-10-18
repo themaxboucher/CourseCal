@@ -18,12 +18,6 @@ const colorNames = [
   "pink",
 ];
 
-// Create mapping from color names to CSS classes
-const colorMap = colorNames.reduce((map, colorName, index) => {
-  map[colorName] = eventColors[index];
-  return map;
-}, {} as Record<string, string>);
-
 interface ColorFieldProps {
   form: UseFormReturn<any>;
   name: string;
@@ -62,8 +56,8 @@ export function ColorField({
               className={cn(
                 "size-9 p-0 border-[1.5px]",
                 field.value
-                  ? colorMap[field.value as keyof typeof colorMap]
-                  : colorMap.red
+                  ? eventColors[field.value as keyof typeof eventColors]
+                  : eventColors.red
               )}
             >
               <div className="w-full h-full rounded-sm" />
@@ -79,7 +73,7 @@ export function ColorField({
                   variant="outline"
                   className={cn(
                     "size-6 p-0 border-2 hover:scale-103 transition-transform hover:cursor-pointer",
-                    colorMap[colorName],
+                    eventColors[colorName as keyof typeof eventColors],
                     field.value === colorName &&
                       "ring-2 ring-offset-2 ring-ring"
                   )}

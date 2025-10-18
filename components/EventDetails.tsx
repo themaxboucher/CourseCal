@@ -1,9 +1,4 @@
-import {
-  cn,
-  getReadableRecurrence,
-  getSubjectColor,
-  formatTime,
-} from "@/lib/utils";
+import { cn, getReadableRecurrence, formatTime } from "@/lib/utils";
 import {
   Clock,
   MapPin,
@@ -17,17 +12,11 @@ import { Button } from "./ui/button";
 import { useState } from "react";
 import DeleteEventDialog from "./DeleteEventDialog";
 import EventDialog from "./EventDialog";
-import { classTypeIcons } from "@/constants";
+import { classTypeIcons, eventColors } from "@/constants";
 
 export default function EventDetails({ event }: { event: CalendarEvent }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-
-  const subjectColor = event.course?.title
-    ? getSubjectColor(event.course.title)
-    : event.summary
-    ? getSubjectColor(event.summary)
-    : "bg-gray-100 border-gray-200 text-gray-800";
 
   function handleEditDialog() {
     setIsDialogOpen(true);
@@ -42,7 +31,12 @@ export default function EventDetails({ event }: { event: CalendarEvent }) {
       <div className="space-y-4">
         <div className="flex gap-3">
           <div
-            className={cn("min-h-full w-1.5 rounded-[0.2rem]", subjectColor)}
+            className={cn(
+              "min-h-full w-1.5 rounded-[0.2rem]",
+              event.courseColor
+                ? eventColors[event.courseColor.color]
+                : eventColors.red
+            )}
           />
           <div>
             <div className="w-full flex items-center justify-between gap-2">

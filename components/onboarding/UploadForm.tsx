@@ -18,8 +18,9 @@ import {
 } from "@/components/ui/form";
 import { SelectField } from "@/components/form-fields/SelectField";
 import { seasonColors, seasonIcons } from "@/constants";
-import { getCurrentTerm } from "@/lib/utils";
+import { getCurrentTerm, getRandomColor } from "@/lib/utils";
 import { LoaderCircle } from "lucide-react";
+import { createCourseColor } from "@/lib/actions/courseColors.actions";
 
 interface UploadFormProps {
   terms: Term[];
@@ -93,6 +94,14 @@ export default function UploadForm({ terms, user }: UploadFormProps) {
           };
 
           await createEvent(calendarEvent);
+
+          if (course) {
+            await createCourseColor({
+              course: course.$id,
+              user: user.$id,
+              color: getRandomColor(),
+            });
+          }
         } catch (error) {
           console.error("Error creating event:", error);
         }

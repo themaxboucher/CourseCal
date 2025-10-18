@@ -1,6 +1,6 @@
 "use client";
 
-import { cn, getSubjectColor, formatTime } from "@/lib/utils";
+import { cn, formatTime } from "@/lib/utils";
 import {
   Popover,
   PopoverTrigger,
@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/drawer";
 import EventDetails from "./EventDetails";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { eventColors } from "@/constants";
 interface EventProps {
   event: CalendarEvent;
   onClick?: (event: CalendarEvent) => void;
@@ -28,18 +29,14 @@ export default function Event({
   style,
   className,
 }: EventProps) {
-  const subjectColor = event.course?.title
-    ? getSubjectColor(event.course.title)
-    : event.summary
-    ? getSubjectColor(event.summary)
-    : "bg-gray-100 border-gray-200 text-gray-800";
-
   const eventContent = (
     <div
       className={cn(
         "absolute left-0 right-0 my-[0.2rem] mx-[0.08rem] md:my-1 md:mx-0.5 rounded-lg border-[1.5px] p-[0.3rem] sm:p-2 cursor-pointer hover:opacity-95 transition-opacity",
         "text-xs font-medium z-20 relative",
-        subjectColor,
+        event.courseColor
+          ? eventColors[event.courseColor.color]
+          : eventColors.red,
         className
       )}
       style={style}

@@ -9,7 +9,7 @@ import { Form } from "@/components/ui/form";
 import { TextField } from "./form-fields/TextField";
 import { SelectField } from "./form-fields/SelectField";
 import { LoaderCircle } from "lucide-react";
-import { classTypeIcons, eventColors } from "@/constants";
+import { classTypeIcons } from "@/constants";
 import { CheckboxesField } from "./form-fields/CheckboxesField";
 import { ColorField } from "./form-fields/ColorField";
 import { CourseField } from "./form-fields/CourseField";
@@ -18,6 +18,10 @@ import { RadioGroupField } from "./form-fields/RadioGroupField";
 import { createEvent, updateEvent } from "@/lib/actions/events.actions";
 import { getLoggedInUser } from "@/lib/actions/users.actions";
 import { useRouter } from "next/navigation";
+import {
+  createCourseColor,
+  updateCourseColor,
+} from "@/lib/actions/courseColors.actions";
 
 // Form validation schema
 const eventFormSchema = z
@@ -42,7 +46,16 @@ const eventFormSchema = z
       .string()
       .min(1, "Enter a location for your class")
       .min(2, "Location must be at least 2 characters long"),
-    color: z.string().optional(),
+    color: z.enum([
+      "red",
+      "orange",
+      "yellow",
+      "green",
+      "cyan",
+      "blue",
+      "purple",
+      "pink",
+    ]),
   })
   .refine(
     (data) => {
@@ -92,7 +105,7 @@ export default function EventForm({
       startTime: eventToEdit?.startTime || "",
       endTime: eventToEdit?.endTime || "",
       location: eventToEdit?.location || "",
-      color: eventColors[0],
+      color: eventToEdit?.courseColor?.color || "red",
     },
   });
 
@@ -152,6 +165,11 @@ export default function EventForm({
         throw new Error("Course ID not found");
       }
 
+      // Ensure color is always a valid value
+      if (!data.color) {
+        data.color = "red";
+      }
+
       if (eventToEdit) {
         if (!eventToEdit.$id) {
           throw new Error("Event ID not found");
@@ -169,6 +187,23 @@ export default function EventForm({
         };
         await updateEvent(eventToEdit.$id, newEvent);
         // Update course color (if changed)
+        if (
+          eventToEdit.courseColor &&
+          data.color !== eventToEdit.courseColor.color
+        ) {
+          await updateCourseColor({
+            course: data.course.$id,
+            user: user.$id,
+            color: data.color,
+            $id: eventToEdit.courseColor.$id,
+          });
+        } else {
+          await createCourseColor({
+            course: data.course.$id,
+            user: user.$id,
+            color: data.color,
+          });
+        }
       } else {
         if (!term) {
           throw new Error("Term not found");
@@ -187,6 +222,13 @@ export default function EventForm({
         };
         await createEvent(newEvent);
         // Create course color
+        if (data.color) {
+          await createCourseColor({
+            course: data.course.$id,
+            user: user.$id,
+            color: data.color,
+          });
+        }
       }
       router.refresh();
       onCancel?.();

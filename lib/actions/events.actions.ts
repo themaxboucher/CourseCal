@@ -3,6 +3,7 @@
 import { ID, Query } from "node-appwrite";
 import { createAdminClient } from "../appwrite/server";
 import { parseStringify } from "../utils";
+import { getCourseColor } from "./courseColors.actions";
 
 const {
   APPWRITE_DATABASE_ID: DATABASE_ID,
@@ -78,10 +79,28 @@ export async function getEvents(userId: string) {
       }, {} as Record<string, any>);
     }
 
-    // Populate course relationships
+    // Fetch course colors for each course (only if there are courses)
+    let courseColorsMap: Record<string, any> = {};
+    if (courseIds.length > 0) {
+      // Fetch course colors for each course
+      const courseColorsPromises = courseIds.map((courseId) =>
+        getCourseColor(courseId, userId)
+      );
+      const courseColorsResponses = await Promise.all(courseColorsPromises);
+
+      // Process the responses to create a map
+      courseColorsResponses.forEach((response, index) => {
+        if (response.documents && response.documents.length > 0) {
+          courseColorsMap[courseIds[index]] = response.documents[0];
+        }
+      });
+    }
+
+    // Populate course relationships and course colors
     const eventsWithCourses = events.documents.map((event) => ({
       ...event,
       course: event.course ? courses[event.course] || null : null,
+      courseColor: event.course ? courseColorsMap[event.course] || null : null,
     }));
 
     return parseStringify(eventsWithCourses);

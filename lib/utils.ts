@@ -81,25 +81,24 @@ export function getReadableRecurrence(
   }
 }
 
-// Simple hash function to consistently assign colors to course titles
-export function getSubjectColor(title: string): string {
-  if (!title) return "bg-gray-100 border-gray-200 text-gray-800";
-
-  let hash = 0;
-  for (let i = 0; i < title.length; i++) {
-    const char = title.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32-bit integer
-  }
-
-  const index = Math.abs(hash) % eventColors.length;
-  return eventColors[index];
-}
-
 export function formatTime(timeString: string) {
   // Handle time strings like "16:00:00" or "16:00"
   const [hours, minutes] = timeString.split(":").map(Number);
   const date = new Date();
   date.setHours(hours, minutes || 0, 0, 0);
   return format(date, "h:mm a");
+}
+
+export function getRandomColor(): Color {
+  const colors: Color[] = [
+    "red",
+    "orange",
+    "yellow",
+    "green",
+    "cyan",
+    "blue",
+    "purple",
+    "pink",
+  ];
+  return colors[Math.floor(Math.random() * colors.length)];
 }
