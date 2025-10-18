@@ -1,1 +1,3 @@
-## DinoCal
+## CourseCal
+
+A better UCalgary schedule.
