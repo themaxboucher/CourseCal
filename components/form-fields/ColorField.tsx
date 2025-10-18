@@ -12,6 +12,7 @@ const colorNames = [
   "orange",
   "yellow",
   "green",
+  "cyan",
   "blue",
   "purple",
   "pink",
