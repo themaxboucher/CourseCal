@@ -74,10 +74,11 @@ export function getReadableRecurrence(
   }
 
   // Create recurrence string
-  const recurrenceString =
-    recurrence === "biweekly" ? "Every other week" : "Weekly";
-
-  return `${recurrenceString} on ${dayString}`;
+  if (recurrence === "biweekly") {
+    return `Every other ${dayString}`;
+  } else {
+    return `Every ${dayString}`;
+  }
 }
 
 // Simple hash function to consistently assign colors to course titles
