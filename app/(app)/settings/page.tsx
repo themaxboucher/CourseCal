@@ -8,6 +8,8 @@ import { getLoggedInUser } from "@/lib/actions/users.actions";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export default async function SettingsPage() {
   const user = await getLoggedInUser();
 

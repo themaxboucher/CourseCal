@@ -4,6 +4,8 @@ import { getLoggedInUser } from "@/lib/actions/users.actions";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 export default async function UploadPage() {
   const user = await getLoggedInUser();
   if (!user) {

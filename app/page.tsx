@@ -6,6 +6,8 @@ import AuthForm from "@/components/landing-page/AuthForm";
 import { getAuthUser } from "@/lib/actions/users.actions";
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const user = await getAuthUser();
   if (user) {

@@ -4,6 +4,8 @@ import { getEvents } from "@/lib/actions/events.actions";
 import { getLoggedInUser } from "@/lib/actions/users.actions";
 import { getTerms } from "@/lib/actions/terms.actions";
 
+export const dynamic = "force-dynamic";
+
 export default async function SchedulePage() {
   const user = await getLoggedInUser();
   const terms = await getTerms();
