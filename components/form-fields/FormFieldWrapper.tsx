@@ -31,6 +31,8 @@ export function FormFieldWrapper({
   description,
   warning,
 }: FormFieldWrapperProps) {
+  const hasError = form.formState.errors[name];
+
   return (
     <FormField
       control={form.control}
@@ -46,7 +48,7 @@ export function FormFieldWrapper({
               {description}
             </FormDescription>
           )}
-          {warning && <FormWarning message={warning} />}
+          {warning && !hasError && <FormWarning message={warning} />}
           <FormMessage className="text-xs" />
         </FormItem>
       )}
