@@ -124,7 +124,7 @@ export default function Schedule({
 
   return (
     <>
-      <div className="flex items-center justify-between pb-4 ml-16">
+      <div className="flex items-center justify-between pb-4">
         <Select value={selectedTermId} onValueChange={setSelectedTermId}>
           <SelectTrigger className="capitalize">
             <SelectValue placeholder="Select a term">

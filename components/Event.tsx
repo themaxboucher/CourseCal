@@ -37,6 +37,7 @@ export default function Event({
         event.courseColor
           ? eventColors[event.courseColor.color]
           : eventColors.red,
+        event.recurrence !== "weekly" && "opacity-75",
         className
       )}
       style={style}
@@ -55,7 +56,7 @@ export default function Event({
               </div>
             )}
             {event.type && (
-              <div className="text-xxs md:text-xs opacity-75 capitalize">
+              <div className="hidden md:block text-xxs md:text-xs opacity-75 capitalize">
                 {event.type}
               </div>
             )}
