@@ -12,11 +12,12 @@ import {
 import { seasonColors, seasonIcons } from "@/constants";
 import { getCurrentTerm, cn } from "@/lib/utils";
 import { AddEventButton } from "./AddEventButton";
+import { UploadDialog } from "./UploadDialog";
 
 interface ScheduleProps {
   events: CalendarEvent[];
   terms: Term[];
-  onEventClick?: (event: CalendarEvent) => void;
+  user: User;
 }
 
 const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
@@ -80,11 +81,7 @@ const getEventPosition = (event: CalendarEvent) => {
   return { top, height };
 };
 
-export default function Schedule({
-  events,
-  terms,
-  onEventClick,
-}: ScheduleProps) {
+export default function Schedule({ events, terms, user }: ScheduleProps) {
   const [selectedTermId, setSelectedTermId] = useState<string>("");
 
   // Set default term based on current date
@@ -167,7 +164,10 @@ export default function Schedule({
             })}
           </SelectContent>
         </Select>
-        <AddEventButton term={selectedTermId} />
+        <div className="flex items-center gap-2">
+          <AddEventButton term={selectedTermId} />
+          <UploadDialog terms={terms} user={user} />
+        </div>
       </div>
       <div className="w-full max-w-6xl mx-auto">
         {/* Schedule grid */}
@@ -235,7 +235,6 @@ export default function Schedule({
                   <Event
                     key={`${event.$id || eventIndex}`}
                     event={event}
-                    onClick={onEventClick}
                     style={{
                       position: "absolute",
                       top: `${top}px`,

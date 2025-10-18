@@ -7,7 +7,6 @@ import EventDialog from "./EventDialog";
 
 export function AddEventButton({ term }: { term: string }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
   function handleOpenDialog() {
     setIsDialogOpen(true);
   }
@@ -18,7 +17,8 @@ export function AddEventButton({ term }: { term: string }) {
   return (
     <>
       <Button size="sm" onClick={handleOpenDialog}>
-        <Plus className="size-4" /> Add Class
+        <Plus className="size-4" />
+        <span className="hidden md:block">Add Class</span>
       </Button>
       <EventDialog
         open={isDialogOpen}
