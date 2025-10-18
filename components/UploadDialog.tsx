@@ -12,7 +12,7 @@ interface UploadDialogProps {
 export function UploadDialog({ terms, user }: UploadDialogProps) {
   return (
     <Dialog>
-      <DialogTrigger>
+      <DialogTrigger className="hidden md:block">
         <Button variant="outline" size="sm">
           <Upload className="size-4" />
           <span className="hidden md:block">Upload</span>

@@ -166,7 +166,9 @@ export default function Schedule({ events, terms, user }: ScheduleProps) {
         </Select>
         <div className="flex items-center gap-2">
           <AddEventButton term={selectedTermId} events={filteredEvents} />
-          <UploadDialog terms={terms} user={user} />
+          {filteredEvents.length === 0 && (
+            <UploadDialog terms={terms} user={user} />
+          )}
         </div>
       </div>
       <div className="w-full max-w-6xl mx-auto">
