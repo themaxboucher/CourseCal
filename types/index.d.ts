@@ -60,3 +60,17 @@ declare interface CalendarEvent {
   $createdAt?: string;
   $updatedAt?: string;
 }
+
+declare interface CalendarEventDB {
+  user: string;
+  course?: string;
+  summary?: string;
+  type?: "lecture" | "tutorial" | "lab" | "seminar";
+  location: string;
+  startTime: string;
+  endTime: string;
+  days: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday")[];
+  recurrence: "weekly" | "biweekly";
+  exclusions: string[];
+  term: string;
+}

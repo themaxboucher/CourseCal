@@ -15,6 +15,9 @@ import { ColorField } from "./form-fields/ColorField";
 import { CourseField } from "./form-fields/CourseField";
 import TimeField from "./form-fields/TimeField";
 import { RadioGroupField } from "./form-fields/RadioGroupField";
+import { createEvent, updateEvent } from "@/lib/actions/events.actions";
+import { getLoggedInUser } from "@/lib/actions/users.actions";
+import { useRouter } from "next/navigation";
 
 // Form validation schema
 const eventFormSchema = z
@@ -28,17 +31,11 @@ const eventFormSchema = z
       })
       .nullable()
       .refine((val) => val !== null, "Select a course"),
-    type: z
-      .string()
-      .min(1, "Select a class type")
-      .refine(
-        (val) => ["lecture", "tutorial", "lab", "seminar"].includes(val),
-        "Select a class type"
-      ),
+    type: z.enum(["lecture", "tutorial", "lab", "seminar"]),
     days: z
       .array(z.enum(["monday", "tuesday", "wednesday", "thursday", "friday"]))
       .min(1, "Select at least one day for your class"),
-    recurrence: z.string().min(1, "Select how often this class repeats"),
+    recurrence: z.enum(["weekly", "biweekly"]),
     startTime: z.string().min(1, "Select a start time for your class"),
     endTime: z.string().min(1, "Select an end time for your class"),
     location: z
@@ -67,10 +64,16 @@ type EventFormData = z.infer<typeof eventFormSchema>;
 interface EventFormProps {
   eventToEdit?: CalendarEvent | null;
   onCancel?: () => void;
+  term?: string;
 }
 
-export default function EventForm({ eventToEdit, onCancel }: EventFormProps) {
+export default function EventForm({
+  eventToEdit,
+  onCancel,
+  term,
+}: EventFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   const form = useForm<EventFormData>({
     resolver: zodResolver(eventFormSchema),
@@ -83,9 +86,9 @@ export default function EventForm({ eventToEdit, onCancel }: EventFormProps) {
             title: eventToEdit.course.title,
           }
         : null,
-      type: eventToEdit?.type || "",
+      type: eventToEdit?.type || undefined,
       days: eventToEdit?.days || [],
-      recurrence: eventToEdit?.recurrence || "none",
+      recurrence: eventToEdit?.recurrence || "weekly",
       startTime: eventToEdit?.startTime || "",
       endTime: eventToEdit?.endTime || "",
       location: eventToEdit?.location || "",
@@ -137,8 +140,61 @@ export default function EventForm({ eventToEdit, onCancel }: EventFormProps) {
   const missingFields = getMissingFields();
 
   async function onSubmit(data: EventFormData) {
-    console.log("Event form data:", data);
-    console.log("Course ID:", data.course?.$id);
+    setIsSubmitting(true);
+    try {
+      // Get the user
+      const user = await getLoggedInUser();
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      if (!data.course) {
+        throw new Error("Course ID not found");
+      }
+
+      if (eventToEdit) {
+        if (!eventToEdit.$id) {
+          throw new Error("Event ID not found");
+        }
+        const newEvent: Partial<CalendarEventDB> = {
+          user: user.$id,
+          course: data.course.$id,
+          type: data.type,
+          location: data.location,
+          startTime: data.startTime,
+          endTime: data.endTime,
+          days: data.days,
+          recurrence: data.recurrence,
+          exclusions: [],
+        };
+        await updateEvent(eventToEdit.$id, newEvent);
+        // Update course color (if changed)
+      } else {
+        if (!term) {
+          throw new Error("Term not found");
+        }
+        const newEvent: CalendarEventDB = {
+          user: user.$id,
+          course: data.course.$id,
+          type: data.type,
+          location: data.location,
+          startTime: data.startTime,
+          endTime: data.endTime,
+          days: data.days,
+          recurrence: data.recurrence,
+          exclusions: [],
+          term: term,
+        };
+        await createEvent(newEvent);
+        // Create course color
+      }
+      router.refresh();
+      onCancel?.();
+    } catch (error) {
+      console.error("Error creating event:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   const classTypeOptions = [

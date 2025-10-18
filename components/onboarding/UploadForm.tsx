@@ -67,14 +67,23 @@ export default function UploadForm({ terms, user }: UploadFormProps) {
 
       for (const parsedEvent of parsedEvents) {
         try {
+          if (!parsedEvent.days) {
+            continue;
+          }
+          if (!parsedEvent.recurrence) {
+            continue;
+          }
+          if (!parsedEvent.exclusions) {
+            continue;
+          }
+
           const course = await getCourseFromTitle(parsedEvent.summary);
 
-          const calendarEvent: CalendarEvent = {
+          const calendarEvent: CalendarEventDB = {
             user: user.$id,
             course: course ? course.$id : null,
             summary: parsedEvent.summary,
             location: parsedEvent.location || "",
-            type: null,
             startTime: parsedEvent.startTime,
             endTime: parsedEvent.endTime,
             days: parsedEvent.days,

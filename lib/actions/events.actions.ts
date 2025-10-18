@@ -10,7 +10,7 @@ const {
   APPWRITE_COURSES_TABLE_ID: COURSES_TABLE_ID,
 } = process.env;
 
-export async function createEvent(event: CalendarEvent) {
+export async function createEvent(event: CalendarEventDB) {
   try {
     const { database } = await createAdminClient();
 
@@ -21,6 +21,25 @@ export async function createEvent(event: CalendarEvent) {
       event
     );
     return parseStringify(eventDoc);
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function updateEvent(
+  eventId: string,
+  event: Partial<CalendarEventDB>
+) {
+  try {
+    const { database } = await createAdminClient();
+    await database.updateDocument(
+      DATABASE_ID!,
+      EVENTS_TABLE_ID!,
+      eventId,
+      event
+    );
+    return parseStringify(event);
   } catch (error) {
     console.error(error);
     throw error;

@@ -167,7 +167,7 @@ export default function Schedule({
             })}
           </SelectContent>
         </Select>
-        <AddEventButton />
+        <AddEventButton term={selectedTermId} />
       </div>
       <div className="w-full max-w-6xl mx-auto">
         {/* Schedule grid */}
