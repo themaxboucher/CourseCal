@@ -93,6 +93,49 @@ export default function EventForm({ eventToEdit, onCancel }: EventFormProps) {
     },
   });
 
+  // Watch form values to update warnings dynamically
+  const formValues = form.watch();
+
+  // Function to check for missing fields based on current form values
+  const getMissingFields = () => {
+    if (!eventToEdit) return {};
+
+    const missing: Record<string, string> = {};
+
+    // Only show warnings for fields that were originally missing AND are still empty
+    if (!eventToEdit.course && !formValues.course) {
+      missing.course = "Course information is missing";
+    }
+    if (!eventToEdit.type && !formValues.type) {
+      missing.type = "Class type is not specified";
+    }
+    if (
+      (!eventToEdit.days || eventToEdit.days.length === 0) &&
+      (!formValues.days || formValues.days.length === 0)
+    ) {
+      missing.days = "No days selected for this class";
+    }
+    if (!eventToEdit.recurrence && !formValues.recurrence) {
+      missing.recurrence = "Recurrence pattern is not set";
+    }
+    if (!eventToEdit.startTime && !formValues.startTime) {
+      missing.startTime = "Start time is not specified";
+    }
+    if (!eventToEdit.endTime && !formValues.endTime) {
+      missing.endTime = "End time is not specified";
+    }
+    if (
+      (!eventToEdit.location || eventToEdit.location.trim() === "") &&
+      (!formValues.location || formValues.location.trim() === "")
+    ) {
+      missing.location = "Location is not provided";
+    }
+
+    return missing;
+  };
+
+  const missingFields = getMissingFields();
+
   async function onSubmit(data: EventFormData) {
     console.log("Event form data:", data);
     console.log("Course ID:", data.course?.$id);
@@ -108,9 +151,14 @@ export default function EventForm({ eventToEdit, onCancel }: EventFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <div className="flex items-center gap-2">
+        <div className="flex gap-2">
           <ColorField form={form} name="color" />
-          <CourseField form={form} name="course" className="flex-grow" />
+          <CourseField
+            form={form}
+            name="course"
+            className="flex-grow"
+            warning={missingFields.course}
+          />
         </div>
         <SelectField
           form={form}
@@ -118,6 +166,7 @@ export default function EventForm({ eventToEdit, onCancel }: EventFormProps) {
           label="Class Type"
           placeholder="Select class type"
           options={classTypeOptions}
+          warning={missingFields.type}
         />
 
         <CheckboxesField
@@ -131,6 +180,7 @@ export default function EventForm({ eventToEdit, onCancel }: EventFormProps) {
             { value: "thursday", label: "Thursday" },
             { value: "friday", label: "Friday" },
           ]}
+          warning={missingFields.days}
         />
 
         <RadioGroupField
@@ -141,17 +191,29 @@ export default function EventForm({ eventToEdit, onCancel }: EventFormProps) {
             { value: "weekly", label: "Every week" },
             { value: "biweekly", label: "Every other week" },
           ]}
+          warning={missingFields.recurrence}
         />
 
         <div className="grid grid-cols-2 gap-4">
-          <TimeField form={form} name="startTime" label="Start Time" />
-          <TimeField form={form} name="endTime" label="End Time" />
+          <TimeField
+            form={form}
+            name="startTime"
+            label="Start Time"
+            warning={missingFields.startTime}
+          />
+          <TimeField
+            form={form}
+            name="endTime"
+            label="End Time"
+            warning={missingFields.endTime}
+          />
         </div>
         <TextField
           form={form}
           name="location"
           label="Location"
           placeholder="e.g., Room 101, Online"
+          warning={missingFields.location}
         />
         <div className="flex justify-end gap-2 pt-4">
           {onCancel && (

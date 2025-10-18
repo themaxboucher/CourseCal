@@ -10,6 +10,7 @@ interface TextFieldProps {
   className?: string;
   description?: React.ReactNode;
   variant?: "destructive" | "default";
+  warning?: string;
 }
 
 export function TextField({
@@ -20,6 +21,7 @@ export function TextField({
   className,
   description,
   variant = "default",
+  warning,
 }: TextFieldProps) {
   return (
     <FormFieldWrapper
@@ -27,6 +29,7 @@ export function TextField({
       name={name}
       label={label}
       description={description}
+      warning={warning}
     >
       <Input
         placeholder={placeholder}

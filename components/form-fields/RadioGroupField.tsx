@@ -10,6 +10,7 @@ interface RadioGroupFieldProps {
   options: { value: string; label: string }[];
   label?: string;
   description?: React.ReactNode;
+  warning?: string;
 }
 
 export function RadioGroupField({
@@ -18,6 +19,7 @@ export function RadioGroupField({
   label,
   options,
   description,
+  warning,
 }: RadioGroupFieldProps) {
   const hasError = form.formState.errors[name];
 
@@ -27,6 +29,7 @@ export function RadioGroupField({
       name={name}
       label={label}
       description={description}
+      warning={warning}
     >
       {({ field }: { field: ControllerRenderProps<any, string> }) => (
         <RadioGroup

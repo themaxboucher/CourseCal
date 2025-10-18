@@ -8,6 +8,7 @@ import {
 } from "../ui/form";
 import { ReactNode } from "react";
 import { UseFormReturn, ControllerRenderProps } from "react-hook-form";
+import { FormWarning } from "../FormWarning";
 
 interface FormFieldWrapperProps {
   form: UseFormReturn<any>;
@@ -18,6 +19,7 @@ interface FormFieldWrapperProps {
     | ((props: { field: ControllerRenderProps<any, string> }) => ReactNode);
   className?: string;
   description?: React.ReactNode;
+  warning?: string;
 }
 
 export function FormFieldWrapper({
@@ -27,6 +29,7 @@ export function FormFieldWrapper({
   children,
   className,
   description,
+  warning,
 }: FormFieldWrapperProps) {
   return (
     <FormField
@@ -43,6 +46,7 @@ export function FormFieldWrapper({
               {description}
             </FormDescription>
           )}
+          {warning && <FormWarning message={warning} />}
           <FormMessage className="text-xs" />
         </FormItem>
       )}

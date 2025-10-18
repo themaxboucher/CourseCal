@@ -10,6 +10,7 @@ interface CheckboxesFieldProps {
   options: { value: string; label: string }[];
   label?: string;
   description?: React.ReactNode;
+  warning?: string;
 }
 
 export function CheckboxesField({
@@ -18,6 +19,7 @@ export function CheckboxesField({
   label,
   options,
   description,
+  warning,
 }: CheckboxesFieldProps) {
   const hasError = form.formState.errors[name];
 
@@ -27,6 +29,7 @@ export function CheckboxesField({
       name={name}
       label={label}
       description={description}
+      warning={warning}
     >
       {({ field }: { field: ControllerRenderProps<any, string> }) => (
         <div className="flex flex-wrap gap-4 py-2">

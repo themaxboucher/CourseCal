@@ -28,6 +28,7 @@ interface SelectFieldProps {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
+  warning?: string;
 }
 
 export function SelectField({
@@ -38,6 +39,7 @@ export function SelectField({
   placeholder = "Select an option",
   className,
   disabled = false,
+  warning,
 }: SelectFieldProps) {
   const hasError = form.formState.errors[name];
 
@@ -58,6 +60,7 @@ export function SelectField({
       name={name}
       label={label}
       className={className}
+      warning={warning}
     >
       {({ field }: { field: ControllerRenderProps<any, string> }) => {
         const selectedOption = options.find(

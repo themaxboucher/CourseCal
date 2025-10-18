@@ -30,6 +30,7 @@ interface ColorFieldProps {
   label?: string;
   description?: React.ReactNode;
   className?: string;
+  warning?: string;
 }
 
 export function ColorField({
@@ -38,6 +39,7 @@ export function ColorField({
   label,
   description,
   className,
+  warning,
 }: ColorFieldProps) {
   const [open, setOpen] = useState(false);
 
@@ -48,6 +50,7 @@ export function ColorField({
       label={label}
       description={description}
       className={className}
+      warning={warning}
     >
       {({ field }) => (
         <Popover open={open} onOpenChange={setOpen}>
@@ -57,7 +60,7 @@ export function ColorField({
               variant="outline"
               size="sm"
               className={cn(
-                "size-8 p-0 border-2",
+                "size-9 p-0 border-[1.5px]",
                 field.value
                   ? colorMap[field.value as keyof typeof colorMap]
                   : colorMap.red

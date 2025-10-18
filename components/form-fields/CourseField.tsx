@@ -28,6 +28,7 @@ interface CourseSelectProps {
   description?: React.ReactNode;
   placeholder?: string;
   className?: string;
+  warning?: string;
 }
 
 export function CourseField({
@@ -37,6 +38,7 @@ export function CourseField({
   description,
   placeholder = "Select a course",
   className,
+  warning,
 }: CourseSelectProps) {
   const [open, setOpen] = useState(false);
   const [courses, setCourses] = useState<Course[]>([]);
@@ -87,6 +89,7 @@ export function CourseField({
       label={label}
       description={description}
       className={className}
+      warning={warning}
     >
       {({ field }: { field: any }) => {
         const selectedCourse = field.value;
@@ -99,8 +102,8 @@ export function CourseField({
                 role="combobox"
                 aria-expanded={open}
                 className={cn(
-                  "active:scale-100 font-normal normal-case justify-between",
-                  selectedCourse && "font-medium",
+                  "active:scale-100 font-medium normal-case justify-between",
+                  !selectedCourse && "font-normal text-muted-foreground",
                   hasError && "border-destructive focus:ring-destructive"
                 )}
                 aria-invalid={hasError ? "true" : "false"}

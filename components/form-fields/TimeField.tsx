@@ -8,6 +8,7 @@ interface TimeFieldProps {
   name: string;
   label?: string;
   description?: React.ReactNode;
+  warning?: string;
 }
 
 export default function TimeField({
@@ -15,6 +16,7 @@ export default function TimeField({
   name,
   label,
   description,
+  warning,
 }: TimeFieldProps) {
   const hasError = form.formState.errors[name];
 
@@ -24,6 +26,7 @@ export default function TimeField({
       name={name}
       label={label}
       description={description}
+      warning={warning}
     >
       <Input
         type="time"

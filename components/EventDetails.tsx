@@ -102,10 +102,10 @@ export default function EventDetails({ event }: { event: CalendarEvent }) {
           </div>
         </div>
         {(!event.course || !event.type) && (
-          <Alert className="border-[1.5px] bg-yellow-100 border-yellow-400 dark:bg-yellow-800/20 text-yellow-600">
+          <Alert className="border-[1.5px] bg-amber-100 border-amber-400 dark:bg-amber-800/20 text-amber-600">
             <TriangleAlert className="size-3" />
             <AlertTitle>Incomplete details</AlertTitle>
-            <AlertDescription className="text-yellow-600">
+            <AlertDescription className="text-amber-600">
               Edit this class to add missing details.
             </AlertDescription>
           </Alert>
