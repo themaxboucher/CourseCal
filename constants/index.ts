@@ -60,3 +60,137 @@ export const eventColors = {
   fallback:
     "bg-zinc-500 border-zinc-300 dark:bg-zinc-700 dark:border-zinc-900 text-white hover:bg-zinc-500 hover:dark:bg-zinc-700",
 };
+
+export const displayEvents = [
+  // Core Classes - Mixed schedule with variety
+  {
+    course: {
+      subjectCode: "MATH",
+      catalogNumber: 101,
+      title: "Calculus I",
+    },
+    type: "lecture",
+    days: ["monday", "wednesday", "friday"],
+    startTime: "09:00",
+    endTime: "10:00",
+    location: "Math Building Room 101",
+    courseColor: { color: "blue" },
+  },
+  {
+    course: {
+      subjectCode: "PHYS",
+      catalogNumber: 201,
+      title: "Physics I: Mechanics",
+    },
+    type: "tutorial",
+    days: ["tuesday", "thursday"],
+    startTime: "09:30",
+    endTime: "10:30",
+    location: "Physics Lab 205",
+    courseColor: { color: "orange" },
+  },
+  {
+    course: {
+      subjectCode: "CHAOS",
+      catalogNumber: 520,
+      title: "Embracing the Chaos of Life",
+    },
+    type: "lecture",
+    days: ["monday", "wednesday"],
+    startTime: "10:30",
+    endTime: "12:00",
+    location: "The Chaos Chamber (Room 911)",
+    courseColor: { color: "red" },
+  },
+  {
+    course: {
+      subjectCode: "CHEM",
+      catalogNumber: 301,
+      title: "Organic Chemistry I",
+    },
+    type: "seminar",
+    days: ["tuesday", "thursday"],
+    startTime: "11:00",
+    endTime: "12:30",
+    location: "Chemistry Lab 301",
+    courseColor: { color: "yellow" },
+  },
+  {
+    course: {
+      subjectCode: "NAP",
+      catalogNumber: 101,
+      title: "Strategic Napping Techniques",
+    },
+    type: "lab",
+    days: ["friday"],
+    startTime: "11:00",
+    endTime: "12:00",
+    location: "The Comfy Couch (Student Lounge)",
+    courseColor: { color: "cyan" },
+  },
+  {
+    course: {
+      subjectCode: "BIOL",
+      catalogNumber: 401,
+      title: "Cell Biology",
+    },
+    type: "lecture",
+    days: ["monday", "tuesday", "thursday", "friday"],
+    startTime: "13:00",
+    endTime: "14:00",
+    location: "Biology Building Room 401",
+    courseColor: { color: "green" },
+  },
+  {
+    course: {
+      subjectCode: "PSYC",
+      catalogNumber: 150,
+      title: "Introduction to Psychology",
+    },
+    type: "tutorial",
+    days: ["wednesday"],
+    startTime: "13:30",
+    endTime: "15:00",
+    location: "Psychology Building Room 150",
+    courseColor: { color: "pink" },
+  },
+  {
+    course: {
+      subjectCode: "ECON",
+      catalogNumber: 180,
+      title: "Microeconomics",
+    },
+    type: "lab",
+    days: ["tuesday", "thursday"],
+    startTime: "14:30",
+    endTime: "16:00",
+    location: "Economics Building Room 180",
+    courseColor: { color: "red" },
+  },
+  {
+    course: {
+      subjectCode: "HIST",
+      catalogNumber: 380,
+      title: "World History",
+    },
+    type: "seminar",
+    days: ["monday", "friday"],
+    startTime: "15:00",
+    endTime: "16:30",
+    location: "History Building Room 380",
+    courseColor: { color: "purple" },
+  },
+  {
+    course: {
+      subjectCode: "ENGL",
+      catalogNumber: 120,
+      title: "English Composition",
+    },
+    type: "tutorial",
+    days: ["wednesday"],
+    startTime: "16:00",
+    endTime: "17:00",
+    location: "English Building Room 120",
+    courseColor: { color: "cyan" },
+  },
+];

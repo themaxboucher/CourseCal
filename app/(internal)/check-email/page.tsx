@@ -7,8 +7,8 @@ export default function CheckEmailPage() {
     <>
       <section className="flex flex-col gap-2 max-w-[75rem] mx-auto px-8 py-16">
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-6">
-          <div className="flex items-center justify-center rounded-full bg-primary/10 p-4">
-            <Inbox className="size-8 text-primary" />
+          <div className="flex items-center justify-center rounded-full bg-red-500 border-2 border-red-300 text-white p-3.5">
+            <Inbox className="size-8" />
           </div>
           <div className="flex flex-col items-center gap-2 max-w-md">
             <h1 className="heading-3 text-center max-w-64">

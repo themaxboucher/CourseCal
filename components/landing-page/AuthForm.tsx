@@ -48,18 +48,13 @@ export default function AuthForm() {
   return (
     <Form {...form}>
       <form
-        className="grid gap-4 w-full max-w-md pointer-events-auto"
+        className="flex flex-col items-center gap-4 w-full max-w-70 pointer-events-auto"
         onSubmit={form.handleSubmit(onSubmitHandler)}
       >
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 w-full">
-          <div className="md:col-span-3">
-            <TextField form={form} name="email" placeholder="you@ucalgary.ca" />
-          </div>
-          <Button
-            type="submit"
-            className="w-full md:col-span-2"
-            disabled={loading}
-          >
+        <div className="flex flex-col items-stretch gap-4 w-full">
+          <TextField form={form} name="email" placeholder="you@ucalgary.ca" />
+
+          <Button type="submit" className="w-full" disabled={loading}>
             {loading && <LoaderCircle className="h-4 w-4 animate-spin" />}
             {!loading && "Get started"}
           </Button>

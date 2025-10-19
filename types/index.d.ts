@@ -71,6 +71,20 @@ declare interface CourseColorDB {
   $id: string;
 }
 
+declare interface DisplayEvent {
+  course: {
+    subjectCode: string;
+    catalogNumber: number;
+    title: string;
+  };
+  type: string;
+  days: string[];
+  startTime: string;
+  endTime: string;
+  location: string;
+  courseColor: { color: string };
+}
+
 declare interface CalendarEvent {
   user: string;
   course: Course | null;

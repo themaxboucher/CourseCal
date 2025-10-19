@@ -1,6 +1,5 @@
 "use client";
 
-import { cn, formatTime } from "@/lib/utils";
 import {
   Popover,
   PopoverTrigger,
@@ -15,71 +14,27 @@ import {
 } from "@/components/ui/drawer";
 import EventDetails from "./EventDetails";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { eventColors } from "@/constants";
+import EventBlock from "./EventBlock";
 interface EventProps {
   event: CalendarEvent;
-  onClick?: (event: CalendarEvent) => void;
   style?: React.CSSProperties;
-  className?: string;
   events?: CalendarEvent[];
   user: User;
 }
 
-export default function Event({
-  event,
-  onClick,
-  style,
-  className,
-  events = [],
-  user,
-}: EventProps) {
-  const eventContent = (
-    <div
-      className={cn(
-        "absolute left-0 right-0 my-[0.2rem] mx-[0.08rem] md:my-1 md:mx-0.5 rounded-lg border-[1.5px] p-[0.3rem] sm:p-2 cursor-pointer hover:opacity-95 transition-opacity",
-        "text-xs font-medium z-20 relative",
-        event.courseColor
-          ? eventColors[event.courseColor.color]
-          : eventColors.fallback,
-        event.recurrence !== "weekly" && "opacity-75",
-        className
-      )}
-      style={style}
-      onClick={() => onClick?.(event)}
-    >
-      <div className="flex items-start justify-between gap-1">
-        <div className="space-y-0.5 md:space-y-1 w-full">
-          <div className="w-full flex items-center justify-between gap-2">
-            {event.course?.subjectCode && event.course?.catalogNumber ? (
-              <div className="font-semibold truncate text-xxs md:text-xs">
-                {event.course.subjectCode} {event.course.catalogNumber}
-              </div>
-            ) : (
-              <div className="font-semibold truncate text-xxs md:text-xs">
-                {event.summary}
-              </div>
-            )}
-            {event.type && (
-              <div className="hidden md:block text-xxs md:text-xs opacity-75 capitalize">
-                {event.type}
-              </div>
-            )}
-          </div>
-          <div className="text-xxs md:text-xs opacity-75 flex items-center gap-0.5 flex-wrap">
-            <span>{formatTime(event.startTime)} - </span>
-            <span>{formatTime(event.endTime)}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
+export default function Event({ event, style, events = [], user }: EventProps) {
   return (
     <>
       {/* Desktop: Popover */}
       <div className="hidden md:block">
         <Popover>
-          <PopoverTrigger asChild>{eventContent}</PopoverTrigger>
+          <PopoverTrigger asChild>
+            <EventBlock
+              event={event}
+              style={style}
+              className="cursor-pointer hover:opacity-95 transition-opacity"
+            />
+          </PopoverTrigger>
           <PopoverContent
             side="left"
             align="start"
@@ -95,7 +50,13 @@ export default function Event({
       {/* Mobile: Drawer */}
       <div className="block md:hidden">
         <Drawer>
-          <DrawerTrigger asChild>{eventContent}</DrawerTrigger>
+          <DrawerTrigger asChild>
+            <EventBlock
+              event={event}
+              style={style}
+              className="cursor-pointer hover:opacity-95 transition-opacity"
+            />
+          </DrawerTrigger>
           <DrawerContent className="border-[1.5px]">
             <VisuallyHidden>
               <DrawerHeader>
