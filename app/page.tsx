@@ -58,7 +58,7 @@ export default async function Home() {
           </div>
         </section>
         <section className="flex flex-col gap-2 max-w-[75rem] mx-auto md:px-8 px-4 py-12 md:pt-16 pt-12">
-          <Card className="w-full p-6 border-2 bg-red-500 dark:bg-red-700 border-red-300 dark:border-red-900 text-white">
+          <Card className="w-full p-6 border-2 bg-red-500 border-red-300 dark:border-red-800 text-white">
             <CardContent className="flex flex-col lg:flex-row gap-12 py-8">
               <div>
                 <Image
@@ -66,7 +66,7 @@ export default async function Home() {
                   alt="Max Boucher"
                   width={128}
                   height={128}
-                  className="rounded-3xl size-30 min-w-30 object-cover border-2 border-red-300 dark:border-red-900 shadow -rotate-3"
+                  className="rounded-3xl size-30 min-w-30 object-cover border-2 border-red-300 dark:border-red-800 shadow -rotate-3"
                 />
               </div>
               <div className="text-lg space-y-2">
