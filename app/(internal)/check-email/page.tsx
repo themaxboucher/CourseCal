@@ -18,12 +18,14 @@ export default function CheckEmailPage() {
               Click the link in your email to login.
             </p>
           </div>
-          <Button variant="outline" className="mt-2" asChild>
-            <a href="https://outlook.office.com/" target="_blank">
-              <OutlookIcon />
-              Open Outlook
-            </a>
-          </Button>
+          <div className="hidden md:flex justify-center">
+            <Button variant="outline" className="mt-2" asChild>
+              <a href="https://outlook.office.com/" target="_blank">
+                <OutlookIcon />
+                Open Outlook
+              </a>
+            </Button>
+          </div>
         </div>
       </section>
     </>
