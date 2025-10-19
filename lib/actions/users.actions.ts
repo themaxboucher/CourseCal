@@ -219,3 +219,31 @@ export async function deleteAccount(
     throw error;
   }
 }
+
+// Update boolean flags on the user document by document ID
+export const setUserFlags = async (
+  docUserId: string,
+  flags: Partial<Pick<User, "hasCompletedOnboarding" | "hasBeenWelcomed">>
+) => {
+  try {
+    const { database } = await createAdminClient();
+    const updated = await database.updateDocument(
+      DATABASE_ID!,
+      USERS_TABLE_ID!,
+      docUserId,
+      flags
+    );
+    return parseStringify(updated);
+  } catch (error) {
+    console.error("Error updating user flags:", error);
+    throw error;
+  }
+};
+
+export const markOnboardingCompleted = async (docUserId: string) => {
+  return setUserFlags(docUserId, { hasCompletedOnboarding: true });
+};
+
+export const markUserWelcomed = async (docUserId: string) => {
+  return setUserFlags(docUserId, { hasBeenWelcomed: true });
+};

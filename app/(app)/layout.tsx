@@ -1,5 +1,4 @@
-import { Navbar } from "@/components/Navbar";
-import { getAuthUser } from "@/lib/actions/users.actions";
+import { getLoggedInUser } from "@/lib/actions/users.actions";
 import { redirect } from "next/navigation";
 
 export default async function AppLayout({
@@ -7,9 +6,14 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getAuthUser();
+  const user = await getLoggedInUser();
   if (!user) {
     redirect("/");
+  }
+
+  // If the user has not completed onboarding, redirect to the onboarding page
+  if (!user.hasCompletedOnboarding) {
+    redirect("/onboarding/profile");
   }
 
   return <main>{children}</main>;

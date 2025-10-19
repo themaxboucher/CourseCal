@@ -21,6 +21,7 @@ import { seasonColors, seasonIcons } from "@/constants";
 import { getCurrentTerm, getRandomColor } from "@/lib/utils";
 import { LoaderCircle } from "lucide-react";
 import { createCourseColor } from "@/lib/actions/courseColors.actions";
+import { markOnboardingCompleted } from "@/lib/actions/users.actions";
 
 interface UploadFormProps {
   terms: Term[];
@@ -106,6 +107,8 @@ export default function UploadForm({ terms, user }: UploadFormProps) {
           console.error("Error creating event:", error);
         }
       }
+
+      await markOnboardingCompleted(user.$id);
       router.push("/schedule");
     } catch (error) {
       console.error("Error parsing ICS file:", error);
