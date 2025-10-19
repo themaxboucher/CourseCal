@@ -72,7 +72,6 @@ export async function getAuthUser() {
     const user = await account.get();
     return user;
   } catch (error) {
-    console.error(error);
     return false;
   }
 }
@@ -85,7 +84,6 @@ export async function getLoggedInUser() {
 
     return userDocument;
   } catch (error) {
-    console.error(error);
     return false;
   }
 }
