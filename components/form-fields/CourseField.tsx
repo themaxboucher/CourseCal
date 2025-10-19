@@ -20,6 +20,7 @@ import {
 import { getCourses } from "@/lib/actions/courses.actions";
 import { FormFieldWrapper } from "./FormFieldWrapper";
 import { UseFormReturn } from "react-hook-form";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface CourseSelectProps {
   form: UseFormReturn<any>;
@@ -47,14 +48,18 @@ export function CourseField({
   const [open, setOpen] = useState(false);
   const [courses, setCourses] = useState<Course[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const hasError = form.formState.errors[name];
 
   const fetchCourses = async (query: string = "") => {
+    setIsLoading(true);
     try {
       const coursesData = await getCourses(10, query, userId);
       setCourses(coursesData || []);
     } catch (error) {
       console.error("Failed to fetch courses:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -128,42 +133,56 @@ export function CourseField({
                 <CommandList>
                   <CommandEmpty>No courses found.</CommandEmpty>
                   <CommandGroup>
-                    {courses.map((course) => (
-                      <CommandItem
-                        key={course.$id}
-                        value={course.$id}
-                        onSelect={() => {
-                          const selectedCourse = {
-                            $id: course.$id!,
-                            subjectCode: course.subjectCode,
-                            catalogNumber: course.catalogNumber,
-                            title: course.title,
-                            color: course.color,
-                          };
-                          field.onChange(selectedCourse);
-                          onCourseSelect?.(selectedCourse);
-                          setOpen(false);
-                        }}
-                        className="flex items-center justify-between gap-2"
-                      >
-                        <div className="flex flex-col">
-                          <span className="font-medium">
-                            {course.subjectCode} {course.catalogNumber}
-                          </span>
-                          <span className="text-xs text-muted-foreground truncate">
-                            {course.title}
-                          </span>
-                        </div>
-                        <CheckIcon
-                          className={cn(
-                            "mr-2 size-4",
-                            field.value?.$id === course.$id
-                              ? "opacity-100"
-                              : "opacity-0"
-                          )}
-                        />
-                      </CommandItem>
-                    ))}
+                    {isLoading && // Loading skeleton with pulsing animation
+                      Array.from({ length: 5 }).map((_, index) => (
+                        <CommandItem
+                          key={`loading-${index}`}
+                          disabled
+                          className="flex items-center justify-between gap-2"
+                        >
+                          <div className="flex flex-col space-y-2 w-full">
+                            <Skeleton className="h-4 w-1/3" />
+                            <Skeleton className="h-3 w-2/3" />
+                          </div>
+                        </CommandItem>
+                      ))}
+                    {!isLoading &&
+                      courses.map((course) => (
+                        <CommandItem
+                          key={course.$id}
+                          value={course.$id}
+                          onSelect={() => {
+                            const selectedCourse = {
+                              $id: course.$id!,
+                              subjectCode: course.subjectCode,
+                              catalogNumber: course.catalogNumber,
+                              title: course.title,
+                              color: course.color,
+                            };
+                            field.onChange(selectedCourse);
+                            onCourseSelect?.(selectedCourse);
+                            setOpen(false);
+                          }}
+                          className="flex items-center justify-between gap-2"
+                        >
+                          <div className="flex flex-col">
+                            <span className="font-medium">
+                              {course.subjectCode} {course.catalogNumber}
+                            </span>
+                            <span className="text-xs text-muted-foreground truncate">
+                              {course.title}
+                            </span>
+                          </div>
+                          <CheckIcon
+                            className={cn(
+                              "mr-2 size-4",
+                              field.value?.$id === course.$id
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                        </CommandItem>
+                      ))}
                   </CommandGroup>
                 </CommandList>
               </Command>
