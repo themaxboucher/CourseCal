@@ -9,7 +9,7 @@ interface NavbarProps {
 
 export function Navbar({ isApp = false }: NavbarProps) {
   return (
-    <header className="flex justify-between items-center px-6 py-4">
+    <header className="flex justify-between items-center px-6 py-4 relative z-50">
       <Logo />
       <div>
         {isApp && (
