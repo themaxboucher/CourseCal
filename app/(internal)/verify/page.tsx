@@ -22,10 +22,29 @@ function VerifyContent() {
   useEffect(() => {
     const handleVerification = async () => {
       try {
+        // Debug logging
+        console.log("Full URL:", window.location.href);
+        console.log("Search params string:", searchParams.toString());
+        console.log(
+          "All search params:",
+          Object.fromEntries(searchParams.entries())
+        );
+
         const userId = searchParams.get("userId");
         const secret = searchParams.get("secret");
 
+        console.log("userId:", userId);
+        console.log("secret:", secret);
+        console.log("userId type:", typeof userId);
+        console.log("secret type:", typeof secret);
+
         if (!userId || !secret) {
+          console.log(
+            "Missing parameters - userId:",
+            userId,
+            "secret:",
+            secret
+          );
           setStatus("error");
           setError("Invalid login link. Please request a new one.");
           return;
@@ -34,6 +53,7 @@ function VerifyContent() {
         // Check if the user is authenticated
         const authUser = await loginWithMagicLink(userId, secret);
         if (!authUser) {
+          console.log("Login failed - no authUser");
           setStatus("error");
           setError("Invalid login link. Please request a new one.");
           return;
