@@ -8,9 +8,11 @@ import EventDialog from "./EventDialog";
 export function AddEventButton({
   term,
   events = [],
+  user,
 }: {
   term: string;
   events?: CalendarEvent[];
+  user: User;
 }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   function handleOpenDialog() {
@@ -32,6 +34,7 @@ export function AddEventButton({
         eventToEdit={null}
         term={term}
         events={events}
+        user={user}
       />
     </>
   );

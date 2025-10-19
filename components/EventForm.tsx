@@ -16,7 +16,6 @@ import { CourseField } from "./form-fields/CourseField";
 import TimeField from "./form-fields/TimeField";
 import { RadioGroupField } from "./form-fields/RadioGroupField";
 import { createEvent, updateEvent } from "@/lib/actions/events.actions";
-import { getLoggedInUser } from "@/lib/actions/users.actions";
 import { useRouter } from "next/navigation";
 import {
   createCourseColor,
@@ -27,6 +26,7 @@ import {
   isTimeInRange,
   getOverlapErrorMessage,
 } from "@/lib/utils";
+import { Label } from "./ui/label";
 
 // Create dynamic schema with events context
 const createEventFormSchema = (
@@ -55,16 +55,19 @@ const createEventFormSchema = (
         .string()
         .min(1, "Enter a location for your class")
         .min(2, "Location must be at least 2 characters long"),
-      color: z.enum([
-        "red",
-        "orange",
-        "yellow",
-        "green",
-        "cyan",
-        "blue",
-        "purple",
-        "pink",
-      ]),
+      color: z
+        .enum([
+          "red",
+          "orange",
+          "yellow",
+          "green",
+          "cyan",
+          "blue",
+          "purple",
+          "pink",
+        ])
+        .nullable()
+        .refine((val) => val !== null, "Select a color for your class"),
     })
     .superRefine((data, ctx) => {
       // Early return if required fields are missing
@@ -133,6 +136,7 @@ interface EventFormProps {
   onCancel?: () => void;
   term?: string;
   events?: CalendarEvent[];
+  user: User;
 }
 
 export default function EventForm({
@@ -140,6 +144,7 @@ export default function EventForm({
   onCancel,
   term,
   events = [],
+  user,
 }: EventFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
@@ -161,7 +166,7 @@ export default function EventForm({
       startTime: eventToEdit?.startTime || "",
       endTime: eventToEdit?.endTime || "",
       location: eventToEdit?.location || "",
-      color: eventToEdit?.courseColor?.color || "red",
+      color: eventToEdit?.courseColor?.color || null,
     },
   });
 
@@ -172,6 +177,17 @@ export default function EventForm({
   const startTime = form.watch("startTime");
   const endTime = form.watch("endTime");
   const days = form.watch("days");
+
+  // Handle course selection to update color field
+  const handleCourseSelect = (course: any) => {
+    if (course.color && course.color.color) {
+      // If the course has a saved color, update the color field
+      form.setValue("color", course.color.color);
+    } else {
+      // If no saved color, reset to null to show fallback color
+      form.setValue("color", null);
+    }
+  };
 
   // Trigger validation on both time fields when either changes
   useEffect(() => {
@@ -223,19 +239,13 @@ export default function EventForm({
   async function onSubmit(data: EventFormData) {
     setIsSubmitting(true);
     try {
-      // Get the user
-      const user = await getLoggedInUser();
-      if (!user) {
-        throw new Error("User not found");
-      }
-
       if (!data.course) {
         throw new Error("Course ID not found");
       }
 
-      // Ensure color is always a valid value
+      // Ensure color is provided before submission
       if (!data.color) {
-        data.color = "red";
+        throw new Error("Color is required");
       }
 
       if (eventToEdit) {
@@ -324,6 +334,8 @@ export default function EventForm({
             name="course"
             className="flex-grow"
             warning={missingFields.course}
+            onCourseSelect={handleCourseSelect}
+            userId={user.$id}
           />
         </div>
         <SelectField
@@ -335,29 +347,12 @@ export default function EventForm({
           warning={missingFields.type}
         />
 
-        <CheckboxesField
+        <TextField
           form={form}
-          name="days"
-          label="Days"
-          options={[
-            { value: "monday", label: "Monday" },
-            { value: "tuesday", label: "Tuesday" },
-            { value: "wednesday", label: "Wednesday" },
-            { value: "thursday", label: "Thursday" },
-            { value: "friday", label: "Friday" },
-          ]}
-          warning={missingFields.days}
-        />
-
-        <RadioGroupField
-          form={form}
-          name="recurrence"
-          label="Recurrence"
-          options={[
-            { value: "weekly", label: "Every week" },
-            { value: "biweekly", label: "Every other week" },
-          ]}
-          warning={missingFields.recurrence}
+          name="location"
+          label="Location"
+          placeholder="e.g., Room 101, Online"
+          warning={missingFields.location}
         />
 
         <div className="grid grid-cols-2 gap-4">
@@ -374,14 +369,33 @@ export default function EventForm({
             warning={missingFields.endTime}
           />
         </div>
-        <TextField
+
+        <CheckboxesField
           form={form}
-          name="location"
-          label="Location"
-          placeholder="e.g., Room 101, Online"
-          warning={missingFields.location}
+          name="days"
+          label="Days"
+          options={[
+            { value: "monday", label: "Mon" },
+            { value: "tuesday", label: "Tue" },
+            { value: "wednesday", label: "Wed" },
+            { value: "thursday", label: "Thu" },
+            { value: "friday", label: "Fri" },
+          ]}
+          warning={missingFields.days}
         />
-        <div className="flex justify-end gap-2 pt-4">
+
+        <RadioGroupField
+          form={form}
+          name="recurrence"
+          label="Recurrence"
+          options={[
+            { value: "weekly", label: "Every week" },
+            { value: "biweekly", label: "Every other week" },
+          ]}
+          warning={missingFields.recurrence}
+        />
+
+        <div className="flex justify-between gap-2 pt-4">
           {onCancel && (
             <Button
               type="button"

@@ -29,6 +29,8 @@ interface CourseSelectProps {
   placeholder?: string;
   className?: string;
   warning?: string;
+  onCourseSelect?: (course: any) => void;
+  userId: string;
 }
 
 export function CourseField({
@@ -39,6 +41,8 @@ export function CourseField({
   placeholder = "Select a course",
   className,
   warning,
+  onCourseSelect,
+  userId,
 }: CourseSelectProps) {
   const [open, setOpen] = useState(false);
   const [courses, setCourses] = useState<Course[]>([]);
@@ -47,17 +51,17 @@ export function CourseField({
 
   const fetchCourses = async (query: string = "") => {
     try {
-      const coursesData = await getCourses(10, query);
-      setCourses(coursesData.documents || []);
+      const coursesData = await getCourses(10, query, userId);
+      setCourses(coursesData || []);
     } catch (error) {
       console.error("Failed to fetch courses:", error);
     }
   };
 
-  // Fetch courses on mount
+  // Fetch courses on mount and when userId changes
   useEffect(() => {
     const initializeCourses = async () => {
-      // Fetch initial courses
+      // Fetch initial courses with user colors
       await fetchCourses();
 
       // If there's a selected course, add it to the list
@@ -71,7 +75,7 @@ export function CourseField({
     };
 
     initializeCourses();
-  }, []);
+  }, [userId]);
 
   // Debounced search
   useEffect(() => {
@@ -129,12 +133,15 @@ export function CourseField({
                         key={course.$id}
                         value={course.$id}
                         onSelect={() => {
-                          field.onChange({
+                          const selectedCourse = {
                             $id: course.$id!,
                             subjectCode: course.subjectCode,
                             catalogNumber: course.catalogNumber,
                             title: course.title,
-                          });
+                            color: course.color,
+                          };
+                          field.onChange(selectedCourse);
+                          onCourseSelect?.(selectedCourse);
                           setOpen(false);
                         }}
                         className="flex items-center justify-between gap-2"

@@ -14,13 +14,17 @@ import DeleteEventDialog from "./DeleteEventDialog";
 import EventDialog from "./EventDialog";
 import { classTypeIcons, eventColors } from "@/constants";
 
+interface EventDetailsProps {
+  event: CalendarEvent;
+  events?: CalendarEvent[];
+  user: User;
+}
+
 export default function EventDetails({
   event,
   events = [],
-}: {
-  event: CalendarEvent;
-  events?: CalendarEvent[];
-}) {
+  user,
+}: EventDetailsProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
@@ -41,7 +45,7 @@ export default function EventDetails({
               "min-h-full w-1.5 rounded-[0.2rem]",
               event.courseColor
                 ? eventColors[event.courseColor.color]
-                : eventColors.red
+                : eventColors.fallback
             )}
           />
           <div>
@@ -134,6 +138,7 @@ export default function EventDetails({
         onOpenChange={setIsDialogOpen}
         eventToEdit={event}
         events={events}
+        user={user}
       />
       <DeleteEventDialog
         eventId={event.$id || ""}

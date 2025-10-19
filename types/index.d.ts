@@ -18,9 +18,9 @@ declare interface User {
   avatar: string;
   hasCompletedOnboarding: boolean;
   hasBeenWelcomed: boolean;
-  $id?: string;
-  $createdAt?: string;
-  $updatedAt?: string;
+  $id: string;
+  $createdAt: string;
+  $updatedAt: string;
 }
 
 declare interface Course {
@@ -31,17 +31,18 @@ declare interface Course {
   description: string;
   units: number;
   instructionalComponents: "lecture" | "tutorial" | "laboratory" | "seminar";
-  $id?: string;
-  $createdAt?: string;
-  $updatedAt?: string;
+  color?: CourseColor;
+  $id: string;
+  $createdAt: string;
+  $updatedAt: string;
 }
 
 declare interface Major {
   major: string;
   degreeType: string;
-  $id?: string;
-  $createdAt?: string;
-  $updatedAt?: string;
+  $id: string;
+  $createdAt: string;
+  $updatedAt: string;
 }
 
 declare interface Term {
@@ -49,9 +50,9 @@ declare interface Term {
   season: "winter" | "spring" | "summer" | "fall";
   startDate: string;
   endDate: string;
-  $id?: string;
-  $createdAt?: string;
-  $updatedAt?: string;
+  $id: string;
+  $createdAt: string;
+  $updatedAt: string;
 }
 
 declare interface CourseColor {
@@ -83,9 +84,9 @@ declare interface CalendarEvent {
   exclusions?: string[];
   term: string;
   courseColor: CourseColor;
-  $id?: string;
-  $createdAt?: string;
-  $updatedAt?: string;
+  $id: string;
+  $createdAt: string;
+  $updatedAt: string;
 }
 
 declare interface CalendarEventDB {

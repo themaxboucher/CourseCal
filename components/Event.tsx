@@ -22,6 +22,7 @@ interface EventProps {
   style?: React.CSSProperties;
   className?: string;
   events?: CalendarEvent[];
+  user: User;
 }
 
 export default function Event({
@@ -30,6 +31,7 @@ export default function Event({
   style,
   className,
   events = [],
+  user,
 }: EventProps) {
   const eventContent = (
     <div
@@ -38,7 +40,7 @@ export default function Event({
         "text-xs font-medium z-20 relative",
         event.courseColor
           ? eventColors[event.courseColor.color]
-          : eventColors.red,
+          : eventColors.fallback,
         event.recurrence !== "weekly" && "opacity-75",
         className
       )}
@@ -85,7 +87,7 @@ export default function Event({
             alignOffset={-25}
             className="border-[1.5px]"
           >
-            <EventDetails event={event} events={events} />
+            <EventDetails event={event} events={events} user={user} />
           </PopoverContent>
         </Popover>
       </div>
@@ -105,7 +107,7 @@ export default function Event({
               </DrawerHeader>
             </VisuallyHidden>
             <div className="px-4 pb-4 pt-6">
-              <EventDetails event={event} events={events} />
+              <EventDetails event={event} events={events} user={user} />
             </div>
           </DrawerContent>
         </Drawer>

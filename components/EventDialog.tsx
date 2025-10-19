@@ -7,6 +7,7 @@ interface EventDialogProps {
   eventToEdit: CalendarEvent | null;
   term?: string;
   events?: CalendarEvent[];
+  user: User;
 }
 
 export default function EventDialog({
@@ -15,6 +16,7 @@ export default function EventDialog({
   eventToEdit,
   term,
   events = [],
+  user,
 }: EventDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -29,6 +31,7 @@ export default function EventDialog({
           onCancel={() => onOpenChange(false)}
           term={term}
           events={events}
+          user={user}
         />
       </DialogContent>
     </Dialog>

@@ -3,13 +3,18 @@
 import { Query } from "node-appwrite";
 import { createAdminClient } from "../appwrite/server";
 import { parseStringify } from "../utils";
+import { getCourseColor } from "./courseColors.actions";
 
 const {
   APPWRITE_DATABASE_ID: DATABASE_ID,
   APPWRITE_COURSES_TABLE_ID: COURSES_TABLE_ID,
 } = process.env;
 
-export async function getCourses(limit: number = 10, search?: string) {
+export async function getCourses(
+  limit: number = 10,
+  search?: string,
+  userId?: string
+) {
   try {
     const { database } = await createAdminClient();
 
@@ -44,7 +49,36 @@ export async function getCourses(limit: number = 10, search?: string) {
       COURSES_TABLE_ID!,
       queries
     );
-    return parseStringify(courses);
+
+    // Fetch course colors for each course (if there are any)
+    let coursesWithColors = courses.documents;
+
+    if (userId && courses.documents.length > 0) {
+      // Get all course IDs
+      const courseIds = courses.documents.map((course) => course.$id);
+
+      // Fetch course colors for each course
+      const courseColorsPromises = courseIds.map((courseId) =>
+        getCourseColor(courseId, userId)
+      );
+      const courseColorsResponses = await Promise.all(courseColorsPromises);
+
+      // Create a map of course colors
+      const courseColorsMap: Record<string, any> = {};
+      courseColorsResponses.forEach((response, index) => {
+        if (response.documents && response.documents.length > 0) {
+          courseColorsMap[courseIds[index]] = response.documents[0];
+        }
+      });
+
+      // Attach course colors to courses
+      coursesWithColors = courses.documents.map((course) => ({
+        ...course,
+        color: courseColorsMap[course.$id] || null,
+      }));
+    }
+
+    return parseStringify(coursesWithColors);
   } catch (error) {
     console.error(error);
     throw error;

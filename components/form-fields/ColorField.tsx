@@ -57,7 +57,7 @@ export function ColorField({
                 "size-9 p-0 border-[1.5px]",
                 field.value
                   ? eventColors[field.value as keyof typeof eventColors]
-                  : eventColors.red
+                  : eventColors.fallback
               )}
             >
               <div className="w-full h-full rounded-sm" />
