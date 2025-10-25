@@ -7,9 +7,14 @@ import Image from "next/image";
 interface UploadDialogProps {
   terms: Term[];
   user: User;
+  selectedTermId?: string;
 }
 
-export function UploadDialog({ terms, user }: UploadDialogProps) {
+export function UploadDialog({
+  terms,
+  user,
+  selectedTermId,
+}: UploadDialogProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -35,7 +40,7 @@ export function UploadDialog({ terms, user }: UploadDialogProps) {
           className="shadow-lg rounded-xl border-2"
         />
 
-        <UploadForm terms={terms} user={user} />
+        <UploadForm terms={terms} user={user} selectedTermId={selectedTermId} />
       </DialogContent>
     </Dialog>
   );

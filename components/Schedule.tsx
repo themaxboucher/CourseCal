@@ -90,7 +90,11 @@ export default function Schedule({ events, terms, user }: ScheduleProps) {
             user={user}
           />
           {filteredEvents.length === 0 && (
-            <UploadDialog terms={terms} user={user} />
+            <UploadDialog
+              terms={terms}
+              user={user}
+              selectedTermId={selectedTermId}
+            />
           )}
         </div>
       </div>

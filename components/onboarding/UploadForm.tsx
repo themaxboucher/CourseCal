@@ -24,6 +24,7 @@ import { markOnboardingCompleted } from "@/lib/actions/users.actions";
 interface UploadFormProps {
   terms: Term[];
   user: User;
+  selectedTermId?: string;
 }
 
 interface UploadFormData {
@@ -31,14 +32,18 @@ interface UploadFormData {
   term: string;
 }
 
-export default function UploadForm({ terms, user }: UploadFormProps) {
+export default function UploadForm({
+  terms,
+  user,
+  selectedTermId,
+}: UploadFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const form = useForm<UploadFormData>({
     defaultValues: {
       file: undefined,
-      term: getCurrentTerm(terms)?.$id || "",
+      term: selectedTermId || getCurrentTerm(terms)?.$id || "",
     },
   });
 
@@ -99,14 +104,16 @@ export default function UploadForm({ terms, user }: UploadFormProps) {
     <div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <SelectField
-            form={form}
-            name="term"
-            label="Term"
-            options={termOptions}
-            placeholder="Select a term"
-            disabled={isLoading}
-          />
+          {!selectedTermId && (
+            <SelectField
+              form={form}
+              name="term"
+              label="Term"
+              options={termOptions}
+              placeholder="Select a term"
+              disabled={isLoading}
+            />
+          )}
 
           <FormField
             control={form.control}
