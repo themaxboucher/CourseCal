@@ -9,7 +9,12 @@ interface EventProps {
   className?: string;
 }
 
-export default function EventBlock({ event, style, className }: EventProps) {
+export default function EventBlock({
+  event,
+  style,
+  className,
+  ...props
+}: EventProps) {
   return (
     <div
       className={cn(
@@ -23,6 +28,7 @@ export default function EventBlock({ event, style, className }: EventProps) {
         className
       )}
       style={style}
+      {...props}
     >
       <div className="flex items-start justify-between gap-1">
         <div className="space-y-0.5 md:space-y-1 w-full">
