@@ -49,13 +49,13 @@ export async function updateEvent(
   }
 }
 
-export async function getEvents(userId: string) {
+export async function getEvents(userId: string, limit: number = 5000) {
   try {
     const { database } = await createAdminClient();
     const events = await database.listDocuments(
       DATABASE_ID!,
       EVENTS_TABLE_ID!,
-      [Query.equal("user", [userId])]
+      [Query.equal("user", [userId]), Query.limit(limit)]
     );
 
     // Get all unique course IDs from events (filter out null values)
