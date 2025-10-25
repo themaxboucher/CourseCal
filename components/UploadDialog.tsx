@@ -13,7 +13,7 @@ export function UploadDialog({ terms, user }: UploadDialogProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="hidden md:block">
+        <Button variant="outline" size="sm" className="hidden md:flex">
           <Upload className="size-4" />
           <span className="hidden md:block">Upload</span>
         </Button>

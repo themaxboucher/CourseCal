@@ -1,16 +1,5 @@
 import { parseISO, format } from "date-fns";
 
-// Only the properties that are needed for the app are included
-export interface ParsedEvent {
-  summary: string;
-  location?: string;
-  startTime: string;
-  endTime: string;
-  days?: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday")[];
-  recurrence?: "weekly" | "biweekly";
-  exclusions?: string[];
-}
-
 export function parseICSFile(icsContent: string): ParsedEvent[] {
   const events: ParsedEvent[] = [];
   const lines = icsContent.split(/\r?\n/);

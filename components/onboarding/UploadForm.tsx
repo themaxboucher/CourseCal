@@ -4,9 +4,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { parseICSFile, type ParsedEvent } from "@/lib/ics";
-import { createEvent } from "@/lib/actions/events.actions";
-import { getCourseFromTitle } from "@/lib/actions/courses.actions";
+import { parseICSFile } from "@/lib/ics";
+import { createBulkEvents } from "@/lib/actions/events.actions";
 import { useRouter } from "next/navigation";
 import {
   Form,
@@ -18,9 +17,8 @@ import {
 } from "@/components/ui/form";
 import { SelectField } from "@/components/form-fields/SelectField";
 import { seasonColors, seasonIcons } from "@/constants";
-import { getCurrentTerm, getRandomColor } from "@/lib/utils";
+import { getCurrentTerm } from "@/lib/utils";
 import { LoaderCircle } from "lucide-react";
-import { createCourseColor } from "@/lib/actions/courseColors.actions";
 import { markOnboardingCompleted } from "@/lib/actions/users.actions";
 
 interface UploadFormProps {
@@ -67,51 +65,18 @@ export default function UploadForm({ terms, user }: UploadFormProps) {
       const fileContent = await file.text();
       const parsedEvents: ParsedEvent[] = parseICSFile(fileContent);
 
-      for (const parsedEvent of parsedEvents) {
-        try {
-          if (!parsedEvent.days) {
-            continue;
-          }
-          if (!parsedEvent.recurrence) {
-            continue;
-          }
-          if (!parsedEvent.exclusions) {
-            continue;
-          }
+      // Use bulk creation instead of sequential loop
+      const result = await createBulkEvents(parsedEvents, user.$id, data.term);
 
-          const course = await getCourseFromTitle(parsedEvent.summary);
-
-          const calendarEvent: CalendarEventDB = {
-            user: user.$id,
-            course: course ? course.$id : null,
-            summary: parsedEvent.summary,
-            location: parsedEvent.location || "",
-            startTime: parsedEvent.startTime,
-            endTime: parsedEvent.endTime,
-            days: parsedEvent.days,
-            recurrence: parsedEvent.recurrence,
-            exclusions: parsedEvent.exclusions,
-            term: data.term,
-          };
-
-          await createEvent(calendarEvent);
-
-          if (course) {
-            await createCourseColor({
-              course: course.$id,
-              user: user.$id,
-              color: getRandomColor(),
-            });
-          }
-        } catch (error) {
-          console.error("Error creating event:", error);
-        }
+      if (result.success) {
+        await markOnboardingCompleted(user.$id);
+        router.push("/schedule");
+      } else {
+        form.setError("file", {
+          message: "Error creating events. Please try again.",
+        });
       }
-
-      await markOnboardingCompleted(user.$id);
-      router.push("/schedule");
     } catch (error) {
-      console.error("Error parsing ICS file:", error);
       form.setError("file", {
         message: "Error parsing the ICS file. Please check the file format.",
       });

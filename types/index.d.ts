@@ -116,3 +116,13 @@ declare interface CalendarEventDB {
   exclusions: string[];
   term: string;
 }
+
+declare interface ParsedEvent {
+  summary: string;
+  location?: string;
+  startTime: string;
+  endTime: string;
+  days?: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday")[];
+  recurrence?: "weekly" | "biweekly";
+  exclusions?: string[];
+}
