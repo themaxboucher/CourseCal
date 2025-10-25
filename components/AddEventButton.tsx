@@ -24,9 +24,12 @@ export function AddEventButton({
   }
   return (
     <>
-      <Button size="sm" onClick={handleOpenDialog}>
+      <Button className="hidden md:flex" size="sm" onClick={handleOpenDialog}>
         <Plus className="size-4" />
-        <span className="hidden md:block">Add Class</span>
+        <span>Add Class</span>
+      </Button>
+      <Button className="md:hidden" size="icon" onClick={handleOpenDialog}>
+        <Plus className="size-5" />
       </Button>
       <EventDialog
         open={isDialogOpen}
