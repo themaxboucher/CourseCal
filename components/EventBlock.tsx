@@ -46,7 +46,7 @@ export default function EventBlock({
             {event.course?.subjectCode && event.course?.catalogNumber ? (
               <div
                 className={cn(
-                  "font-semibold truncate",
+                  "font-bold truncate",
                   !isWallpaper && "md:text-xs",
                   isWallpaper ? "text-[6px]" : "text-xxs"
                 )}
@@ -56,7 +56,7 @@ export default function EventBlock({
             ) : (
               <div
                 className={cn(
-                  "font-semibold truncate",
+                  "font-bold truncate",
                   !isWallpaper && "md:text-xs",
                   isWallpaper ? "text-[6px]" : "text-xxs"
                 )}
@@ -79,7 +79,7 @@ export default function EventBlock({
             className={cn(
               "opacity-75 flex items-center gap-0.5 flex-wrap",
               !isWallpaper && "md:text-xs",
-              isWallpaper ? "text-[5px]" : "text-xxs"
+              isWallpaper ? "text-[4.5px]" : "text-xxs"
             )}
           >
             <span>{formatTime(event.startTime, !isWallpaper)} - </span>
