@@ -118,7 +118,7 @@ export default function WallpaperImage({ events }: WallpaperImageProps) {
             <div
               key={day}
               className={cn(
-                "text-[6px] text-muted-foreground font-medium p-2 bg-muted/50 text-center uppercase border-l border-t relative z-20",
+                "text-[6px] text-muted-foreground font-medium p-2 bg-muted/30 text-center uppercase border-l border-t relative z-20",
                 index === 0 && "rounded-tl-lg",
                 index === weekdays.length - 1 && "border-r rounded-tr-lg"
               )}
@@ -131,7 +131,7 @@ export default function WallpaperImage({ events }: WallpaperImageProps) {
             {timeSlotsShort.map((time) => (
               <div
                 key={time}
-                className="h-6.5 py-0.5 pr-0.5 text-[6px] font-medium text-muted-foreground text-nowrap"
+                className="h-6.5 py-0.5 pr-1 text-[6px] font-medium text-muted-foreground text-right text-nowrap tracking-tight"
               >
                 {time}
               </div>

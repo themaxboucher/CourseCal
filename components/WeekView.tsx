@@ -131,7 +131,7 @@ export default function WeekView({ events, user }: WeekViewProps) {
           {timeSlots.map((time) => (
             <div
               key={time}
-              className="h-16 px-2 py-1 text-xs font-medium text-muted-foreground"
+              className="h-16 px-2 py-1 text-xs font-medium text-muted-foreground text-right text-nowrap tracking-tight"
             >
               {time}
             </div>
@@ -141,7 +141,7 @@ export default function WeekView({ events, user }: WeekViewProps) {
           {timeSlotsShort.map((time) => (
             <div
               key={time}
-              className="h-16 py-0.5 pr-0.5 text-xxxs font-medium text-muted-foreground"
+              className="h-16 py-0.5 pr-0.5 text-xxxs font-medium text-muted-foreground text-right text-nowrap tracking-tight"
             >
               {time}
             </div>

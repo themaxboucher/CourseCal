@@ -2,6 +2,8 @@
 
 import type { HTMLAttributes } from "react";
 import { format } from "date-fns";
+import { ThemeType } from "@/components/wallpaper/WallpaperForm";
+import { cn } from "@/lib/utils";
 
 const PHONE_WIDTH = 433;
 const PHONE_HEIGHT = 882;
@@ -21,22 +23,42 @@ const RADIUS_V = (SCREEN_RADIUS / SCREEN_HEIGHT) * 100;
 
 export interface IphoneProps extends HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
+  theme?: ThemeType;
 }
 
-export function Iphone({ children, className, style, ...props }: IphoneProps) {
+export function Iphone({
+  children,
+  className,
+  style,
+  theme = "light",
+  ...props
+}: IphoneProps) {
   const date = new Date();
   return (
     <div
-      className={`relative inline-block w-full align-middle leading-none ${className}`}
+      className={cn(
+        "relative inline-block w-full align-middle leading-none",
+        theme === "dark" ? "dark" : "light",
+        className
+      )}
       style={{
         aspectRatio: `${PHONE_WIDTH}/${PHONE_HEIGHT}`,
         ...style,
       }}
       {...props}
     >
-      <div className="absolute inset-0 pt-18 size-full flex flex-col justify-start items-center gap-2 z-10 font-sf-pro tracking-tight">
-        <div className="font-semibold opacity-95">{format(date, "EEEE, MMMM d")}</div>
-        <div className="text-6xl font-black tracking-tighter">{format(date, "h:mm")}</div>
+      <div
+        className={cn(
+          "absolute inset-0 pt-18 size-full flex flex-col justify-start items-center gap-2 z-10 font-sf-pro tracking-tight",
+          theme === "dark" ? "text-white" : "text-black"
+        )}
+      >
+        <div className="font-semibold opacity-95">
+          {format(date, "EEEE, MMMM d")}
+        </div>
+        <div className="text-6xl font-black tracking-tighter">
+          {format(date, "h:mm")}
+        </div>
       </div>
       {children && (
         <div
@@ -49,7 +71,7 @@ export function Iphone({ children, className, style, ...props }: IphoneProps) {
             borderRadius: `${RADIUS_H}% / ${RADIUS_V}%`,
           }}
         >
-          <div className="absolute inset-0"> {children}</div>
+          <div className="absolute inset-0">{children}</div>
         </div>
       )}
 

@@ -20,10 +20,10 @@ export default function EventBlock({
   return (
     <div
       className={cn(
-        "absolute left-0 right-0 my-[0.2rem] mx-[0.08rem] border-[1.5px] ",
+        "absolute left-0 right-0 mx-[0.08rem] border-[1.5px] overflow-hidden",
         "text-xs font-medium z-20 relative",
         !isWallpaper && "md:my-1 md:mx-0.5 sm:p-2",
-        isWallpaper ? "rounded-sm px-[0.15rem] py-[0.1rem]" : "rounded-lg p-[0.3rem]",
+        isWallpaper ? "rounded-sm px-[0.15rem] py-[0.1rem] my-[0.1rem]" : "rounded-lg p-[0.3rem] my-[0.2rem]",
         event.courseColor
           ? eventColors[event.courseColor.color as keyof typeof eventColors] ||
               eventColors.fallback
@@ -77,7 +77,7 @@ export default function EventBlock({
           </div>
           <div
             className={cn(
-              "opacity-75 flex items-center gap-0.5 flex-wrap",
+              "opacity-75 flex justify-start items-center gap-0.5 flex-wrap tracking-tight",
               !isWallpaper && "md:text-xs",
               isWallpaper ? "text-[4.5px]" : "text-xxs"
             )}
