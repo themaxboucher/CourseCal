@@ -13,7 +13,7 @@ export function WallpaperPreview({ events, imageRef }: WallpaperPreviewProps) {
     <div className="flex justify-center items-center bg-muted border-r p-10 h-full">
       <Iphone className="max-w-70">
         <div ref={imageRef}>
-          <div className="bg-background overflow-hidden w-full aspect-18/39 p-3 flex flex-col justify-end items-stretch">
+          <div className="bg-gradient-to-b from-background to-muted dark:from-muted dark:to-background overflow-hidden w-full aspect-18/39 p-3 flex flex-col justify-end items-stretch">
             <WallpaperImage events={events} />
           </div>
         </div>

@@ -1,4 +1,7 @@
+"use client";
+
 import type { HTMLAttributes } from "react";
+import { format } from "date-fns";
 
 const PHONE_WIDTH = 433;
 const PHONE_HEIGHT = 882;
@@ -21,6 +24,7 @@ export interface IphoneProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export function Iphone({ children, className, style, ...props }: IphoneProps) {
+  const date = new Date();
   return (
     <div
       className={`relative inline-block w-full align-middle leading-none ${className}`}
@@ -30,9 +34,9 @@ export function Iphone({ children, className, style, ...props }: IphoneProps) {
       }}
       {...props}
     >
-      <div className="absolute inset-0 pt-20 size-full flex flex-col justify-start items-center z-10">
-        <div className="font-medium opacity-75">Sunday, January 5</div>
-        <div className="text-6xl font-bold">7:38</div>
+      <div className="absolute inset-0 pt-18 size-full flex flex-col justify-start items-center gap-2 z-10 font-sf-pro tracking-tight">
+        <div className="font-semibold opacity-95">{format(date, "EEEE, MMMM d")}</div>
+        <div className="text-6xl font-black tracking-tighter">{format(date, "h:mm")}</div>
       </div>
       {children && (
         <div
