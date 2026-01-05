@@ -81,12 +81,12 @@ export function getReadableRecurrence(
   }
 }
 
-export function formatTime(timeString: string) {
+export function formatTime(timeString: string, includeAmPm: boolean = true) {
   // Handle time strings like "16:00:00" or "16:00"
   const [hours, minutes] = timeString.split(":").map(Number);
   const date = new Date();
   date.setHours(hours, minutes || 0, 0, 0);
-  return format(date, "h:mm a");
+  return format(date, includeAmPm ? "h:mm a" : "h:mm");
 }
 
 export function getRandomColor(): Color {

@@ -18,7 +18,7 @@ interface DisplayEvent {
   courseColor: { color: string };
 }
 
-interface ScheduleProps {
+interface WeekViewProps {
   events: CalendarEvent[] | DisplayEvent[];
   user?: User;
 }
@@ -84,7 +84,7 @@ const getEventPosition = (event: CalendarEvent | DisplayEvent) => {
   return { top, height };
 };
 
-export default function WeekView({ events, user }: ScheduleProps) {
+export default function WeekView({ events, user }: WeekViewProps) {
   // Group events by day of week using the days array
   const eventsByDay = events.reduce((acc, event) => {
     if (event.days && event.days.length > 0) {
