@@ -20,7 +20,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
     try {
       const dataUrl = await toPng(previewRef.current, {
         cacheBust: true,
-        pixelRatio: 2, // Higher quality export
+        pixelRatio: 6, // Higher quality export
       });
 
       // Create a download link
@@ -28,7 +28,6 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
       link.download = `wallpaper-${new Date().getTime()}.png`;
       link.href = dataUrl;
       link.click();
-
     } catch (error) {
       console.error("Error downloading wallpaper:", error);
       toast.error("Failed to download wallpaper");
@@ -40,13 +39,13 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
       <div>
         <WallpaperPreview events={events} imageRef={previewRef} />
       </div>
-      
+
       <div className="p-6 flex flex-col gap-2">
         <div>
-            <h2 className="heading-3">Download a wallpaper</h2>
-            <p className="text-muted-foreground">
-                Download a lock screen phone wallpaper of your schedule.
-            </p>
+          <h2 className="heading-3">Download a wallpaper</h2>
+          <p className="text-muted-foreground">
+            Download a lock screen phone wallpaper of your schedule.
+          </p>
         </div>
         <Button onClick={handleDownload} className="gap-2">
           <Download className="size-4" />
@@ -56,4 +55,3 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
     </div>
   );
 }
-
