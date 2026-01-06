@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useEffect, useState } from "react";
 import { Moon, Sun, Monitor } from "lucide-react";
 import { useTheme } from "next-themes";
 
@@ -9,6 +9,11 @@ import { cn } from "@/lib/utils";
 
 export function ThemeSlider() {
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className="flex items-center gap-1 rounded-full bg-muted-foreground/5 p-1 mx-2">
@@ -17,7 +22,7 @@ export function ThemeSlider() {
         onClick={() => setTheme("light")}
         className={cn(
           "rounded-full size-7 p-0",
-          theme === "light"
+          mounted && theme === "light"
             ? "bg-popover text-foreground"
             : "text-muted-foreground"
         )}
@@ -30,7 +35,7 @@ export function ThemeSlider() {
         onClick={() => setTheme("dark")}
         className={cn(
           "rounded-full size-7 p-0",
-          theme === "dark"
+          mounted && theme === "dark"
             ? "bg-popover text-foreground"
             : "text-muted-foreground"
         )}
@@ -43,7 +48,7 @@ export function ThemeSlider() {
         onClick={() => setTheme("system")}
         className={cn(
           "rounded-full size-7 p-0",
-          theme === "system"
+          mounted && theme === "system"
             ? "bg-popover text-foreground"
             : "text-muted-foreground"
         )}

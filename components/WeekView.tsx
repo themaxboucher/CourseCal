@@ -109,7 +109,7 @@ export default function WeekView({ events, user }: WeekViewProps) {
     <div className="w-full max-w-6xl mx-auto">
       {/* Schedule grid */}
       <div
-        className="grid grid-cols-6  overflow-hidden"
+        className="grid grid-cols-6"
         style={{ gridTemplateColumns: "auto 1fr 1fr 1fr 1fr 1fr" }}
       >
         <div />
