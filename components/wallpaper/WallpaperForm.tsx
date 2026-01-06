@@ -47,7 +47,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
   };
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <WallpaperPreview
           events={events}
@@ -59,7 +59,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
       </div>
 
       <div className="p-6 flex flex-col gap-6">
-        <div className="space-y-1">
+        <div className="space-y-1 hidden md:block">
           <h2 className="heading-3">Download a wallpaper</h2>
           <p className="text-muted-foreground">
             Make your uni schedule your lock screen.

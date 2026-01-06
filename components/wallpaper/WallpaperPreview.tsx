@@ -40,7 +40,7 @@ export function WallpaperPreview({
   theme,
 }: WallpaperPreviewProps) {
   return (
-    <div className="flex justify-center items-center bg-muted border-r p-10 h-full">
+    <div className="flex justify-center items-center bg-muted border-b md:border-b-0 md:border-r p-10 h-full">
       <Iphone className="max-w-70" theme={theme}>
         <div ref={imageRef}>
           <div
