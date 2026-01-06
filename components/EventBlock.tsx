@@ -1,13 +1,15 @@
 "use client";
 
 import { cn, formatTime } from "@/lib/utils";
-import { eventColors } from "@/constants";
+import { eventColors, lightEventColors } from "@/constants";
+import { ThemeType } from "./wallpaper/WallpaperForm";
 
 interface EventProps {
   event: CalendarEvent | DisplayEvent;
   style?: React.CSSProperties;
   className?: string;
   isWallpaper?: boolean;
+  wallpaperTheme?: ThemeType;
 }
 
 export default function EventBlock({
@@ -15,6 +17,7 @@ export default function EventBlock({
   style,
   className,
   isWallpaper = false,
+  wallpaperTheme = "light",
   ...props
 }: EventProps) {
   return (
@@ -23,11 +26,16 @@ export default function EventBlock({
         "absolute left-0 right-0 mx-[0.08rem] border-[1.5px] overflow-hidden",
         "text-xs font-medium z-20 relative",
         !isWallpaper && "md:my-1 md:mx-0.5 sm:p-2",
-        isWallpaper ? "rounded-sm px-[0.15rem] py-[0.1rem] my-[0.1rem]" : "rounded-lg p-[0.3rem] my-[0.2rem]",
-        event.courseColor
-          ? eventColors[event.courseColor.color as keyof typeof eventColors] ||
-              eventColors.fallback
-          : eventColors.fallback,
+        isWallpaper
+          ? "rounded-sm px-[0.15rem] py-[0.1rem] my-[0.1rem]"
+          : "rounded-lg p-[0.3rem] my-[0.2rem]",
+        // Event colors
+        isWallpaper && wallpaperTheme === "light"
+          ? lightEventColors[
+              event.courseColor.color as keyof typeof lightEventColors
+            ] || lightEventColors.fallback
+          : eventColors[event.courseColor.color as keyof typeof eventColors] ||
+              eventColors.fallback,
         "recurrence" in event && event.recurrence !== "weekly" && "opacity-75",
         className
       )}

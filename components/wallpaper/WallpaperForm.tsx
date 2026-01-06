@@ -8,13 +8,13 @@ import { WallpaperPreview } from "./WallpaperPreview";
 import { toast } from "sonner";
 import { Label } from "../ui/label";
 import { cn } from "@/lib/utils";
-import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { Alert, AlertTitle } from "../ui/alert";
 
 interface WallpaperFormProps {
   events: CalendarEvent[];
 }
 
-export type BackgroundType = "gradient-1" | "gradient-2" | "gradient-3";
+export type BackgroundType = "plain" | "ice" | "fire";
 
 export type FontType = "default" | "serif" | "mono";
 
@@ -22,7 +22,7 @@ export type ThemeType = "light" | "dark";
 
 export function WallpaperForm({ events }: WallpaperFormProps) {
   const previewRef = useRef<HTMLDivElement>(null);
-  const [background, setBackground] = useState<BackgroundType>("gradient-1");
+  const [background, setBackground] = useState<BackgroundType>("plain");
   const [font, setFont] = useState<FontType>("default");
   const [theme, setTheme] = useState<ThemeType>("light");
 
@@ -109,10 +109,10 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
                   type="button"
                   size="lg"
                   variant="outline"
-                  onClick={() => setBackground("gradient-1")}
+                  onClick={() => setBackground("plain")}
                   className={cn(
                     "flex-1 normal-case font-medium",
-                    background === "gradient-1" &&
+                    background === "plain" &&
                       "ring-2 ring-sky-500 ring-offset-2 ring-offset-background"
                   )}
                 >
@@ -123,10 +123,10 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
                   type="button"
                   size="lg"
                   variant="outline"
-                  onClick={() => setBackground("gradient-2")}
+                  onClick={() => setBackground("ice")}
                   className={cn(
                     "flex-1 normal-case font-medium",
-                    background === "gradient-2" &&
+                    background === "ice" &&
                       "ring-2 ring-sky-500 ring-offset-2 ring-offset-background"
                   )}
                 >
@@ -137,10 +137,10 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
                   type="button"
                   size="lg"
                   variant="outline"
-                  onClick={() => setBackground("gradient-3")}
+                  onClick={() => setBackground("fire")}
                   className={cn(
                     "flex-1 normal-case font-medium",
-                    background === "gradient-3" &&
+                    background === "fire" &&
                       "ring-2 ring-sky-500 ring-offset-2 ring-offset-background"
                   )}
                 >

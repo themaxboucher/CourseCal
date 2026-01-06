@@ -1,7 +1,8 @@
-import { Bell, House, Search, Settings } from "lucide-react";
+import { Settings } from "lucide-react";
 import { Logo } from "./Logo";
 import { Button } from "./ui/button";
 import Link from "next/link";
+import { ThemeSlider } from "./ThemeSlider";
 
 interface NavbarProps {
   isApp?: boolean;
@@ -15,6 +16,9 @@ export function Navbar({ isApp = false }: NavbarProps) {
         {isApp && (
           <div>
             <ul className="flex items-center">
+              <li>
+                <ThemeSlider />
+              </li>
               <li>
                 <Button variant="ghost" size="icon" asChild>
                   <Link href="/settings">

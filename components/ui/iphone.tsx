@@ -38,7 +38,7 @@ export function Iphone({
     <div
       className={cn(
         "relative inline-block w-full align-middle leading-none",
-        theme === "dark" ? "dark" : "light",
+        theme === "dark" ? "dark" : "",
         className
       )}
       style={{
