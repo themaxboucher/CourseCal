@@ -3,6 +3,7 @@
 import { cn, formatTime } from "@/lib/utils";
 import { eventColors, lightEventColors } from "@/constants";
 import { ThemeType } from "./wallpaper/WallpaperForm";
+import { TriangleAlert } from "lucide-react";
 
 interface EventProps {
   event: CalendarEvent | DisplayEvent;
@@ -23,7 +24,7 @@ export default function EventBlock({
   return (
     <div
       className={cn(
-        "absolute left-0 right-0 mx-[0.08rem] border-[1.5px] overflow-hidden",
+        "absolute left-0 right-0 mx-[0.08rem] border-[1.5px]",
         "text-xs font-medium z-20 relative",
         !isWallpaper && "md:my-1 md:mx-0.5 sm:p-2",
         isWallpaper
@@ -31,17 +32,26 @@ export default function EventBlock({
           : "rounded-lg p-[0.3rem] my-[0.2rem]",
         // Event colors
         isWallpaper && wallpaperTheme === "light"
-          ? lightEventColors[
-              event.courseColor.color as keyof typeof lightEventColors
-            ] || lightEventColors.fallback
-          : eventColors[event.courseColor.color as keyof typeof eventColors] ||
-              eventColors.fallback,
+          ? event.courseColor?.color
+            ? lightEventColors[
+                event.courseColor.color as keyof typeof lightEventColors
+              ] || lightEventColors.fallback
+            : lightEventColors.fallback
+          : event.courseColor?.color
+          ? eventColors[event.courseColor.color as keyof typeof eventColors] ||
+            eventColors.fallback
+          : eventColors.fallback,
         "recurrence" in event && event.recurrence !== "weekly" && "opacity-75",
         className
       )}
       style={style}
       {...props}
     >
+      {(!event.course || !event.type) && !isWallpaper && (
+        <div className="absolute -top-1.5 -right-1.5 size-5 md:size-6 flex justify-center items-center rounded-full border-[1.5px] text-amber-600 bg-amber-200 border-amber-100">
+          <TriangleAlert className="size-3 md:size-3.5" />
+        </div>
+      )}
       <div className="flex items-start justify-between gap-1">
         <div
           className={cn(
