@@ -12,7 +12,7 @@ export function Logo() {
           height={36}
           className="size-8 md:size-9"
         />
-        <h1 className="text-2xl font-semibold">CourseCal</h1>
+        <h1 className="text-2xl font-bold">CourseCal</h1>
       </div>
     </Link>
   );

@@ -61,6 +61,18 @@ export const eventColors = {
     "bg-zinc-500 border-zinc-300 dark:bg-zinc-700 dark:border-zinc-900 text-white hover:bg-zinc-500 hover:dark:bg-zinc-700",
 };
 
+export const lightEventColors = {
+  red: "bg-red-500 border-red-300 text-white hover:bg-red-500",
+  orange: "bg-orange-500 border-orange-300 text-white hover:bg-orange-500",
+  yellow: "bg-yellow-400 border-yellow-300 text-white hover:bg-yellow-400",
+  green: "bg-green-500 border-green-300 text-white hover:bg-green-500",
+  cyan: "bg-cyan-500 border-cyan-300 text-white hover:bg-cyan-500",
+  blue: "bg-blue-500 border-blue-300 text-white hover:bg-blue-500",
+  purple: "bg-purple-500 border-purple-300 text-white hover:bg-purple-500",
+  pink: "bg-pink-500 border-pink-300 text-white hover:bg-pink-500",
+  fallback: "bg-zinc-500 border-zinc-300 text-white hover:bg-zinc-500",
+};
+
 export const displayEvents = [
   // Core Classes - Mixed schedule with variety
   {

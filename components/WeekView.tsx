@@ -18,7 +18,7 @@ interface DisplayEvent {
   courseColor: { color: string };
 }
 
-interface ScheduleProps {
+interface WeekViewProps {
   events: CalendarEvent[] | DisplayEvent[];
   user?: User;
 }
@@ -84,7 +84,7 @@ const getEventPosition = (event: CalendarEvent | DisplayEvent) => {
   return { top, height };
 };
 
-export default function WeekView({ events, user }: ScheduleProps) {
+export default function WeekView({ events, user }: WeekViewProps) {
   // Group events by day of week using the days array
   const eventsByDay = events.reduce((acc, event) => {
     if (event.days && event.days.length > 0) {
@@ -131,7 +131,7 @@ export default function WeekView({ events, user }: ScheduleProps) {
           {timeSlots.map((time) => (
             <div
               key={time}
-              className="h-16 px-2 py-1 text-xs font-medium text-muted-foreground"
+              className="h-16 px-2 py-1 text-xs font-medium text-muted-foreground text-right text-nowrap tracking-tight"
             >
               {time}
             </div>
@@ -141,7 +141,7 @@ export default function WeekView({ events, user }: ScheduleProps) {
           {timeSlotsShort.map((time) => (
             <div
               key={time}
-              className="h-16 py-0.5 pr-0.5 text-xxxs font-medium text-muted-foreground"
+              className="h-16 py-0.5 pr-0.5 text-xxxs font-medium text-muted-foreground text-right text-nowrap tracking-tight"
             >
               {time}
             </div>

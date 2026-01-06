@@ -13,6 +13,7 @@ import { getCurrentTerm } from "@/lib/utils";
 import { AddEventButton } from "./AddEventButton";
 import { UploadDialog } from "./UploadDialog";
 import WeekView from "./WeekView";
+import { WallpaperDialog } from "./wallpaper/WallpaperDialog";
 
 interface ScheduleProps {
   events: CalendarEvent[];
@@ -84,6 +85,7 @@ export default function Schedule({ events, terms, user }: ScheduleProps) {
           </SelectContent>
         </Select>
         <div className="flex items-center gap-2">
+          <WallpaperDialog events={filteredEvents} />
           <AddEventButton
             term={selectedTermId}
             events={filteredEvents}
