@@ -37,14 +37,6 @@ declare interface Course {
   $updatedAt: string;
 }
 
-declare interface Major {
-  major: string;
-  degreeType: string;
-  $id: string;
-  $createdAt: string;
-  $updatedAt: string;
-}
-
 declare interface Term {
   year: number;
   season: "winter" | "spring" | "summer" | "fall";
@@ -118,11 +110,13 @@ declare interface CalendarEventDB {
 }
 
 declare interface ParsedEvent {
-  summary: string;
+  course: string;
   location?: string;
+  type?: "lecture" | "tutorial" | "lab" | "seminar";
   startTime: string;
   endTime: string;
   days?: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday")[];
   recurrence?: "weekly" | "biweekly";
   exclusions?: string[];
+  term: string;
 }

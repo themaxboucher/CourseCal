@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import EventBlock from "../EventBlock";
 import { ThemeType } from "./WallpaperForm";
+import { weekdays, timeSlots, timeSlotsShort } from "@/constants";
 
 interface DisplayEvent {
   course: {
@@ -23,35 +24,6 @@ interface WallpaperImageProps {
   user?: User;
   theme?: ThemeType;
 }
-
-const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-const timeSlots = [
-  "8:00 AM",
-  "9:00 AM",
-  "10:00 AM",
-  "11:00 AM",
-  "12:00 PM",
-  "1:00 PM",
-  "2:00 PM",
-  "3:00 PM",
-  "4:00 PM",
-  "5:00 PM",
-  "6:00 PM",
-];
-
-const timeSlotsShort = [
-  "8 AM",
-  "9 AM",
-  "10 AM",
-  "11 AM",
-  "12 PM",
-  "1 PM",
-  "2 PM",
-  "3 PM",
-  "4 PM",
-  "5 PM",
-  "6 PM",
-];
 
 // Helper function to convert day name to weekday index
 const getWeekdayIndex = (dayName: string): number => {

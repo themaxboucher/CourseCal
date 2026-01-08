@@ -5,20 +5,20 @@ import Link from "next/link";
 import { ThemeSlider } from "./ThemeSlider";
 
 interface NavbarProps {
-  isApp?: boolean;
+  loggedIn?: boolean;
 }
 
-export function Navbar({ isApp = false }: NavbarProps) {
+export function Navbar({ loggedIn = false }: NavbarProps) {
   return (
     <header className="flex justify-between items-center px-4 md:px-6 py-4 relative z-50">
       <Logo />
       <div>
-        {isApp && (
-          <div>
-            <ul className="flex items-center">
-              <li>
-                <ThemeSlider />
-              </li>
+        <div>
+          <ul className="flex items-center">
+            <li>
+              <ThemeSlider />
+            </li>
+            {loggedIn && (
               <li>
                 <Button variant="ghost" size="icon" asChild>
                   <Link href="/settings">
@@ -26,9 +26,9 @@ export function Navbar({ isApp = false }: NavbarProps) {
                   </Link>
                 </Button>
               </li>
-            </ul>
-          </div>
-        )}
+            )}
+          </ul>
+        </div>
       </div>
     </header>
   );

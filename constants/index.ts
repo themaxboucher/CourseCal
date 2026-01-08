@@ -73,6 +73,40 @@ export const lightEventColors = {
   fallback: "bg-zinc-500 border-zinc-300 text-white hover:bg-zinc-500",
 };
 
+export const weekdays = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+];
+export const timeSlots = [
+  "8:00 AM",
+  "9:00 AM",
+  "10:00 AM",
+  "11:00 AM",
+  "12:00 PM",
+  "1:00 PM",
+  "2:00 PM",
+  "3:00 PM",
+  "4:00 PM",
+  "5:00 PM",
+  "6:00 PM",
+];
+export const timeSlotsShort = [
+  "8 AM",
+  "9 AM",
+  "10 AM",
+  "11 AM",
+  "12 PM",
+  "1 PM",
+  "2 PM",
+  "3 PM",
+  "4 PM",
+  "5 PM",
+  "6 PM",
+];
+
 export const displayEvents = [
   // Core Classes - Mixed schedule with variety
   {
