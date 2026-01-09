@@ -2,14 +2,6 @@ import WallpaperImage from "./WallpaperImage";
 import { Iphone } from "../ui/iphone";
 import { cn } from "@/lib/utils";
 
-interface WallpaperPreviewProps {
-  events: ScheduleEvent[];
-  imageRef: React.RefObject<HTMLDivElement | null>;
-  background: BackgroundType;
-  font: FontType;
-  theme: ThemeType;
-}
-
 const backgroundStyles: Record<BackgroundType, Record<ThemeType, string>> = {
   plain: {
     light: "bg-gradient-to-b from-white to-zinc-100",
@@ -31,7 +23,15 @@ const fontStyles: Record<FontType, string> = {
   mono: "font-mono",
 };
 
-export function WallpaperPreview({
+interface WallpaperPreviewProps {
+  events: ScheduleEvent[];
+  imageRef?: React.RefObject<HTMLDivElement | null>;
+  background: BackgroundType;
+  font: FontType;
+  theme: ThemeType;
+}
+
+export default function WallpaperPreview({
   events,
   imageRef,
   background,
@@ -39,20 +39,18 @@ export function WallpaperPreview({
   theme,
 }: WallpaperPreviewProps) {
   return (
-    <div className="flex justify-center items-center bg-muted border-b md:border-b-0 md:border-r p-10 h-full">
-      <Iphone className="max-w-70" theme={theme}>
-        <div ref={imageRef}>
-          <div
-            className={cn(
-              "overflow-hidden w-full aspect-18/39 py-3.5 px-2 flex flex-col justify-end items-stretch",
-              backgroundStyles[background][theme],
-              fontStyles[font]
-            )}
-          >
-            <WallpaperImage events={events} theme={theme} />
-          </div>
+    <Iphone className="max-w-70" theme={theme}>
+      <div ref={imageRef}>
+        <div
+          className={cn(
+            "overflow-hidden w-full aspect-18/39 py-3.5 px-2 flex flex-col justify-end items-stretch",
+            backgroundStyles[background][theme],
+            fontStyles[font]
+          )}
+        >
+          <WallpaperImage events={events} theme={theme} />
         </div>
-      </Iphone>
-    </div>
+      </div>
+    </Iphone>
   );
 }

@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import { Download, Info, Moon, Sun } from "lucide-react";
 import { Button } from "../ui/button";
-import { WallpaperPreview } from "./WallpaperPreview";
+import WallpaperPreview from "./WallpaperPreview";
 import { toast } from "sonner";
 import { Label } from "../ui/label";
 import { cn } from "@/lib/utils";
@@ -42,7 +42,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
+      <div className="flex justify-center items-center bg-muted border-b md:border-b-0 md:border-r p-10 h-full">
         <WallpaperPreview
           events={events}
           imageRef={previewRef}

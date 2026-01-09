@@ -107,126 +107,147 @@ export const timeSlotsShort = [
   "6 PM",
 ];
 
-export const displayEvents = [
+// Mock term for display events
+const mockTerm = {
+  $id: "mock",
+  $createdAt: "2025-01-01",
+  $updatedAt: "2025-01-01",
+  year: 2025,
+  season: "winter" as const,
+  startDate: "2025-01-06",
+  endDate: "2025-04-15",
+};
+
+export const displayEvents: ScheduleEvent[] = [
   // Core Classes - Mixed schedule with variety
   {
     course: {
       courseCode: "MATH 101",
       title: "Calculus I",
-    },
+    } as Course,
     type: "lecture",
     days: ["monday", "wednesday", "friday"],
     startTime: "09:00",
     endTime: "10:00",
     location: "Math Building Room 101",
     courseColor: { color: "blue" },
+    term: mockTerm,
   },
   {
     course: {
       courseCode: "PHYS 201",
       title: "Physics I: Mechanics",
-    },
+    } as Course,
     type: "tutorial",
     days: ["tuesday", "thursday"],
     startTime: "09:30",
     endTime: "10:30",
     location: "Physics Lab 205",
     courseColor: { color: "orange" },
+    term: mockTerm,
   },
   {
     course: {
       courseCode: "CHAOS 520",
       title: "Embracing the Chaos of Life",
-    },
+    } as Course,
     type: "lecture",
     days: ["monday", "wednesday"],
     startTime: "10:30",
     endTime: "12:00",
     location: "The Chaos Chamber (Room 911)",
     courseColor: { color: "red" },
+    term: mockTerm,
   },
   {
     course: {
       courseCode: "CHEM 301",
       title: "Organic Chemistry I",
-    },
+    } as Course,
     type: "seminar",
     days: ["tuesday", "thursday"],
     startTime: "11:00",
     endTime: "12:30",
     location: "Chemistry Lab 301",
     courseColor: { color: "yellow" },
+    term: mockTerm,
   },
   {
     course: {
       courseCode: "NAP 101",
       title: "Strategic Napping Techniques",
-    },
+    } as Course,
     type: "lab",
     days: ["friday"],
     startTime: "11:00",
     endTime: "12:00",
     location: "The Comfy Couch (Student Lounge)",
     courseColor: { color: "cyan" },
+    term: mockTerm,
   },
   {
     course: {
       courseCode: "BIOL 401",
       title: "Cell Biology",
-    },
+    } as Course,
     type: "lecture",
     days: ["monday", "tuesday", "thursday", "friday"],
     startTime: "13:00",
     endTime: "14:00",
     location: "Biology Building Room 401",
     courseColor: { color: "green" },
+    term: mockTerm,
   },
   {
     course: {
       courseCode: "PSYC 150",
       title: "Introduction to Psychology",
-    },
+    } as Course,
     type: "tutorial",
     days: ["wednesday"],
     startTime: "13:30",
     endTime: "15:00",
     location: "Psychology Building Room 150",
     courseColor: { color: "pink" },
+    term: mockTerm,
   },
   {
     course: {
       courseCode: "ECON 180",
       title: "Microeconomics",
-    },
+    } as Course,
     type: "lab",
     days: ["tuesday", "thursday"],
     startTime: "14:30",
     endTime: "16:00",
     location: "Economics Building Room 180",
     courseColor: { color: "red" },
+    term: mockTerm,
   },
   {
     course: {
       courseCode: "HIST 380",
       title: "World History",
-    },
+    } as Course,
     type: "seminar",
     days: ["monday", "friday"],
     startTime: "15:00",
     endTime: "16:30",
     location: "History Building Room 380",
     courseColor: { color: "purple" },
+    term: mockTerm,
   },
   {
     course: {
       courseCode: "ENGL 120",
       title: "English Composition",
-    },
+    } as Course,
     type: "tutorial",
     days: ["wednesday"],
     startTime: "16:00",
     endTime: "17:00",
     location: "English Building Room 120",
     courseColor: { color: "cyan" },
+    term: mockTerm,
   },
 ];

@@ -136,7 +136,7 @@ export default function UploadSchedule() {
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           className={cn(
-            "group w-full h-54 border-2 border-input border-dashed hover:border-ring hover:bg-ring/5 ring-white rounded-lg flex flex-col items-center justify-center gap-4 text-muted-foreground transition-colors cursor-pointer",
+            "group w-full h-54 border-2 border-input border-dashed hover:border-ring hover:bg-ring/5 ring-white rounded-xl flex flex-col items-center justify-center gap-4 text-muted-foreground transition-colors cursor-pointer",
             isDragging && "border-ring bg-ring/5"
           )}
         >
