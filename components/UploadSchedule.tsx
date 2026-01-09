@@ -56,10 +56,8 @@ export default function UploadSchedule() {
       await saveEvents(analysisResult.events);
       await saveCourseColors(courseColors);
 
-      router.push("/schedule");
+      router.push("/schedule?uploadSuccess=true");
     }
-
-    setIsLoading(false);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

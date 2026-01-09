@@ -66,7 +66,7 @@ export default function WeekView({ events, user, isGuest = false, onEventsChange
   }, {} as Record<number, (UserEvent | ScheduleEvent)[]>);
 
   return (
-    <div className="w-full max-w-6xl mx-auto">
+    <div className="w-full max-w-[75rem] mx-auto">
       {/* Schedule grid */}
       <div
         className="grid grid-cols-6"

@@ -10,6 +10,7 @@ import { UploadDialog } from "./UploadDialog";
 import WeekView from "./WeekView";
 import { WallpaperDialog } from "./wallpaper/WallpaperDialog";
 import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ScheduleProps {
   events: UserEvent[];
@@ -109,16 +110,19 @@ export default function Schedule({
   return (
     <>
       <div className="flex items-center justify-between pb-4">
-        <div>
-          {isLoggedIn && (
-            <TermSelector
-              terms={terms}
-              selectedTermId={selectedTermId}
-              onTermChange={setSelectedTermId}
-            />
+        {isLoggedIn && (
+          <TermSelector
+            terms={terms}
+            selectedTermId={selectedTermId}
+            onTermChange={setSelectedTermId}
+          />
+        )}
+        <div
+          className={cn(
+            "flex items-center gap-2",
+            !isLoggedIn && "justify-between w-full"
           )}
-        </div>
-        <div className="flex items-center gap-2">
+        >
           {!hasEvents ? (
             <UploadDialog />
           ) : (

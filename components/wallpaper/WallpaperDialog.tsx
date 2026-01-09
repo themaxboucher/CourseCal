@@ -84,9 +84,10 @@ export function WallpaperDialog({
         {trigger}
         <DrawerContent>
           <DrawerHeader className="border-b">
-            <DrawerTitle>Download a wallpaper</DrawerTitle>
+            <DrawerTitle>Download wallpaper</DrawerTitle>
             <DrawerDescription>
-              Make your uni schedule your lock screen.
+              Download a wallpaper of your schedule that isn't blocked by your
+              lock screens time or widgets.
             </DrawerDescription>
           </DrawerHeader>
           <div className="overflow-y-auto">

@@ -54,9 +54,10 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
 
       <div className="p-6 flex flex-col gap-6">
         <div className="space-y-1 hidden md:block">
-          <h2 className="heading-3">Download a wallpaper</h2>
+          <h2 className="heading-3">Download wallpaper</h2>
           <p className="text-muted-foreground">
-            Make your uni schedule your lock screen.
+            Download a wallpaper of your schedule that isn't blocked by your
+            lock screens time or widgets.
           </p>
         </div>
 
