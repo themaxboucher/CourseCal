@@ -43,7 +43,7 @@ declare interface Course extends AppwriteDoc {
   units?: number;
   instructionalComponents?: "lecture" | "tutorial" | "laboratory" | "seminar";
   color?: CourseColor;
-}s
+}
 
 declare interface Term extends AppwriteDoc {
   year: number;
@@ -59,6 +59,10 @@ declare interface CourseColor {
 
 declare interface UserCourseColor extends CourseColor, AppwriteDoc {
   user: string;
+}
+
+declare interface CourseColorDB extends UserCourseColor {
+  $id: string;
 }
 
 // For creating/updating course colors (no Appwrite metadata)
