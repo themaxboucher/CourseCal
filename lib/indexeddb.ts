@@ -91,6 +91,76 @@ export async function clearEvents(): Promise<void> {
   });
 }
 
+export async function addEvent(event: ScheduleEvent): Promise<number> {
+  const db = await openDB();
+  const tx = db.transaction(STORES.events, "readwrite");
+  const store = tx.objectStore(STORES.events);
+
+  return new Promise((resolve, reject) => {
+    const request = store.add(event);
+    request.onsuccess = () => {
+      db.close();
+      resolve(request.result as number);
+    };
+    request.onerror = () => {
+      db.close();
+      reject(request.error);
+    };
+  });
+}
+
+export async function updateEvent(id: number, event: Partial<ScheduleEvent>): Promise<void> {
+  const db = await openDB();
+  const tx = db.transaction(STORES.events, "readwrite");
+  const store = tx.objectStore(STORES.events);
+
+  return new Promise((resolve, reject) => {
+    // First get the existing event
+    const getRequest = store.get(id);
+    getRequest.onsuccess = () => {
+      const existingEvent = getRequest.result;
+      if (!existingEvent) {
+        db.close();
+        reject(new Error(`Event with id ${id} not found`));
+        return;
+      }
+      // Merge and update
+      const updatedEvent = { ...existingEvent, ...event, id };
+      const putRequest = store.put(updatedEvent);
+      putRequest.onsuccess = () => {
+        db.close();
+        resolve();
+      };
+      putRequest.onerror = () => {
+        db.close();
+        reject(putRequest.error);
+      };
+    };
+    getRequest.onerror = () => {
+      db.close();
+      reject(getRequest.error);
+    };
+  });
+}
+
+export async function deleteEvent(id: number): Promise<void> {
+  const db = await openDB();
+  const tx = db.transaction(STORES.events, "readwrite");
+  const store = tx.objectStore(STORES.events);
+
+  return new Promise((resolve, reject) => {
+    const request = store.delete(id);
+    request.onsuccess = () => {
+      db.close();
+      resolve();
+    };
+    request.onerror = () => {
+      db.close();
+      reject(request.error);
+    };
+  });
+}
+
 // Course Colors
 export async function saveCourseColors(courseColors: CourseColor[]): Promise<void> {
   const db = await openDB();
@@ -142,6 +212,25 @@ export async function clearCourseColors(): Promise<void> {
 
   return new Promise((resolve, reject) => {
     const request = store.clear();
+    request.onsuccess = () => {
+      db.close();
+      resolve();
+    };
+    request.onerror = () => {
+      db.close();
+      reject(request.error);
+    };
+  });
+}
+
+export async function updateCourseColor(course: string, color: Color): Promise<void> {
+  const db = await openDB();
+  const tx = db.transaction(STORES.courseColors, "readwrite");
+  const store = tx.objectStore(STORES.courseColors);
+
+  return new Promise((resolve, reject) => {
+    // Use put to insert or update (course is the keyPath)
+    const request = store.put({ course, color });
     request.onsuccess = () => {
       db.close();
       resolve();

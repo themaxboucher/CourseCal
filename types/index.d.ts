@@ -108,6 +108,19 @@ declare type CalendarEventInput = Omit<
   exclusions: string[];
 };
 
+declare type CalendarEventDB = {
+  user: string;
+  course: string;
+  type: EventType;
+  location: string;
+  startTime: string;
+  endTime: string;
+  days: Day[];
+  recurrence: Recurrence;
+  exclusions: string[];
+  term: string;
+};
+
 declare type BackgroundType = "plain" | "ice" | "fire";
 
 declare type FontType = "default" | "serif" | "mono";

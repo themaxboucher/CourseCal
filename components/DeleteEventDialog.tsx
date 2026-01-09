@@ -15,12 +15,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { deleteEvent } from "@/lib/actions/events.actions";
+import { deleteEvent as deleteLocalEvent } from "@/lib/indexeddb";
 
 interface DeleteEventDialogProps {
-  eventId: string;
+  eventId: string | number;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   onEventDeleted?: () => void;
+  isGuest?: boolean;
 }
 
 export default function DeleteEventDialog({
@@ -28,6 +30,7 @@ export default function DeleteEventDialog({
   open,
   onOpenChange,
   onEventDeleted,
+  isGuest = false,
 }: DeleteEventDialogProps) {
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
@@ -35,9 +38,13 @@ export default function DeleteEventDialog({
   const handleDelete = async () => {
     setDeleting(true);
     try {
-      await deleteEvent(eventId);
+      if (isGuest) {
+        await deleteLocalEvent(eventId as number);
+      } else {
+        await deleteEvent(eventId as string);
+        router.refresh();
+      }
       onEventDeleted?.();
-      router.refresh();
     } catch (error) {
       toast("Error deleting class", {
         icon: <CircleX className="text-destructive size-5" />,

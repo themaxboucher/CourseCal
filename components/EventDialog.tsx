@@ -5,13 +5,16 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "./ui/drawer";
 import EventForm from "./EventForm";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useEffect, useState } from "react";
+
 interface EventDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  eventToEdit: UserEvent | null;
+  eventToEdit: UserEvent | ScheduleEvent | null;
   term?: string;
-  events?: UserEvent[];
-  user: User;
+  events?: (UserEvent | ScheduleEvent)[];
+  user?: User;
+  isGuest?: boolean;
+  onEventSaved?: () => void;
 }
 
 export default function EventDialog({
@@ -21,6 +24,8 @@ export default function EventDialog({
   term,
   events = [],
   user,
+  isGuest = false,
+  onEventSaved,
 }: EventDialogProps) {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -58,6 +63,8 @@ export default function EventDialog({
               term={term}
               events={events}
               user={user}
+              isGuest={isGuest}
+              onEventSaved={onEventSaved}
             />
           </div>
         </DrawerContent>
@@ -80,6 +87,8 @@ export default function EventDialog({
           term={term}
           events={events}
           user={user}
+          isGuest={isGuest}
+          onEventSaved={onEventSaved}
         />
       </DialogContent>
     </Dialog>

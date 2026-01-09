@@ -157,6 +157,8 @@ export async function analyzeScheduleImage(
       days: event.days,
       term: term,
       courseColor: { color: courseColorMap.get(event.courseCode)! },
+      recurrence: "weekly",
+      exclusions: [],
     }));
 
     return { success: true, isSchedule: true, events };

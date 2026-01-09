@@ -8,6 +8,8 @@ import { weekdays, timeSlots, timeSlotsShort } from "@/constants";
 interface WeekViewProps {
   events: UserEvent[] | ScheduleEvent[];
   user?: User;
+  isGuest?: boolean;
+  onEventsChange?: () => void;
 }
 
 // Helper function to convert day name to weekday index
@@ -42,7 +44,7 @@ const getEventPosition = (event: UserEvent | ScheduleEvent) => {
   return { top, height };
 };
 
-export default function WeekView({ events, user }: WeekViewProps) {
+export default function WeekView({ events, user, isGuest = false, onEventsChange }: WeekViewProps) {
   // Group events by day of week using the days array
   const eventsByDay = events.reduce((acc, event) => {
     if (event.days && event.days.length > 0) {
@@ -123,14 +125,17 @@ export default function WeekView({ events, user }: WeekViewProps) {
             {/* Events for this day */}
             {eventsByDay[dayIndex]?.map((event, eventIndex) => {
               const { top, height } = getEventPosition(event);
-              const isDisplayEvent = !("$id" in event);
+              const eventId = "id" in event ? (event as ScheduleEvent & { id: number }).id : ("$id" in event ? (event as UserEvent).$id : undefined);
+              const isInteractive = user || isGuest;
 
-              return user && !isDisplayEvent ? (
+              return isInteractive ? (
                 <Event
-                  key={`${event.$id || eventIndex}`}
-                  event={event as UserEvent}
-                  events={events as UserEvent[]}
+                  key={`${eventId || eventIndex}`}
+                  event={event}
+                  events={events}
                   user={user}
+                  isGuest={isGuest}
+                  onEventsChange={onEventsChange}
                   style={{
                     position: "absolute",
                     top: `${top}px`,

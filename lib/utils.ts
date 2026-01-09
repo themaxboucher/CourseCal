@@ -35,10 +35,8 @@ export function getCurrentTerm(terms: Term[]): Term | null {
 }
 
 export function getReadableRecurrence(
-  recurrence: "weekly" | "biweekly" | undefined,
-  days:
-    | ("monday" | "tuesday" | "wednesday" | "thursday" | "friday")[]
-    | undefined
+  recurrence: Recurrence | undefined,
+  days: Day[] | undefined
 ): string {
   if (!recurrence || !days || days.length === 0) {
     return "No recurrence";
@@ -196,8 +194,8 @@ export const getOverlapErrorMessage = (
 
   const firstEvent = uniqueEvents[0];
   const firstEventName = firstEvent.course
-    ? `${firstEvent.course.subjectCode} ${firstEvent.course.catalogNumber}`
-    : firstEvent.summary || "Unknown event";
+    ? `${firstEvent.course.courseCode}`
+    : "Unknown event";
 
   const hasMultipleEvents = uniqueEvents.length > 1;
   return hasMultipleEvents ? `${firstEventName} and others` : firstEventName;

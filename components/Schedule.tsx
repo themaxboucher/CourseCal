@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { getCurrentTerm } from "@/lib/utils";
 import { getEvents, getCourseColors } from "@/lib/indexeddb";
@@ -28,6 +28,17 @@ export default function Schedule({
   const [selectedTermId, setSelectedTermId] = useState<string>("");
   const [localEvents, setLocalEvents] = useState<ScheduleEvent[]>([]);
   const [isLoading, setIsLoading] = useState(!isLoggedIn);
+
+  // Refresh local events from IndexedDB
+  const refreshLocalEvents = useCallback(async () => {
+    if (isLoggedIn) return;
+    try {
+      const events = await getEvents();
+      setLocalEvents(events);
+    } catch (error) {
+      console.error("Error refreshing local events:", error);
+    }
+  }, [isLoggedIn]);
 
   // Check IndexedDB for guest users
   useEffect(() => {
@@ -93,34 +104,41 @@ export default function Schedule({
     );
   }
 
+  const displayEvents = isLoggedIn ? filteredServerEvents : filteredLocalEvents;
+
   return (
     <>
       <div className="flex items-center justify-between pb-4">
-        <TermSelector
-          terms={terms}
-          selectedTermId={selectedTermId}
-          onTermChange={setSelectedTermId}
-        />
-        <div className="flex items-center gap-2">
-          {!hasEvents ? (
-            <UploadDialog />
-          ) : isLoggedIn ? (
-            <WallpaperDialog events={filteredServerEvents} />
-          ) : null}
-          {user && (
-            <AddEventButton
-              term={selectedTermId}
-              events={filteredServerEvents}
-              user={user}
+        <div>
+          {isLoggedIn && (
+            <TermSelector
+              terms={terms}
+              selectedTermId={selectedTermId}
+              onTermChange={setSelectedTermId}
             />
           )}
         </div>
+        <div className="flex items-center gap-2">
+          {!hasEvents ? (
+            <UploadDialog />
+          ) : (
+            <WallpaperDialog events={displayEvents} />
+          )}
+          <AddEventButton
+            term={selectedTermId}
+            events={displayEvents}
+            user={user}
+            isGuest={!isLoggedIn}
+            onEventSaved={refreshLocalEvents}
+          />
+        </div>
       </div>
-      {isLoggedIn && user !== null ? (
-        <WeekView events={filteredServerEvents} user={user} />
-      ) : (
-        <WeekView events={filteredLocalEvents} />
-      )}
+      <WeekView
+        events={displayEvents}
+        user={user ?? undefined}
+        isGuest={!isLoggedIn}
+        onEventsChange={refreshLocalEvents}
+      />
     </>
   );
 }
