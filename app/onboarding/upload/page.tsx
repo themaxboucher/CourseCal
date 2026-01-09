@@ -1,4 +1,3 @@
-import UploadForm from "@/components/onboarding/UploadForm";
 import { getTerms } from "@/lib/actions/terms.actions";
 import { getLoggedInUser } from "@/lib/actions/users.actions";
 import Image from "next/image";
@@ -31,8 +30,6 @@ export default async function UploadPage() {
           height={166}
           className="shadow-lg rounded-xl border-2"
         />
-
-        <UploadForm terms={terms} user={user} />
       </div>
     </section>
   );
