@@ -121,10 +121,10 @@ export const checkTimeOverlap = (
 // Helper function to find overlapping events
 export const findOverlappingEvents = (
   formData: any,
-  events: CalendarEvent[],
+  events: UserEvent[],
   currentEventId?: string
-): { day: string; event: CalendarEvent }[] => {
-  const overlaps: { day: string; event: CalendarEvent }[] = [];
+): { day: string; event: UserEvent }[] => {
+  const overlaps: { day: string; event: UserEvent }[] = [];
 
   if (!formData.days || !formData.startTime || !formData.endTime) {
     return overlaps;
@@ -182,7 +182,7 @@ export const isTimeInRange = (
 
 // Get formatted overlap error message
 export const getOverlapErrorMessage = (
-  overlaps: { day: string; event: CalendarEvent }[]
+  overlaps: { day: string; event: UserEvent }[]
 ): string => {
   if (overlaps.length === 0) return "";
 

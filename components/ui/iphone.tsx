@@ -2,7 +2,6 @@
 
 import type { HTMLAttributes } from "react";
 import { format } from "date-fns";
-import { ThemeType } from "@/components/wallpaper/WallpaperForm";
 import { cn } from "@/lib/utils";
 
 const PHONE_WIDTH = 433;

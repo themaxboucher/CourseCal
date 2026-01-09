@@ -1,5 +1,14 @@
+// === Utility Types ===
 declare type Override<T, R> = Omit<T, keyof R> & R;
 
+// Appwrite document fields - used for all stored documents
+declare type AppwriteDoc = {
+  $id: string;
+  $createdAt: string;
+  $updatedAt: string;
+};
+
+// === Primitive Types ===
 declare type Color =
   | "red"
   | "orange"
@@ -10,7 +19,13 @@ declare type Color =
   | "purple"
   | "pink";
 
-declare interface User {
+declare type Day = "monday" | "tuesday" | "wednesday" | "thursday" | "friday";
+declare type EventType = "lecture" | "tutorial" | "lab" | "seminar";
+declare type Recurrence = "weekly" | "biweekly";
+declare type Season = "winter" | "spring" | "summer" | "fall";
+
+// === Domain Types ===
+declare interface User extends AppwriteDoc {
   userId: string;
   email: string;
   name: string;
@@ -18,105 +33,83 @@ declare interface User {
   avatar: string;
   hasCompletedOnboarding: boolean;
   hasBeenWelcomed: boolean;
-  $id: string;
-  $createdAt: string;
-  $updatedAt: string;
 }
 
-declare interface Course {
-  subjectCode: string;
-  subject: string;
-  catalogNumber: number;
-  title: string;
-  description: string;
-  units: number;
-  instructionalComponents: "lecture" | "tutorial" | "laboratory" | "seminar";
+declare interface Course extends AppwriteDoc {
+  courseCode: string;
+  subject?: string;
+  title?: string;
+  description?: string;
+  units?: number;
+  instructionalComponents?: "lecture" | "tutorial" | "laboratory" | "seminar";
   color?: CourseColor;
-  $id: string;
-  $createdAt: string;
-  $updatedAt: string;
-}
+}s
 
-declare interface Term {
+declare interface Term extends AppwriteDoc {
   year: number;
-  season: "winter" | "spring" | "summer" | "fall";
+  season: Season;
   startDate: string;
   endDate: string;
-  $id: string;
-  $createdAt: string;
-  $updatedAt: string;
 }
 
 declare interface CourseColor {
   course: string;
-  user: string;
   color: Color;
-  $id: string;
-  $createdAt: string;
-  $updatedAt: string;
 }
 
-declare interface CourseColorDB {
-  course: string;
+declare interface UserCourseColor extends CourseColor, AppwriteDoc {
   user: string;
-  color: Color;
-  $id: string;
 }
 
-declare interface DisplayEvent {
-  course: {
-    subjectCode: string;
-    catalogNumber: number;
-    title: string;
-  };
-  type: string;
-  days: string[];
-  startTime: string;
-  endTime: string;
-  location: string;
-  courseColor: { color: string };
-}
+// For creating/updating course colors (no Appwrite metadata)
+declare type CourseColorInput = Pick<
+  CourseColor,
+  "course" | "user" | "color"
+> & { $id?: string };
 
-declare interface CalendarEvent {
-  user: string;
-  course: Course | null;
-  summary?: string;
-  type: "lecture" | "tutorial" | "lab" | "seminar" | null;
-  location: string;
-  startTime: string;
-  endTime: string;
-  days?: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday")[];
-  recurrence?: "weekly" | "biweekly";
-  exclusions?: string[];
-  term: string;
-  courseColor: CourseColor;
-  $id: string;
-  $createdAt: string;
-  $updatedAt: string;
-}
+// === Event Types ===
 
-declare interface CalendarEventDB {
-  user: string;
-  course?: string;
-  summary?: string;
-  type?: "lecture" | "tutorial" | "lab" | "seminar";
-  location: string;
-  startTime: string;
-  endTime: string;
-  days: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday")[];
-  recurrence: "weekly" | "biweekly";
-  exclusions: string[];
-  term: string;
-}
-
+// Event format from AI parsing
 declare interface ParsedEvent {
-  course: string;
-  location?: string;
-  type?: "lecture" | "tutorial" | "lab" | "seminar";
+  courseCode: string;
+  location: string;
+  type: EventType | null;
   startTime: string;
   endTime: string;
-  days?: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday")[];
-  recurrence?: "weekly" | "biweekly";
-  exclusions?: string[];
-  term: string;
+  days: Day[];
 }
+
+declare interface ScheduleEvent {
+  course: Course;
+  location?: string;
+  type?: EventType;
+  startTime: string;
+  endTime: string;
+  days: Day[];
+  term: Term;
+  courseColor: { color: Color };
+  recurrence?: Recurrence;
+  exclusions?: string[];
+}
+
+// Full stored event with all relationships
+declare interface UserEvent extends ScheduleEvent, AppwriteDoc {
+  user: string;
+}
+
+// For creating events in the database
+declare type CalendarEventInput = Omit<
+  UserEvent,
+  keyof AppwriteDoc | "course" | "courseColor"
+> & {
+  course?: string;
+  days: Day[];
+  recurrence: Recurrence;
+  exclusions: string[];
+};
+
+declare type BackgroundType = "plain" | "ice" | "fire";
+
+declare type FontType = "default" | "serif" | "mono";
+
+declare type ThemeType = "light" | "dark";

@@ -1,6 +1,8 @@
 "use server";
 
 import { OpenRouter } from "@openrouter/sdk";
+import { getCurrentTerm } from "../utils";
+import { getTerms } from "./terms.actions";
 
 const openrouter = new OpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
@@ -12,27 +14,74 @@ const SYSTEM_PROMPT = `You are an assistant that extracts university course sche
 
 Your task:
 1. First, determine if the image is a university/college course schedule (like from a student portal, registration system, or calendar).
-2. If it's NOT a schedule, respond with: {"isSchedule": false}
-3. If it IS a schedule, extract all events and respond with: {"isSchedule": true, "events": [...]}
-
-Each event in the "events" array must have this exact structure:
-{
-  "summary": "Course code, e.g. 'CPSC 231'",
-  "location": "Room/building if visible, otherwise empty string",
-  "startTime": "24-hour format HH:MM, e.g. '09:00'",
-  "endTime": "24-hour format HH:MM, e.g. '10:30'",
-  "days": ["monday", "tuesday", "wednesday", "thursday", "friday"] // only include days the class meets
-}
+2. If it's NOT a schedule, set isSchedule to false and events to an empty array.
+3. If it IS a schedule, set isSchedule to true and extract all events.
 
 Rules:
+- Course codes should be in the format "SUBJECT CODE NUMBER", e.g. "CPSC 231"
 - Use lowercase for days: "monday", "tuesday", "wednesday", "thursday", "friday"
-- Times must be in 24-hour format with leading zeros
+- Times must be in 24-hour format with leading zeros (e.g. "09:00", "14:30")
 - Extract ALL events/classes visible in the schedule
-- If a class appears on multiple days at the same time, include all days in the "days" array
-- Respond ONLY with valid JSON, no markdown or explanation`;
+- If a class appears on multiple days at the same time, include all days in the "days" array`;
+
+const RESPONSE_SCHEMA = {
+  name: "schedule_analysis",
+  strict: true,
+  schema: {
+    type: "object",
+    properties: {
+      isSchedule: {
+        type: "boolean",
+        description: "Whether the image is a university course schedule",
+      },
+      events: {
+        type: "array",
+        description: "Array of course events extracted from the schedule",
+        items: {
+          type: "object",
+          properties: {
+            courseCode: {
+              type: "string",
+              description: "Course code, e.g. 'CPSC 231'",
+            },
+            location: {
+              type: "string",
+              description: "Room/building if visible, otherwise empty string",
+            },
+            type: {
+              type: ["string", "null"],
+              description:
+                "Type of class if visible: 'lecture', 'tutorial', 'lab', or 'seminar'. Null if not visible.",
+            },
+            startTime: {
+              type: "string",
+              description: "Start time in 24-hour format HH:MM, e.g. '09:00'",
+            },
+            endTime: {
+              type: "string",
+              description: "End time in 24-hour format HH:MM, e.g. '10:30'",
+            },
+            days: {
+              type: "array",
+              description: "Days the class meets",
+              items: {
+                type: "string",
+                enum: ["monday", "tuesday", "wednesday", "thursday", "friday"],
+              },
+            },
+          },
+          required: ["courseCode", "location", "startTime", "endTime", "days", "type"],
+          additionalProperties: false,
+        },
+      },
+    },
+    required: ["isSchedule", "events"],
+    additionalProperties: false,
+  },
+} as const;
 
 export type ScheduleAnalysisResult =
-  | { success: true; isSchedule: true; events: ParsedEvent[] }
+  | { success: true; isSchedule: true; events: ScheduleEvent[] }
   | { success: true; isSchedule: false }
   | { success: false; error: string };
 
@@ -52,7 +101,7 @@ export async function analyzeScheduleImage(
           content: [
             {
               type: "text",
-              text: "Extract the schedule events from this image. Respond with JSON only.",
+              text: "Extract the schedule events from this image.",
             },
             {
               type: "image_url",
@@ -63,37 +112,51 @@ export async function analyzeScheduleImage(
           ],
         },
       ],
+      responseFormat: {
+        type: "json_schema",
+        jsonSchema: RESPONSE_SCHEMA,
+      },
     });
 
     const messageContent = response.choices[0]?.message?.content;
-    let text = "";
-
-    if (typeof messageContent === "string") {
-      text = messageContent;
-    } else if (Array.isArray(messageContent)) {
-      text = messageContent
-        .filter((item) => item.type === "text")
-        .map((item) => item.text)
-        .join("");
+    if (!messageContent || typeof messageContent !== "string") {
+      return { success: false, error: "No response from AI" };
     }
 
-    // Clean up potential markdown code blocks
-    text = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-
-    // Parse the JSON response
-    const parsed = JSON.parse(text);
+    const parsed = JSON.parse(messageContent);
 
     if (!parsed.isSchedule) {
       return { success: true, isSchedule: false };
     }
 
+    let term: Term | null = null;
+    try {
+      const terms = await getTerms();
+      term = getCurrentTerm(terms);
+    } catch (error) {
+      console.error("Error getting terms:", error);
+      return { success: false, error: "Failed to get terms" };
+    }
+
+    // Create course colors - assign a unique color to each course
+    const colors: Color[] = ["red", "orange", "yellow", "green", "cyan", "blue", "purple", "pink"];
+    const uniqueCourses = [...new Set(parsed.events.map((e: ParsedEvent) => e.courseCode))] as string[];
+    const courseColorMap = new Map<string, Color>(
+      uniqueCourses.map((course, index) => [course, colors[index % colors.length]])
+    );
+
     // Validate and return events
-    const events: ParsedEvent[] = parsed.events.map((event: any) => ({
-      summary: String(event.summary || ""),
-      location: event.location ? String(event.location) : undefined,
-      startTime: String(event.startTime || ""),
-      endTime: String(event.endTime || ""),
-      days: Array.isArray(event.days) ? event.days : undefined,
+    const events: ScheduleEvent[] = parsed.events.map((event: ParsedEvent) => ({
+      course: {
+        courseCode: event.courseCode,
+      },
+      location: event.location,
+      type: event.type,
+      startTime: event.startTime,
+      endTime: event.endTime,
+      days: event.days,
+      term: term,
+      courseColor: { color: courseColorMap.get(event.courseCode)! },
     }));
 
     return { success: true, isSchedule: true, events };

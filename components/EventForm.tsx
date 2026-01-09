@@ -30,7 +30,7 @@ import { Label } from "./ui/label";
 
 // Create dynamic schema with events context
 const createEventFormSchema = (
-  events: CalendarEvent[],
+  events: UserEvent[],
   currentEventId?: string
 ) => {
   return z
@@ -132,10 +132,10 @@ const createEventFormSchema = (
 type EventFormData = z.infer<ReturnType<typeof createEventFormSchema>>;
 
 interface EventFormProps {
-  eventToEdit?: CalendarEvent | null;
+  eventToEdit?: UserEvent | null;
   onCancel?: () => void;
   term?: string;
-  events?: CalendarEvent[];
+  events?: UserEvent[];
   user: User;
 }
 

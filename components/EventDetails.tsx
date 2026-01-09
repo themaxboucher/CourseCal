@@ -15,8 +15,8 @@ import EventDialog from "./EventDialog";
 import { classTypeIcons, eventColors } from "@/constants";
 
 interface EventDetailsProps {
-  event: CalendarEvent;
-  events?: CalendarEvent[];
+  event: UserEvent;
+  events?: UserEvent[];
   user: User;
 }
 

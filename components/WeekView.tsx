@@ -5,22 +5,8 @@ import { cn } from "@/lib/utils";
 import EventBlock from "./EventBlock";
 import { weekdays, timeSlots, timeSlotsShort } from "@/constants";
 
-interface DisplayEvent {
-  course: {
-    subjectCode: string;
-    catalogNumber: number;
-    title: string;
-  };
-  type: string;
-  days: string[];
-  startTime: string;
-  endTime: string;
-  location: string;
-  courseColor: { color: string };
-}
-
 interface WeekViewProps {
-  events: CalendarEvent[] | DisplayEvent[];
+  events: UserEvent[] | ScheduleEvent[];
   user?: User;
 }
 
@@ -44,7 +30,7 @@ const timeToMinutes = (timeString: string): number => {
 };
 
 // Helper function to get position and height for event
-const getEventPosition = (event: CalendarEvent | DisplayEvent) => {
+const getEventPosition = (event: UserEvent | ScheduleEvent) => {
   const startMinutes = timeToMinutes(event.startTime);
   const endMinutes = timeToMinutes(event.endTime);
   const duration = endMinutes - startMinutes;
@@ -75,7 +61,7 @@ export default function WeekView({ events, user }: WeekViewProps) {
     }
 
     return acc;
-  }, {} as Record<number, (CalendarEvent | DisplayEvent)[]>);
+  }, {} as Record<number, (UserEvent | ScheduleEvent)[]>);
 
   return (
     <div className="w-full max-w-6xl mx-auto">
@@ -142,8 +128,8 @@ export default function WeekView({ events, user }: WeekViewProps) {
               return user && !isDisplayEvent ? (
                 <Event
                   key={`${event.$id || eventIndex}`}
-                  event={event as CalendarEvent}
-                  events={events as CalendarEvent[]}
+                  event={event as UserEvent}
+                  events={events as UserEvent[]}
                   user={user}
                   style={{
                     position: "absolute",

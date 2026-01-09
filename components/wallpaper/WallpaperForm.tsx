@@ -11,14 +11,8 @@ import { cn } from "@/lib/utils";
 import { Alert, AlertTitle } from "../ui/alert";
 
 interface WallpaperFormProps {
-  events: CalendarEvent[];
+  events: ScheduleEvent[];
 }
-
-export type BackgroundType = "plain" | "ice" | "fire";
-
-export type FontType = "default" | "serif" | "mono";
-
-export type ThemeType = "light" | "dark";
 
 export function WallpaperForm({ events }: WallpaperFormProps) {
   const previewRef = useRef<HTMLDivElement>(null);

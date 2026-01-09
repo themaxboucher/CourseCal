@@ -11,7 +11,7 @@ export function AddEventButton({
   user,
 }: {
   term: string;
-  events?: CalendarEvent[];
+  events?: UserEvent[];
   user: User;
 }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);

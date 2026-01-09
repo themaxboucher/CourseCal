@@ -2,25 +2,10 @@
 
 import { cn } from "@/lib/utils";
 import EventBlock from "../EventBlock";
-import { ThemeType } from "./WallpaperForm";
 import { weekdays, timeSlots, timeSlotsShort } from "@/constants";
 
-interface DisplayEvent {
-  course: {
-    subjectCode: string;
-    catalogNumber: number;
-    title: string;
-  };
-  type: string;
-  days: string[];
-  startTime: string;
-  endTime: string;
-  location: string;
-  courseColor: { color: string };
-}
-
 interface WallpaperImageProps {
-  events: CalendarEvent[] | DisplayEvent[];
+  events: ScheduleEvent[];
   user?: User;
   theme?: ThemeType;
 }
@@ -45,7 +30,7 @@ const timeToMinutes = (timeString: string): number => {
 };
 
 // Helper function to get position and height for event
-const getEventPosition = (event: CalendarEvent | DisplayEvent) => {
+  const getEventPosition = (event: ScheduleEvent) => {
   const startMinutes = timeToMinutes(event.startTime);
   const endMinutes = timeToMinutes(event.endTime);
   const duration = endMinutes - startMinutes;
@@ -112,7 +97,7 @@ export default function WallpaperImage({ events, theme = "light" }: WallpaperIma
     }
 
     return acc;
-  }, {} as Record<number, (CalendarEvent | DisplayEvent)[]>);
+  }, {} as Record<number, ScheduleEvent[]>);
 
   return (
       <div 

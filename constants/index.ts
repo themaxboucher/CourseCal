@@ -111,8 +111,7 @@ export const displayEvents = [
   // Core Classes - Mixed schedule with variety
   {
     course: {
-      subjectCode: "MATH",
-      catalogNumber: 101,
+      courseCode: "MATH 101",
       title: "Calculus I",
     },
     type: "lecture",
@@ -124,8 +123,7 @@ export const displayEvents = [
   },
   {
     course: {
-      subjectCode: "PHYS",
-      catalogNumber: 201,
+      courseCode: "PHYS 201",
       title: "Physics I: Mechanics",
     },
     type: "tutorial",
@@ -137,8 +135,7 @@ export const displayEvents = [
   },
   {
     course: {
-      subjectCode: "CHAOS",
-      catalogNumber: 520,
+      courseCode: "CHAOS 520",
       title: "Embracing the Chaos of Life",
     },
     type: "lecture",
@@ -150,8 +147,7 @@ export const displayEvents = [
   },
   {
     course: {
-      subjectCode: "CHEM",
-      catalogNumber: 301,
+      courseCode: "CHEM 301",
       title: "Organic Chemistry I",
     },
     type: "seminar",
@@ -163,8 +159,7 @@ export const displayEvents = [
   },
   {
     course: {
-      subjectCode: "NAP",
-      catalogNumber: 101,
+      courseCode: "NAP 101",
       title: "Strategic Napping Techniques",
     },
     type: "lab",
@@ -176,8 +171,7 @@ export const displayEvents = [
   },
   {
     course: {
-      subjectCode: "BIOL",
-      catalogNumber: 401,
+      courseCode: "BIOL 401",
       title: "Cell Biology",
     },
     type: "lecture",
@@ -189,8 +183,7 @@ export const displayEvents = [
   },
   {
     course: {
-      subjectCode: "PSYC",
-      catalogNumber: 150,
+      courseCode: "PSYC 150",
       title: "Introduction to Psychology",
     },
     type: "tutorial",
@@ -202,8 +195,7 @@ export const displayEvents = [
   },
   {
     course: {
-      subjectCode: "ECON",
-      catalogNumber: 180,
+      courseCode: "ECON 180",
       title: "Microeconomics",
     },
     type: "lab",
@@ -215,8 +207,7 @@ export const displayEvents = [
   },
   {
     course: {
-      subjectCode: "HIST",
-      catalogNumber: 380,
+      courseCode: "HIST 380",
       title: "World History",
     },
     type: "seminar",
@@ -228,8 +219,7 @@ export const displayEvents = [
   },
   {
     course: {
-      subjectCode: "ENGL",
-      catalogNumber: 120,
+      courseCode: "ENGL 120",
       title: "English Composition",
     },
     type: "tutorial",

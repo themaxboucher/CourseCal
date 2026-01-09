@@ -1,10 +1,9 @@
 import WallpaperImage from "./WallpaperImage";
 import { Iphone } from "../ui/iphone";
-import { BackgroundType, FontType, ThemeType } from "./WallpaperForm";
 import { cn } from "@/lib/utils";
 
 interface WallpaperPreviewProps {
-  events: CalendarEvent[];
+  events: ScheduleEvent[];
   imageRef: React.RefObject<HTMLDivElement | null>;
   background: BackgroundType;
   font: FontType;

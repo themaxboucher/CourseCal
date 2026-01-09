@@ -5,7 +5,8 @@ import {
   analyzeScheduleImage,
   ScheduleAnalysisResult,
 } from "@/lib/actions/ai.actions";
-import { Upload, Loader2 } from "lucide-react";
+import { saveEvents, saveCourseColors } from "@/lib/indexeddb";
+import { Loader2, CalendarArrowUp } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -24,6 +25,30 @@ export default function UploadSchedule() {
     const analysisResult = await analyzeScheduleImage(imageBase64);
     console.log(analysisResult);
     setResult(analysisResult);
+
+    if (analysisResult.success && analysisResult.isSchedule) {
+      // Extract unique course colors from events
+      const courseColors: CourseColor[] = [];
+      const seenCourses = new Set<string>();
+
+      for (const event of analysisResult.events) {
+        const courseCode = event.course.courseCode;
+        if (!seenCourses.has(courseCode)) {
+          seenCourses.add(courseCode);
+          courseColors.push({
+            course: courseCode,
+            color: event.courseColor.color,
+          });
+        }
+      }
+
+      // Store in IndexedDB
+      await saveEvents(analysisResult.events);
+      await saveCourseColors(courseColors);
+
+      router.push("/schedule");
+    }
+
     setIsLoading(false);
   };
 
@@ -86,7 +111,7 @@ export default function UploadSchedule() {
   };
 
   return (
-    <div className="w-full max-w-[30rem]">
+    <div className="w-full max-w-[30rem] space-y-4">
       <div className="space-y-4">
         <input
           ref={fileInputRef}
@@ -111,13 +136,13 @@ export default function UploadSchedule() {
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           className={cn(
-            "group w-full h-54 border-2 border-dashed hover:bg-primary/10 hover:border-primary/50 ring-white hover:ring-primary/10 ring-8 rounded-lg flex flex-col items-center justify-center gap-2.5 text-muted-foreground transition-colors cursor-pointer",
-            isDragging && "border-primary/50 bg-primary/10 ring-primary/10"
+            "group w-full h-54 border-2 border-input border-dashed hover:border-ring hover:bg-ring/5 ring-white rounded-lg flex flex-col items-center justify-center gap-4 text-muted-foreground transition-colors cursor-pointer",
+            isDragging && "border-ring bg-ring/5"
           )}
         >
           {!isLoading ? (
             <>
-              <Upload className="size-8" />
+              <CalendarArrowUp className="size-8" />
 
               {isDragging ? (
                 <span>Drop your schedule here</span>

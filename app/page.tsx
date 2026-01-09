@@ -23,11 +23,10 @@ export default async function Home() {
                   Calgary schedule in seconds.
                 </p>
               </div>
-              {/* <AuthForm /> */}
               <UploadSchedule />
             </div>
           </div>
-          <WeekView events={displayEvents} />
+          {/* <WeekView events={displayEvents} /> */}
         </section>
         <section className="flex flex-col gap-2 max-w-[75rem] mx-auto md:px-8 px-4 py-12 md:pt-16 pt-12">
           <Card className="w-full p-6 border-2 bg-red-500 border-red-300 dark:border-red-800 text-white">

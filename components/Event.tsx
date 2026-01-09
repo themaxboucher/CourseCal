@@ -16,9 +16,9 @@ import EventDetails from "./EventDetails";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import EventBlock from "./EventBlock";
 interface EventProps {
-  event: CalendarEvent;
+  event: UserEvent;
   style?: React.CSSProperties;
-  events?: CalendarEvent[];
+  events?: UserEvent[];
   user: User;
 }
 
