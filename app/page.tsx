@@ -1,10 +1,10 @@
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/landing-page/Footer";
-import { Card, CardContent } from "@/components/ui/card";
-import Image from "next/image";
 import UploadSchedule from "@/components/UploadSchedule";
 import WallpaperPreview from "@/components/wallpaper/WallpaperPreview";
 import { displayEvents } from "@/constants";
+import { TextAnimate } from "@/components/ui/text-animate";
+import { BlurFade } from "@/components/ui/blur-fade";
 
 export const dynamic = "force-dynamic";
 
@@ -17,37 +17,48 @@ export default async function Home() {
           <div className="flex flex-col gap-10 md:gap-20">
             <div className="flex flex-col gap-12 px-2">
               <div className="space-y-4">
-                <h1 className="heading-1 md:text-6xl max-w-[28rem]">
+                <TextAnimate
+                  animation="slideUp"
+                  by="word"
+                  className="heading-1 md:text-6xl max-w-[28rem]"
+                >
                   New schedule, new lock screen.
-                </h1>
-                <p className="text-muted-foreground text-lg md:text-2xl">
+                </TextAnimate>
+                <TextAnimate
+                  animation="slideUp"
+                  by="word"
+                  delay={0.3}
+                  className="text-muted-foreground text-lg md:text-2xl"
+                >
                   Get a beautiful lock screen wallpaper of your University of
                   Calgary schedule in seconds.
-                </p>
+                </TextAnimate>
               </div>
               <UploadSchedule />
             </div>
           </div>
-          <div className="flex justify-center items-center w-full relative">
-            <div className="w-full h-[75%] absolute left-0 right-0 top-auto bottom-auto bg-muted/50 rounded-xl" />
-            <div className="w-full h-[12.5%] absolute left-0 right-0 top-auto bottom-0 bg-background z-10" />
-            <div className="size-full scale-90 -rotate-3 flex justify-center items-center -translate-x-8">
-              <WallpaperPreview
-                events={displayEvents}
-                background="plain"
-                font="default"
-                theme="dark"
-              />
+          <BlurFade direction="up" inView>
+            <div className="flex justify-center items-center w-full relative">
+              <div className="w-full h-[75%] absolute left-0 right-0 top-auto bottom-auto bg-muted/50 rounded-xl" />
+              <div className="w-full h-[12.5%] absolute left-0 right-0 top-auto bottom-0 bg-background z-10" />
+              <div className="size-full scale-90 -rotate-3 flex justify-center items-center -translate-x-8">
+                <WallpaperPreview
+                  events={displayEvents}
+                  background="plain"
+                  font="default"
+                  theme="dark"
+                />
+              </div>
+              <div className="size-full absolute inset-0 flex justify-end items-end scale-75 rotate-4 translate-y-12">
+                <WallpaperPreview
+                  events={displayEvents}
+                  background="ice"
+                  font="default"
+                  theme="light"
+                />
+              </div>
             </div>
-            <div className="size-full absolute inset-0 flex justify-end items-end scale-75 rotate-4 translate-y-12">
-              <WallpaperPreview
-                events={displayEvents}
-                background="ice"
-                font="default"
-                theme="light"
-              />
-            </div>
-          </div>
+          </BlurFade>
         </section>
         <section className="flex flex-col gap-2 max-w-[75rem] mx-auto md:px-8 px-4 py-12 md:pt-16 pt-12">
           <div className="flex flex-col items-center gap-8 text-center">

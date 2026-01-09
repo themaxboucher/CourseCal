@@ -151,7 +151,9 @@ export default function UploadSchedule() {
         >
           {!isLoading ? (
             <>
-              <CalendarArrowUp className="size-8" />
+              <div className="flex items-center justify-center rounded-2xl bg-muted/50 group-hover:bg-ring/5 group-hover:text-ring p-3">
+                <CalendarArrowUp className="size-6" />
+              </div>
 
               {isDragging ? (
                 <span>Drop your schedule here</span>
