@@ -18,13 +18,23 @@ export default function UploadSchedule() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
+  const clearFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const analyze = async (imageBase64: string) => {
     setIsLoading(true);
     setResult(null);
 
     const analysisResult = await analyzeScheduleImage(imageBase64);
-    console.log(analysisResult);
     setResult(analysisResult);
+
+    // Clear file input if there was an error or not a schedule
+    if (!analysisResult.success || !analysisResult.isSchedule) {
+      clearFileInput();
+    }
 
     if (analysisResult.success && analysisResult.isSchedule) {
       // Extract unique course colors from events
@@ -58,6 +68,7 @@ export default function UploadSchedule() {
 
     if (!file.type.startsWith("image/")) {
       setResult({ success: false, error: "Please select an image file" });
+      clearFileInput();
       return;
     }
 
@@ -149,7 +160,6 @@ export default function UploadSchedule() {
               ) : (
                 <div className="flex flex-col items-center justify-center gap-4">
                   <span>Upload a screenshot of your schedule</span>
-
                   <Button>Choose file</Button>
                 </div>
               )}

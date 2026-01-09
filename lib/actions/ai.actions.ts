@@ -8,7 +8,7 @@ const openrouter = new OpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
 });
 
-const AI_MODEL = "openai/gpt-4o-mini";
+const AI_MODEL = "google/gemini-2.0-flash-001";
 
 const SYSTEM_PROMPT = `You are an assistant that extracts university course schedule information from screenshots.
 
@@ -18,7 +18,7 @@ Your task:
 3. If it IS a schedule, set isSchedule to true and extract all events.
 
 Rules:
-- Course codes should be in the format "SUBJECT CODE NUMBER", e.g. "CPSC 231"
+- Course codes should be in the format "SUBJECT CODE NUMBER" and include nothing else, e.g. "CPSC 231"
 - Use lowercase for days: "monday", "tuesday", "wednesday", "thursday", "friday"
 - Times must be in 24-hour format with leading zeros (e.g. "09:00", "14:30")
 - Extract ALL events/classes visible in the schedule
@@ -50,8 +50,9 @@ const RESPONSE_SCHEMA = {
             },
             type: {
               type: ["string", "null"],
+              enum: ["lecture", "tutorial", "lab", "seminar", null],
               description:
-                "Type of class if visible: 'lecture', 'tutorial', 'lab', or 'seminar'. Null if not visible.",
+                "Type of class: 'lecture', 'tutorial', 'lab', or 'seminar'. Null if not visible.",
             },
             startTime: {
               type: "string",
@@ -70,7 +71,14 @@ const RESPONSE_SCHEMA = {
               },
             },
           },
-          required: ["courseCode", "location", "startTime", "endTime", "days", "type"],
+          required: [
+            "courseCode",
+            "location",
+            "startTime",
+            "endTime",
+            "days",
+            "type",
+          ],
           additionalProperties: false,
         },
       },
@@ -139,10 +147,24 @@ export async function analyzeScheduleImage(
     }
 
     // Create course colors - assign a unique color to each course
-    const colors: Color[] = ["red", "orange", "yellow", "green", "cyan", "blue", "purple", "pink"];
-    const uniqueCourses = [...new Set(parsed.events.map((e: ParsedEvent) => e.courseCode))] as string[];
+    const colors: Color[] = [
+      "red",
+      "orange",
+      "yellow",
+      "green",
+      "cyan",
+      "blue",
+      "purple",
+      "pink",
+    ];
+    const uniqueCourses = [
+      ...new Set(parsed.events.map((e: ParsedEvent) => e.courseCode)),
+    ] as string[];
     const courseColorMap = new Map<string, Color>(
-      uniqueCourses.map((course, index) => [course, colors[index % colors.length]])
+      uniqueCourses.map((course, index) => [
+        course,
+        colors[index % colors.length],
+      ])
     );
 
     // Validate and return events
