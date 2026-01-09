@@ -118,7 +118,7 @@ export function CourseField({
                 aria-invalid={hasError ? "true" : "false"}
               >
                 {selectedCourse
-                  ? `${selectedCourse.subjectCode} ${selectedCourse.catalogNumber}`
+                  ? selectedCourse.courseCode
                   : placeholder}
                 <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
@@ -154,8 +154,7 @@ export function CourseField({
                           onSelect={() => {
                             const selectedCourse = {
                               $id: course.$id!,
-                              subjectCode: course.subjectCode,
-                              catalogNumber: course.catalogNumber,
+                              courseCode: course.courseCode,
                               title: course.title,
                               color: course.color,
                             };
@@ -167,7 +166,7 @@ export function CourseField({
                         >
                           <div className="flex flex-col">
                             <span className="font-medium">
-                              {course.subjectCode} {course.catalogNumber}
+                              {course.courseCode}
                             </span>
                             <span className="text-xs text-muted-foreground truncate">
                               {course.title}
