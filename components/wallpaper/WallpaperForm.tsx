@@ -2,13 +2,19 @@
 
 import { useRef, useState } from "react";
 import { toPng } from "html-to-image";
-import { Download, Moon, Sun } from "lucide-react";
+import { Download, Info, Moon, Sun } from "lucide-react";
 import { Button } from "../ui/button";
+import { Slider } from "../ui/slider";
 import WallpaperPreview from "./WallpaperPreview";
 import { toast } from "sonner";
 import { Label } from "../ui/label";
 import { cn } from "@/lib/utils";
 import { backgroundOptions } from "@/constants";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "../ui/hover-card";
 
 const fontOptions: { value: FontType; label: string; className: string }[] = [
   { value: "default", label: "Default", className: "" },
@@ -28,6 +34,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
   const [background, setBackground] = useState<BackgroundType>("plain");
   const [font, setFont] = useState<FontType>("default");
   const [theme, setTheme] = useState<ThemeType>("light");
+  const [cellHeight, setCellHeight] = useState(0);
 
   const handleDownload = async () => {
     if (!previewRef.current) return;
@@ -58,6 +65,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
           background={background}
           font={font}
           theme={theme}
+          cellHeight={cellHeight}
         />
       </div>
 
@@ -72,6 +80,34 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
 
         <form className="flex flex-col gap-6 justify-between h-full">
           <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <Label>Height</Label>
+                  <HoverCard>
+                    <HoverCardTrigger>
+                      <Info className="size-4 text-muted-foreground" />
+                    </HoverCardTrigger>
+                    <HoverCardContent align="start">
+                      <p className="text-sm">
+                        The schedule will take up more or less space, depending on
+                        your phone's dimensions.
+                      </p>
+                    </HoverCardContent>
+                  </HoverCard>
+                </div>
+                <span className="text-sm text-muted-foreground">
+                  {cellHeight}%
+                </span>
+              </div>
+              <Slider
+                value={[cellHeight]}
+                onValueChange={(value) => setCellHeight(value[0])}
+                min={0}
+                max={100}
+                step={1}
+              />
+            </div>
             <div className="flex flex-col gap-4">
               <Label>Theme</Label>
               <div className="flex gap-4">
@@ -110,21 +146,26 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
               <Label>Background</Label>
               <div className="grid grid-cols-4 gap-3">
                 {backgroundOptions.map((option) => (
-                <Button
+                  <Button
                     key={option.value}
-                  type="button"
+                    type="button"
                     size="sm"
-                  variant="outline"
+                    variant="outline"
                     onClick={() => setBackground(option.value)}
-                  className={cn(
+                    className={cn(
                       "normal-case font-medium",
                       background === option.value &&
-                      "ring-2 ring-sky-500 ring-offset-2 ring-offset-background"
-                  )}
-                >
-                    <span className={cn("size-3.5 min-w-3.5 rounded-[3.5px]", option.preview)} />
+                        "ring-2 ring-sky-500 ring-offset-2 ring-offset-background"
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "size-3.5 min-w-3.5 rounded-[3.5px]",
+                        option.preview
+                      )}
+                    />
                     {option.label}
-                </Button>
+                  </Button>
                 ))}
               </div>
             </div>

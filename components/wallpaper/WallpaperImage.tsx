@@ -15,7 +15,12 @@ interface WallpaperImageProps {
   events: ScheduleEvent[];
   user?: User;
   theme?: ThemeType;
+  cellHeight?: number;
 }
+
+// Cell height constants
+const MIN_CELL_HEIGHT = 24;
+const MAX_CELL_HEIGHT = 32;
 
 // Light theme CSS variables from globals.css
 const lightThemeStyles: React.CSSProperties = {
@@ -55,7 +60,11 @@ const lightThemeStyles: React.CSSProperties = {
 export default function WallpaperImage({
   events,
   theme = "light",
+  cellHeight = 0,
 }: WallpaperImageProps) {
+  // Calculate the actual pixel height from percentage (0% = 26px, 100% = 52px)
+  const cellHeightPx = MIN_CELL_HEIGHT + (cellHeight / 100) * (MAX_CELL_HEIGHT - MIN_CELL_HEIGHT);
+
   // Calculate dynamic time range based on events
   const { startHour, endHour } = useMemo(() => getTimeRange(events), [events]);
   const timeSlots = useMemo(
@@ -116,7 +125,8 @@ export default function WallpaperImage({
           {timeSlotsShort.map((time) => (
             <div
               key={time}
-              className="h-6.5 py-0.5 pr-1 text-[6px] font-medium text-muted-foreground text-right text-nowrap tracking-tight"
+              className="py-0.5 pr-1 text-[6px] font-medium text-muted-foreground text-right text-nowrap tracking-tight"
+              style={{ height: `${cellHeightPx}px` }}
             >
               {time}
             </div>
@@ -134,12 +144,12 @@ export default function WallpaperImage({
           >
             {/* Time slot lines */}
             {timeSlots.map((time) => (
-              <div key={time} className="h-6.5 border-t"></div>
+              <div key={time} className="border-t" style={{ height: `${cellHeightPx}px` }}></div>
             ))}
 
             {/* Events for this day */}
             {eventsByDay[dayIndex]?.map((event, eventIndex) => {
-              const { top, height } = getEventPosition(event, 26, startHour); // 26px per hour
+              const { top, height } = getEventPosition(event, cellHeightPx, startHour);
 
               return (
                 <EventBlock
