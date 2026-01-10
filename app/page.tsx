@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/Navbar";
+import { LandingNavbar } from "@/components/landing-page/LandingNavbar";
 import { Footer } from "@/components/landing-page/Footer";
 import UploadSchedule from "@/components/UploadSchedule";
 import WallpaperPreview from "@/components/wallpaper/WallpaperPreview";
@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   return (
     <>
-      <Navbar />
+      <LandingNavbar />
       <main>
         <section className="grid grid-cols-1 md:grid-cols-2 items-center gap-4 max-w-[75rem] mx-auto md:px-8 px-2 py-12">
           <div className="flex flex-col gap-10 md:gap-20">
@@ -39,12 +39,12 @@ export default async function Home() {
           </div>
           <BlurFade direction="up" inView>
             <div className="flex justify-center items-center w-full relative">
-              <div className="w-full h-[75%] absolute left-0 right-0 top-auto bottom-auto bg-muted/50 rounded-xl" />
-              <div className="w-full h-[12.5%] absolute left-0 right-0 top-auto bottom-0 bg-background z-10" />
+              <div className="w-full h-[70%] absolute left-0 right-0 top-auto bottom-auto bg-muted/50 rounded-xl" />
+              <div className="w-full h-[15%] absolute left-0 right-0 top-auto bottom-0 bg-background z-10" />
               <div className="size-full scale-90 -rotate-3 flex justify-center items-center -translate-x-8">
                 <WallpaperPreview
                   events={displayEvents}
-                  background="plain"
+                  background="galaxy"
                   font="default"
                   theme="dark"
                 />
@@ -53,7 +53,7 @@ export default async function Home() {
                 <WallpaperPreview
                   events={displayEvents}
                   background="ice"
-                  font="default"
+                  font="rounded"
                   theme="light"
                 />
               </div>

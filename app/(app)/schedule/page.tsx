@@ -12,7 +12,9 @@ interface SchedulePageProps {
   searchParams: Promise<{ uploadSuccess?: string }>;
 }
 
-export default async function SchedulePage({ searchParams }: SchedulePageProps) {
+export default async function SchedulePage({
+  searchParams,
+}: SchedulePageProps) {
   const { uploadSuccess } = await searchParams;
   const user = await getLoggedInUser();
   const terms = await getTerms();
@@ -26,7 +28,7 @@ export default async function SchedulePage({ searchParams }: SchedulePageProps) 
       )}
       <UploadSuccessDialog show={uploadSuccess === "true"} />
 
-      <Navbar loggedIn={isLoggedIn} />
+      <Navbar showSettings={isLoggedIn} />
       <section className="flex flex-col gap-2 max-w-[90rem] mx-auto md:px-8 px-2 md:py-8 py-2">
         <div className="flex flex-col items-center gap-8">
           <div className="flex flex-col items-center gap-4 w-full">
