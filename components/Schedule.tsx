@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { getCurrentTerm } from "@/lib/utils";
-import { getEvents, getCourseColors } from "@/lib/indexeddb";
+import { getEvents } from "@/lib/indexeddb";
 import { AddEventButton } from "./AddEventButton";
 import { TermSelector } from "./TermSelector";
 import { UploadDialog } from "./UploadDialog";
@@ -47,13 +47,10 @@ export default function Schedule({
 
     const checkLocalData = async () => {
       try {
-        const [events, courseColors] = await Promise.all([
-          getEvents(),
-          getCourseColors(),
-        ]);
+        const events = await getEvents();
 
         // Redirect if no local data
-        if (events.length === 0 || courseColors.length === 0) {
+        if (events.length === 0) {
           router.replace("/");
           return;
         }

@@ -5,7 +5,7 @@ import {
   analyzeScheduleImage,
   ScheduleAnalysisResult,
 } from "@/lib/actions/ai.actions";
-import { saveEvents, saveCourseColors } from "@/lib/indexeddb";
+import { saveEvents } from "@/lib/indexeddb";
 import { Loader2, CalendarArrowUp } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
@@ -37,25 +37,7 @@ export default function UploadSchedule() {
     }
 
     if (analysisResult.success && analysisResult.isSchedule) {
-      // Extract unique course colors from events
-      const courseColors: CourseColor[] = [];
-      const seenCourses = new Set<string>();
-
-      for (const event of analysisResult.events) {
-        const courseCode = event.course.courseCode;
-        if (!seenCourses.has(courseCode)) {
-          seenCourses.add(courseCode);
-          courseColors.push({
-            course: courseCode,
-            color: event.courseColor.color,
-          });
-        }
-      }
-
-      // Store in IndexedDB
       await saveEvents(analysisResult.events);
-      await saveCourseColors(courseColors);
-
       router.push("/schedule?uploadSuccess=true");
     }
   };

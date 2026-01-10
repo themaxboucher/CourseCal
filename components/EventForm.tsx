@@ -19,7 +19,6 @@ import { createEvent, updateEvent } from "@/lib/actions/events.actions";
 import {
   addEvent as addLocalEvent,
   updateEvent as updateLocalEvent,
-  updateCourseColor as updateLocalCourseColor,
 } from "@/lib/indexeddb";
 import { useRouter } from "next/navigation";
 import { createCourseColor } from "@/lib/actions/courseColors.actions";
@@ -371,9 +370,6 @@ export default function EventForm({
         // Add new event
         await addLocalEvent(scheduleEvent);
       }
-
-      // Update course color in IndexedDB
-      await updateLocalCourseColor(data.courseCode, data.color);
 
       onEventSaved?.();
       onCancel?.();

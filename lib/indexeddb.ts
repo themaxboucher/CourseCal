@@ -3,7 +3,6 @@ const DB_VERSION = 1;
 
 const STORES = {
   events: "events",
-  courseColors: "courseColors",
 } as const;
 
 function openDB(): Promise<IDBDatabase> {
@@ -19,11 +18,6 @@ function openDB(): Promise<IDBDatabase> {
       // Create events store
       if (!db.objectStoreNames.contains(STORES.events)) {
         db.createObjectStore(STORES.events, { keyPath: "id", autoIncrement: true });
-      }
-
-      // Create courseColors store
-      if (!db.objectStoreNames.contains(STORES.courseColors)) {
-        db.createObjectStore(STORES.courseColors, { keyPath: "course" });
       }
     };
   });
@@ -96,7 +90,7 @@ export async function addEvent(event: ScheduleEvent): Promise<number> {
   const tx = db.transaction(STORES.events, "readwrite");
   const store = tx.objectStore(STORES.events);
 
-  return new Promise((resolve, reject) => {
+  const newEventId = await new Promise<number>((resolve, reject) => {
     const request = store.add(event);
     request.onsuccess = () => {
       db.close();
@@ -107,6 +101,13 @@ export async function addEvent(event: ScheduleEvent): Promise<number> {
       reject(request.error);
     };
   });
+
+  // Sync color across all events with this course
+  if (event.courseColor?.color) {
+    await updateCourseColorForAllEvents(event.course.courseCode, event.courseColor.color);
+  }
+
+  return newEventId;
 }
 
 export async function updateEvent(id: number, event: Partial<ScheduleEvent>): Promise<void> {
@@ -114,7 +115,7 @@ export async function updateEvent(id: number, event: Partial<ScheduleEvent>): Pr
   const tx = db.transaction(STORES.events, "readwrite");
   const store = tx.objectStore(STORES.events);
 
-  return new Promise((resolve, reject) => {
+  const updatedEvent = await new Promise<ScheduleEvent & { id: number }>((resolve, reject) => {
     // First get the existing event
     const getRequest = store.get(id);
     getRequest.onsuccess = () => {
@@ -125,11 +126,11 @@ export async function updateEvent(id: number, event: Partial<ScheduleEvent>): Pr
         return;
       }
       // Merge and update
-      const updatedEvent = { ...existingEvent, ...event, id };
-      const putRequest = store.put(updatedEvent);
+      const merged = { ...existingEvent, ...event, id };
+      const putRequest = store.put(merged);
       putRequest.onsuccess = () => {
         db.close();
-        resolve();
+        resolve(merged);
       };
       putRequest.onerror = () => {
         db.close();
@@ -141,6 +142,11 @@ export async function updateEvent(id: number, event: Partial<ScheduleEvent>): Pr
       reject(getRequest.error);
     };
   });
+
+  // Sync color across all events with this course
+  if (updatedEvent.courseColor?.color) {
+    await updateCourseColorForAllEvents(updatedEvent.course.courseCode, updatedEvent.courseColor.color);
+  }
 }
 
 export async function deleteEvent(id: number): Promise<void> {
@@ -161,21 +167,48 @@ export async function deleteEvent(id: number): Promise<void> {
   });
 }
 
-// Course Colors
-export async function saveCourseColors(courseColors: CourseColor[]): Promise<void> {
+/**
+ * Get the color for a course by checking existing events
+ */
+export async function getCourseColorFromEvents(courseCode: string): Promise<Color | null> {
+  const events = await getEvents();
+  const matchingEvent = events.find(e => e.course.courseCode === courseCode);
+  return matchingEvent?.courseColor?.color ?? null;
+}
+
+/**
+ * Update the color for all events with a given course code
+ * This ensures color consistency across all events for the same course
+ */
+export async function updateCourseColorForAllEvents(
+  courseCode: string,
+  newColor: Color
+): Promise<void> {
   const db = await openDB();
-  const tx = db.transaction(STORES.courseColors, "readwrite");
-  const store = tx.objectStore(STORES.courseColors);
-
-  // Clear existing colors first
-  store.clear();
-
-  // Add all new course colors
-  for (const courseColor of courseColors) {
-    store.add(courseColor);
-  }
+  const tx = db.transaction(STORES.events, "readwrite");
+  const store = tx.objectStore(STORES.events);
 
   return new Promise((resolve, reject) => {
+    const request = store.getAll();
+    request.onsuccess = () => {
+      const events = request.result as (ScheduleEvent & { id: number })[];
+
+      // Update all events with matching course
+      for (const event of events) {
+        if (event.course.courseCode === courseCode) {
+          const updatedEvent = {
+            ...event,
+            courseColor: { color: newColor },
+          };
+          store.put(updatedEvent);
+        }
+      }
+    };
+    request.onerror = () => {
+      db.close();
+      reject(request.error);
+    };
+
     tx.oncomplete = () => {
       db.close();
       resolve();
@@ -187,64 +220,7 @@ export async function saveCourseColors(courseColors: CourseColor[]): Promise<voi
   });
 }
 
-export async function getCourseColors(): Promise<CourseColor[]> {
-  const db = await openDB();
-  const tx = db.transaction(STORES.courseColors, "readonly");
-  const store = tx.objectStore(STORES.courseColors);
-
-  return new Promise((resolve, reject) => {
-    const request = store.getAll();
-    request.onsuccess = () => {
-      db.close();
-      resolve(request.result);
-    };
-    request.onerror = () => {
-      db.close();
-      reject(request.error);
-    };
-  });
-}
-
-export async function clearCourseColors(): Promise<void> {
-  const db = await openDB();
-  const tx = db.transaction(STORES.courseColors, "readwrite");
-  const store = tx.objectStore(STORES.courseColors);
-
-  return new Promise((resolve, reject) => {
-    const request = store.clear();
-    request.onsuccess = () => {
-      db.close();
-      resolve();
-    };
-    request.onerror = () => {
-      db.close();
-      reject(request.error);
-    };
-  });
-}
-
-export async function updateCourseColor(course: string, color: Color): Promise<void> {
-  const db = await openDB();
-  const tx = db.transaction(STORES.courseColors, "readwrite");
-  const store = tx.objectStore(STORES.courseColors);
-
-  return new Promise((resolve, reject) => {
-    // Use put to insert or update (course is the keyPath)
-    const request = store.put({ course, color });
-    request.onsuccess = () => {
-      db.close();
-      resolve();
-    };
-    request.onerror = () => {
-      db.close();
-      reject(request.error);
-    };
-  });
-}
-
 // Clear all data
 export async function clearAllData(): Promise<void> {
   await clearEvents();
-  await clearCourseColors();
 }
-
