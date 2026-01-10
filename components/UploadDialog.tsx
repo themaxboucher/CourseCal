@@ -1,20 +1,9 @@
 import { Upload } from "lucide-react";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
-import UploadForm from "./onboarding/UploadForm";
 import Image from "next/image";
 
-interface UploadDialogProps {
-  terms: Term[];
-  user: User;
-  selectedTermId?: string;
-}
-
-export function UploadDialog({
-  terms,
-  user,
-  selectedTermId,
-}: UploadDialogProps) {
+export function UploadDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -39,8 +28,7 @@ export function UploadDialog({
           height={166}
           className="shadow-lg rounded-xl border-2"
         />
-
-        <UploadForm terms={terms} user={user} selectedTermId={selectedTermId} />
+        Upload Schedule
       </DialogContent>
     </Dialog>
   );

@@ -2,11 +2,10 @@
 
 import { cn, formatTime } from "@/lib/utils";
 import { eventColors, lightEventColors } from "@/constants";
-import { ThemeType } from "./wallpaper/WallpaperForm";
 import { TriangleAlert } from "lucide-react";
 
 interface EventProps {
-  event: CalendarEvent | DisplayEvent;
+  event: UserEvent | ScheduleEvent;
   style?: React.CSSProperties;
   className?: string;
   isWallpaper?: boolean;
@@ -61,7 +60,7 @@ export default function EventBlock({
           )}
         >
           <div className="w-full flex items-center justify-between gap-2">
-            {event.course?.subjectCode && event.course?.catalogNumber ? (
+            {event.course?.courseCode ? (
               <div
                 className={cn(
                   "font-bold truncate",
@@ -69,7 +68,7 @@ export default function EventBlock({
                   isWallpaper ? "text-[6px]" : "text-xxs"
                 )}
               >
-                {event.course.subjectCode} {event.course.catalogNumber}
+                {event.course.courseCode}
               </div>
             ) : (
               <div
@@ -79,7 +78,7 @@ export default function EventBlock({
                   isWallpaper ? "text-[6px]" : "text-xxs"
                 )}
               >
-                {"summary" in event ? event.summary : event.course?.title}
+                {event.course?.title}
               </div>
             )}
             {event.type && (

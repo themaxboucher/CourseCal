@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
-import { Outfit, Spectral, Source_Code_Pro } from "next/font/google";
+import {
+  Outfit,
+  Merriweather,
+  Caveat,
+  Fredoka,
+  Stick_No_Bills,
+  Pixelify_Sans,
+} from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -10,42 +17,51 @@ const outfit = Outfit({
   subsets: ["latin"],
 });
 
-const spectral = Spectral({
-  variable: "--font-spectral",
+const fredoka = Fredoka({
+  variable: "--font-fredoka",
   subsets: ["latin"],
-  weight: ["200", "300", "400", "500", "600", "700", "800"],
 });
 
-const sourceCodePro = Source_Code_Pro({
-  variable: "--font-source-code-pro",
+const merriweather = Merriweather({
+  variable: "--font-merriweather",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+});
+
+const stickNoBills = Stick_No_Bills({
+  variable: "--font-stick-no-bills",
+  subsets: ["latin"],
+});
+
+const caveat = Caveat({
+  variable: "--font-caveat",
+  subsets: ["latin"],
+});
+
+const pixelifySans = Pixelify_Sans({
+  variable: "--font-pixelify-sans",
+  subsets: ["latin"],
 });
 
 const sfPro = localFont({
   src: [
     {
-      path: "../public/fonts/SF-Pro-Text-Regular.otf",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../public/fonts/SF-Pro-Text-Medium.otf",
-      weight: "500",
-      style: "normal",
-    },
-    {
       path: "../public/fonts/SF-Pro-Text-Semibold.otf",
       weight: "600",
       style: "normal",
     },
+  ],
+  variable: "--font-sf-pro",
+});
+
+const sfProSoft = localFont({
+  src: [
     {
-      path: "../public/fonts/SF-Pro-Text-Bold.otf",
-      weight: "700",
+      path: "../public/fonts/SF-Pro-Semibold-Soft.otf",
+      weight: "600",
       style: "normal",
     },
   ],
-  variable: "--font-sf-pro",
+  variable: "--font-sf-pro-soft",
 });
 
 export const metadata: Metadata = {
@@ -61,7 +77,16 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${outfit.variable} ${spectral.variable} ${sourceCodePro.variable} ${sfPro.variable} font-sans antialiased`}
+        className={`
+          ${outfit.variable} 
+          ${fredoka.variable} 
+          ${merriweather.variable} 
+          ${caveat.variable} 
+          ${pixelifySans.variable} 
+          ${stickNoBills.variable} 
+          ${sfPro.variable} 
+          ${sfProSoft.variable} 
+          font-sans antialiased`}
       >
         <ThemeProvider
           attribute="class"

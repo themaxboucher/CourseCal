@@ -25,7 +25,7 @@ export async function getCourseColor(courseId: string, userId: string) {
 }
 
 export async function createCourseColor(
-  courseColor: Omit<CourseColorDB, "$id">
+  courseColor: Omit<UserCourseColor, keyof AppwriteDoc>
 ) {
   try {
     const { database } = await createAdminClient();

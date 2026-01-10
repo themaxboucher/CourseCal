@@ -15,14 +15,24 @@ import {
 import EventDetails from "./EventDetails";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import EventBlock from "./EventBlock";
+
 interface EventProps {
-  event: CalendarEvent;
+  event: UserEvent | ScheduleEvent;
   style?: React.CSSProperties;
-  events?: CalendarEvent[];
-  user: User;
+  events?: (UserEvent | ScheduleEvent)[];
+  user?: User;
+  isGuest?: boolean;
+  onEventsChange?: () => void;
 }
 
-export default function Event({ event, style, events = [], user }: EventProps) {
+export default function Event({
+  event,
+  style,
+  events = [],
+  user,
+  isGuest = false,
+  onEventsChange,
+}: EventProps) {
   return (
     <>
       {/* Desktop: Popover */}
@@ -42,7 +52,13 @@ export default function Event({ event, style, events = [], user }: EventProps) {
             alignOffset={-25}
             className="border-[1.5px]"
           >
-            <EventDetails event={event} events={events} user={user} />
+            <EventDetails
+              event={event}
+              events={events}
+              user={user}
+              isGuest={isGuest}
+              onEventsChange={onEventsChange}
+            />
           </PopoverContent>
         </Popover>
       </div>
@@ -61,14 +77,18 @@ export default function Event({ event, style, events = [], user }: EventProps) {
             <VisuallyHidden>
               <DrawerHeader>
                 <DrawerTitle>
-                  {event.course?.subjectCode && event.course?.catalogNumber
-                    ? `${event.course.subjectCode} ${event.course.catalogNumber}`
-                    : event.summary}
+                  {event.course.courseCode}
                 </DrawerTitle>
               </DrawerHeader>
             </VisuallyHidden>
             <div className="px-4 pb-4 pt-6">
-              <EventDetails event={event} events={events} user={user} />
+              <EventDetails
+                event={event}
+                events={events}
+                user={user}
+                isGuest={isGuest}
+                onEventsChange={onEventsChange}
+              />
             </div>
           </DrawerContent>
         </Drawer>

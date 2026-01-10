@@ -1,28 +1,73 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
-import { seasonColors, seasonIcons } from "@/constants";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { getCurrentTerm } from "@/lib/utils";
+import { getEvents } from "@/lib/indexeddb";
 import { AddEventButton } from "./AddEventButton";
+import { TermSelector } from "./TermSelector";
 import { UploadDialog } from "./UploadDialog";
 import WeekView from "./WeekView";
 import { WallpaperDialog } from "./wallpaper/WallpaperDialog";
+import { Loader2, RotateCcw } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "./ui/button";
+import Link from "next/link";
 
 interface ScheduleProps {
-  events: CalendarEvent[];
+  events: UserEvent[];
   terms: Term[];
-  user: User;
+  user: User | null;
+  isLoggedIn: boolean;
 }
 
-export default function Schedule({ events, terms, user }: ScheduleProps) {
+export default function Schedule({
+  events: serverEvents,
+  terms,
+  user,
+  isLoggedIn,
+}: ScheduleProps) {
+  const router = useRouter();
   const [selectedTermId, setSelectedTermId] = useState<string>("");
+  const [localEvents, setLocalEvents] = useState<ScheduleEvent[]>([]);
+  const [isLoading, setIsLoading] = useState(!isLoggedIn);
+
+  // Refresh local events from IndexedDB
+  const refreshLocalEvents = useCallback(async () => {
+    if (isLoggedIn) return;
+    try {
+      const events = await getEvents();
+      setLocalEvents(events);
+    } catch (error) {
+      console.error("Error refreshing local events:", error);
+    }
+  }, [isLoggedIn]);
+
+  // Check IndexedDB for guest users
+  useEffect(() => {
+    if (isLoggedIn) return;
+
+    const checkLocalData = async () => {
+      try {
+        const events = await getEvents();
+
+        // Redirect if no local data
+        if (events.length === 0) {
+          router.replace("/");
+          return;
+        }
+
+        setLocalEvents(events);
+      } catch (error) {
+        console.error("Error checking IndexedDB:", error);
+        router.replace("/");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkLocalData();
+  }, [isLoggedIn, router]);
 
   // Set default term based on current date
   useEffect(() => {
@@ -34,73 +79,96 @@ export default function Schedule({ events, terms, user }: ScheduleProps) {
     }
   }, [terms, selectedTermId]);
 
-  // Filter events by selected term
-  const filteredEvents = events.filter(
-    (event) => event.term === selectedTermId
-  );
+  // Filter events by selected term (term can be string ID or Term object)
+  const filteredServerEvents = serverEvents.filter((event) => {
+    const termId =
+      typeof event.term === "string" ? event.term : (event.term as Term)?.$id;
+    return termId === selectedTermId;
+  });
+
+  const filteredLocalEvents = localEvents.filter((event) => {
+    const term = event.term as Term | null;
+    return term?.$id === selectedTermId;
+  });
+
+  const hasEvents = isLoggedIn
+    ? filteredServerEvents.length > 0
+    : filteredLocalEvents.length > 0;
+
+  // Show loading state for guest users while checking IndexedDB
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-[600px]">
+        <Loader2 className="size-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  const displayEvents = isLoggedIn ? filteredServerEvents : filteredLocalEvents;
 
   return (
     <>
       <div className="flex items-center justify-between pb-4">
-        <Select value={selectedTermId} onValueChange={setSelectedTermId}>
-          <SelectTrigger className="capitalize">
-            <SelectValue placeholder="Select a term">
-              {selectedTermId &&
-                (() => {
-                  const selectedTerm = terms.find(
-                    (term) => term.$id === selectedTermId
-                  );
-                  if (selectedTerm) {
-                    const IconComponent = seasonIcons[selectedTerm.season];
-                    const colorClass = seasonColors[selectedTerm.season];
-                    return (
-                      <div className="flex items-center gap-2">
-                        <IconComponent className={`h-4 w-4 ${colorClass}`} />
-                        {selectedTerm.season} {selectedTerm.year}
-                      </div>
-                    );
-                  }
-                  return null;
-                })()}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            {terms.map((term: Term) => {
-              const IconComponent = seasonIcons[term.season];
-              const colorClass = seasonColors[term.season];
-
-              return (
-                <SelectItem
-                  key={term.$id}
-                  value={term.$id || ""}
-                  className="capitalize"
-                >
-                  <div className="flex items-center gap-2">
-                    <IconComponent className={`h-4 w-4 ${colorClass}`} />
-                    {term.season} {term.year}
-                  </div>
-                </SelectItem>
-              );
-            })}
-          </SelectContent>
-        </Select>
-        <div className="flex items-center gap-2">
-          <WallpaperDialog events={filteredEvents} />
-          <AddEventButton
-            term={selectedTermId}
-            events={filteredEvents}
-            user={user}
+        {isLoggedIn && (
+          <TermSelector
+            terms={terms}
+            selectedTermId={selectedTermId}
+            onTermChange={setSelectedTermId}
           />
-          {filteredEvents.length === 0 && (
-            <UploadDialog
-              terms={terms}
-              user={user}
-              selectedTermId={selectedTermId}
-            />
+        )}
+        <div
+          className={cn(
+            "flex items-center gap-2",
+            !isLoggedIn && "justify-between w-full"
           )}
+        >
+          {!hasEvents ? (
+            <UploadDialog />
+          ) : (
+            <WallpaperDialog events={displayEvents} />
+          )}
+          <div className="flex items-center gap-2">
+            {!isLoggedIn && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="hidden md:flex"
+                  asChild
+                >
+                  <Link href="/">
+                    <RotateCcw className="size-4" />
+                    Retry upload
+                  </Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="md:hidden"
+                  asChild
+                >
+                  <Link href="/">
+                    <RotateCcw className="size-4" />
+                  </Link>
+                </Button>
+              </>
+            )}
+            <AddEventButton
+              term={selectedTermId}
+              events={displayEvents}
+              user={user}
+              isGuest={!isLoggedIn}
+              onEventSaved={refreshLocalEvents}
+            />
+          </div>
         </div>
       </div>
-      <WeekView events={filteredEvents} user={user} />
+      <WeekView
+        events={displayEvents}
+        user={user ?? undefined}
+        isGuest={!isLoggedIn}
+        onEventsChange={refreshLocalEvents}
+      />
     </>
   );
 }

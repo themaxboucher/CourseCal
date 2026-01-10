@@ -1,5 +1,14 @@
+// === Utility Types ===
 declare type Override<T, R> = Omit<T, keyof R> & R;
 
+// Appwrite document fields - used for all stored documents
+declare type AppwriteDoc = {
+  $id: string;
+  $createdAt: string;
+  $updatedAt: string;
+};
+
+// === Primitive Types ===
 declare type Color =
   | "red"
   | "orange"
@@ -10,7 +19,13 @@ declare type Color =
   | "purple"
   | "pink";
 
-declare interface User {
+declare type Day = "monday" | "tuesday" | "wednesday" | "thursday" | "friday";
+declare type EventType = "lecture" | "tutorial" | "lab" | "seminar";
+declare type Recurrence = "weekly" | "biweekly";
+declare type Season = "winter" | "spring" | "summer" | "fall";
+
+// === Domain Types ===
+declare interface User extends AppwriteDoc {
   userId: string;
   email: string;
   name: string;
@@ -18,111 +33,118 @@ declare interface User {
   avatar: string;
   hasCompletedOnboarding: boolean;
   hasBeenWelcomed: boolean;
-  $id: string;
-  $createdAt: string;
-  $updatedAt: string;
 }
 
-declare interface Course {
-  subjectCode: string;
-  subject: string;
-  catalogNumber: number;
-  title: string;
-  description: string;
-  units: number;
-  instructionalComponents: "lecture" | "tutorial" | "laboratory" | "seminar";
+declare interface Course extends AppwriteDoc {
+  courseCode: string;
+  subject?: string;
+  title?: string;
+  description?: string;
+  units?: number;
+  instructionalComponents?: "lecture" | "tutorial" | "laboratory" | "seminar";
   color?: CourseColor;
-  $id: string;
-  $createdAt: string;
-  $updatedAt: string;
 }
 
-declare interface Major {
-  major: string;
-  degreeType: string;
-  $id: string;
-  $createdAt: string;
-  $updatedAt: string;
-}
-
-declare interface Term {
+declare interface Term extends AppwriteDoc {
   year: number;
-  season: "winter" | "spring" | "summer" | "fall";
+  season: Season;
   startDate: string;
   endDate: string;
-  $id: string;
-  $createdAt: string;
-  $updatedAt: string;
 }
 
 declare interface CourseColor {
   course: string;
-  user: string;
   color: Color;
-  $id: string;
-  $createdAt: string;
-  $updatedAt: string;
 }
 
-declare interface CourseColorDB {
-  course: string;
+declare interface UserCourseColor extends CourseColor, AppwriteDoc {
   user: string;
-  color: Color;
+}
+
+declare interface CourseColorDB extends UserCourseColor {
   $id: string;
 }
 
-declare interface DisplayEvent {
-  course: {
-    subjectCode: string;
-    catalogNumber: number;
-    title: string;
-  };
-  type: string;
-  days: string[];
+// For creating/updating course colors (no Appwrite metadata)
+declare type CourseColorInput = Pick<
+  CourseColor,
+  "course" | "user" | "color"
+> & { $id?: string };
+
+// === Event Types ===
+
+// Event format from AI parsing
+declare interface ParsedEvent {
+  courseCode: string;
+  location: string;
+  type: EventType | null;
   startTime: string;
   endTime: string;
-  location: string;
-  courseColor: { color: string };
+  days: Day[];
 }
 
-declare interface CalendarEvent {
-  user: string;
-  course: Course | null;
-  summary?: string;
-  type: "lecture" | "tutorial" | "lab" | "seminar" | null;
-  location: string;
+declare interface ScheduleEvent {
+  course: Pick<Course, "courseCode"> & Partial<Omit<Course, "courseCode">>;
+  location?: string;
+  type?: EventType;
   startTime: string;
   endTime: string;
-  days?: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday")[];
-  recurrence?: "weekly" | "biweekly";
+  days: Day[];
+  term: Term | null;
+  courseColor: { color: Color };
+  recurrence?: Recurrence;
   exclusions?: string[];
-  term: string;
-  courseColor: CourseColor;
-  $id: string;
-  $createdAt: string;
-  $updatedAt: string;
 }
 
-declare interface CalendarEventDB {
+// Full stored event with all relationships
+declare interface UserEvent extends ScheduleEvent, AppwriteDoc {
   user: string;
+}
+
+// For creating events in the database
+declare type CalendarEventInput = Omit<
+  UserEvent,
+  keyof AppwriteDoc | "course" | "courseColor"
+> & {
   course?: string;
-  summary?: string;
-  type?: "lecture" | "tutorial" | "lab" | "seminar";
+  days: Day[];
+  recurrence: Recurrence;
+  exclusions: string[];
+};
+
+declare type CalendarEventDB = {
+  user: string;
+  course: string;
+  type: EventType;
   location: string;
   startTime: string;
   endTime: string;
-  days: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday")[];
-  recurrence: "weekly" | "biweekly";
+  days: Day[];
+  recurrence: Recurrence;
   exclusions: string[];
   term: string;
-}
+};
 
-declare interface ParsedEvent {
-  summary: string;
-  location?: string;
-  startTime: string;
-  endTime: string;
-  days?: ("monday" | "tuesday" | "wednesday" | "thursday" | "friday")[];
-  recurrence?: "weekly" | "biweekly";
-  exclusions?: string[];
-}
+declare type BackgroundType =
+  | "plain"
+  | "ice"
+  | "fire"
+  | "sunset"
+  | "aurora"
+  | "ocean"
+  | "forest"
+  | "lavender"
+  | "mint"
+  | "galaxy"
+  | "rose"
+  | "midnight";
+
+declare type FontType =
+  | "default"
+  | "serif"
+  | "writing"
+  | "rounded"
+  | "stencil"
+  | "pixels";
+
+declare type ThemeType = "light" | "dark";

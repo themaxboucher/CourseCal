@@ -15,18 +15,27 @@ import EventDialog from "./EventDialog";
 import { classTypeIcons, eventColors } from "@/constants";
 
 interface EventDetailsProps {
-  event: CalendarEvent;
-  events?: CalendarEvent[];
-  user: User;
+  event: UserEvent | ScheduleEvent;
+  events?: (UserEvent | ScheduleEvent)[];
+  user?: User;
+  isGuest?: boolean;
+  onEventsChange?: () => void;
 }
 
 export default function EventDetails({
   event,
   events = [],
   user,
+  isGuest = false,
+  onEventsChange,
 }: EventDetailsProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  // Get event ID - for guests it's stored as 'id', for logged-in users it's '$id'
+  const eventId = isGuest
+    ? (event as ScheduleEvent & { id: number }).id
+    : (event as UserEvent).$id;
 
   function handleEditDialog() {
     setIsDialogOpen(true);
@@ -44,20 +53,21 @@ export default function EventDetails({
             className={cn(
               "min-h-full w-1.5 rounded-[0.2rem]",
               event.courseColor
-                ? eventColors[event.courseColor.color]
+                ? eventColors[
+                    event.courseColor.color as keyof typeof eventColors
+                  ]
                 : eventColors.fallback
             )}
           />
           <div>
             <div className="w-full flex items-center justify-between gap-2">
               <div>
-                {event.course?.subjectCode && event.course?.catalogNumber && (
-                  <div className="font-semibold truncate">
-                    {event.course.subjectCode} {event.course.catalogNumber}
-                  </div>
-                )}
+                <div className="font-semibold truncate">
+                  {event.course.courseCode}
+                </div>
+
                 <div className="text-sm opacity-75 text-muted-foreground">
-                  {event.course?.title || event.summary}
+                  {event.course?.title}
                 </div>
               </div>
             </div>
@@ -98,7 +108,7 @@ export default function EventDetails({
             <div className="p-1.5 bg-muted/50 rounded-full">
               <RefreshCw className="size-3 min-w-3" />
             </div>
-            {event && event.recurrence && (
+            {event.days && event.recurrence && (
               <div className="text-sm truncate">
                 {getReadableRecurrence(event.recurrence, event.days)}
               </div>
@@ -139,12 +149,18 @@ export default function EventDetails({
         eventToEdit={event}
         events={events}
         user={user}
+        isGuest={isGuest}
+        onEventSaved={onEventsChange}
       />
       <DeleteEventDialog
-        eventId={event.$id || ""}
+        eventId={eventId}
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
-        onEventDeleted={() => setIsDeleteDialogOpen(false)}
+        onEventDeleted={() => {
+          setIsDeleteDialogOpen(false);
+          onEventsChange?.();
+        }}
+        isGuest={isGuest}
       />
     </>
   );

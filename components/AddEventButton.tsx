@@ -5,16 +5,23 @@ import { Button } from "./ui/button";
 import { useState } from "react";
 import EventDialog from "./EventDialog";
 
+interface AddEventButtonProps {
+  term: string;
+  events?: (UserEvent | ScheduleEvent)[];
+  user?: User | null;
+  isGuest?: boolean;
+  onEventSaved?: () => void;
+}
+
 export function AddEventButton({
   term,
   events = [],
   user,
-}: {
-  term: string;
-  events?: CalendarEvent[];
-  user: User;
-}) {
+  isGuest = false,
+  onEventSaved,
+}: AddEventButtonProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   function handleOpenDialog() {
     setIsDialogOpen(true);
   }
@@ -22,6 +29,7 @@ export function AddEventButton({
   function handleCloseDialog() {
     setIsDialogOpen(false);
   }
+
   return (
     <>
       <Button className="hidden md:flex" size="sm" onClick={handleOpenDialog}>
@@ -37,7 +45,9 @@ export function AddEventButton({
         eventToEdit={null}
         term={term}
         events={events}
-        user={user}
+        user={user ?? undefined}
+        isGuest={isGuest}
+        onEventSaved={onEventSaved}
       />
     </>
   );

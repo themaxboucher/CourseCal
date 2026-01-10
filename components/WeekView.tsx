@@ -1,90 +1,41 @@
 "use client";
 
+import { useMemo } from "react";
 import Event from "./Event";
 import { cn } from "@/lib/utils";
 import EventBlock from "./EventBlock";
-
-interface DisplayEvent {
-  course: {
-    subjectCode: string;
-    catalogNumber: number;
-    title: string;
-  };
-  type: string;
-  days: string[];
-  startTime: string;
-  endTime: string;
-  location: string;
-  courseColor: { color: string };
-}
+import { weekdays } from "@/constants";
+import {
+  getWeekdayIndex,
+  getEventPosition,
+  getTimeRange,
+  generateTimeSlots,
+} from "@/lib/utils";
 
 interface WeekViewProps {
-  events: CalendarEvent[] | DisplayEvent[];
+  events: UserEvent[] | ScheduleEvent[];
   user?: User;
+  isGuest?: boolean;
+  onEventsChange?: () => void;
 }
 
-const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-const timeSlots = [
-  "8:00 AM",
-  "9:00 AM",
-  "10:00 AM",
-  "11:00 AM",
-  "12:00 PM",
-  "1:00 PM",
-  "2:00 PM",
-  "3:00 PM",
-  "4:00 PM",
-  "5:00 PM",
-  "6:00 PM",
-];
+export default function WeekView({
+  events,
+  user,
+  isGuest = false,
+  onEventsChange,
+}: WeekViewProps) {
+  // Calculate dynamic time range based on events
+  const { startHour, endHour } = useMemo(() => getTimeRange(events), [events]);
+  const timeSlots = useMemo(
+    () => generateTimeSlots(startHour, endHour, false),
+    [startHour, endHour]
+  );
+  const timeSlotsShort = useMemo(
+    () => generateTimeSlots(startHour, endHour, true),
+    [startHour, endHour]
+  );
 
-const timeSlotsShort = [
-  "8 AM",
-  "9 AM",
-  "10 AM",
-  "11 AM",
-  "12 PM",
-  "1 PM",
-  "2 PM",
-  "3 PM",
-  "4 PM",
-  "5 PM",
-  "6 PM",
-];
-
-// Helper function to convert day name to weekday index
-const getWeekdayIndex = (dayName: string): number => {
-  const dayMap: Record<string, number> = {
-    monday: 0,
-    tuesday: 1,
-    wednesday: 2,
-    thursday: 3,
-    friday: 4,
-  };
-  return dayMap[dayName] ?? 0;
-};
-
-// Helper function to convert time to minutes from midnight
-const timeToMinutes = (timeString: string): number => {
-  // Handle time strings like "16:00:00" or "16:00"
-  const [hours, minutes] = timeString.split(":").map(Number);
-  return hours * 60 + (minutes || 0);
-};
-
-// Helper function to get position and height for event
-const getEventPosition = (event: CalendarEvent | DisplayEvent) => {
-  const startMinutes = timeToMinutes(event.startTime);
-  const endMinutes = timeToMinutes(event.endTime);
-  const duration = endMinutes - startMinutes;
-
-  // Convert to pixels (assuming 64px per hour)
-  const top = (startMinutes - 8 * 60) * (64 / 60); // Start from 8 AM
-  const height = duration * (64 / 60);
-
-  return { top, height };
-};
-
-export default function WeekView({ events, user }: WeekViewProps) {
   // Group events by day of week using the days array
   const eventsByDay = events.reduce((acc, event) => {
     if (event.days && event.days.length > 0) {
@@ -103,10 +54,10 @@ export default function WeekView({ events, user }: WeekViewProps) {
     }
 
     return acc;
-  }, {} as Record<number, (CalendarEvent | DisplayEvent)[]>);
+  }, {} as Record<number, (UserEvent | ScheduleEvent)[]>);
 
   return (
-    <div className="w-full max-w-6xl mx-auto">
+    <div className="w-full max-w-[75rem] mx-auto">
       {/* Schedule grid */}
       <div
         className="grid grid-cols-6"
@@ -164,15 +115,23 @@ export default function WeekView({ events, user }: WeekViewProps) {
 
             {/* Events for this day */}
             {eventsByDay[dayIndex]?.map((event, eventIndex) => {
-              const { top, height } = getEventPosition(event);
-              const isDisplayEvent = !("$id" in event);
+              const { top, height } = getEventPosition(event, 64, startHour); // 64px per hour
+              const eventId =
+                "id" in event
+                  ? (event as ScheduleEvent & { id: number }).id
+                  : "$id" in event
+                  ? (event as UserEvent).$id
+                  : undefined;
+              const isInteractive = user || isGuest;
 
-              return user && !isDisplayEvent ? (
+              return isInteractive ? (
                 <Event
-                  key={`${event.$id || eventIndex}`}
-                  event={event as CalendarEvent}
-                  events={events as CalendarEvent[]}
+                  key={`${eventId || eventIndex}`}
+                  event={event}
+                  events={events}
                   user={user}
+                  isGuest={isGuest}
+                  onEventsChange={onEventsChange}
                   style={{
                     position: "absolute",
                     top: `${top}px`,
