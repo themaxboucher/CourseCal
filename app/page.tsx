@@ -20,6 +20,7 @@ export default async function Home() {
                 <TextAnimate
                   animation="slideUp"
                   by="word"
+                  once={true}
                   className="heading-1 md:text-6xl max-w-[18rem] md:max-w-[28rem]"
                 >
                   New schedule, new lock screen.
@@ -27,6 +28,7 @@ export default async function Home() {
                 <TextAnimate
                   animation="slideUp"
                   by="word"
+                  once={true}
                   delay={0.3}
                   className="text-muted-foreground text-lg md:text-2xl max-w-sm md:max-w-lg"
                 >
