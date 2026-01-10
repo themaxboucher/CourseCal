@@ -9,8 +9,10 @@ import { TermSelector } from "./TermSelector";
 import { UploadDialog } from "./UploadDialog";
 import WeekView from "./WeekView";
 import { WallpaperDialog } from "./wallpaper/WallpaperDialog";
-import { Loader2 } from "lucide-react";
+import { Loader2, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "./ui/button";
+import Link from "next/link";
 
 interface ScheduleProps {
   events: UserEvent[];
@@ -125,13 +127,23 @@ export default function Schedule({
           ) : (
             <WallpaperDialog events={displayEvents} />
           )}
-          <AddEventButton
-            term={selectedTermId}
-            events={displayEvents}
-            user={user}
-            isGuest={!isLoggedIn}
-            onEventSaved={refreshLocalEvents}
-          />
+          <div className="flex items-center gap-2">
+            {!isLoggedIn && (
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/">
+                  <RotateCcw className="size-4" />
+                  Retry upload
+                </Link>
+              </Button>
+            )}
+            <AddEventButton
+              term={selectedTermId}
+              events={displayEvents}
+              user={user}
+              isGuest={!isLoggedIn}
+              onEventSaved={refreshLocalEvents}
+            />
+          </div>
         </div>
       </div>
       <WeekView
