@@ -227,7 +227,7 @@ export const timeToMinutes = (timeString: string): number => {
 export const getTimeRange = (
   events: (UserEvent | ScheduleEvent)[]
 ): { startHour: number; endHour: number } => {
-  const DEFAULT_START = 8; // 8 AM
+  const DEFAULT_START = 9; // 9 AM
   const DEFAULT_END = 16; // 4 PM
 
   if (!events || events.length === 0) {

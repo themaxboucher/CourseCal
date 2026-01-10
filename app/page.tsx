@@ -47,6 +47,7 @@ export default async function Home() {
                   background="galaxy"
                   font="default"
                   theme="dark"
+                  cellHeight={100}
                 />
               </div>
               <div className="size-full absolute inset-0 flex justify-end items-end scale-75 rotate-4 translate-y-12">
@@ -55,6 +56,7 @@ export default async function Home() {
                   background="ice"
                   font="rounded"
                   theme="light"
+                  cellHeight={100}
                 />
               </div>
             </div>

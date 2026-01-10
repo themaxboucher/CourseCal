@@ -20,7 +20,7 @@ interface WallpaperImageProps {
 
 // Cell height constants
 const MIN_CELL_HEIGHT = 24;
-const MAX_CELL_HEIGHT = 32;
+const TARGET_MAX_TOTAL_HEIGHT = 352; // Target max total height for the schedule grid
 
 // Light theme CSS variables from globals.css
 const lightThemeStyles: React.CSSProperties = {
@@ -62,9 +62,6 @@ export default function WallpaperImage({
   theme = "light",
   cellHeight = 0,
 }: WallpaperImageProps) {
-  // Calculate the actual pixel height from percentage (0% = 26px, 100% = 52px)
-  const cellHeightPx = MIN_CELL_HEIGHT + (cellHeight / 100) * (MAX_CELL_HEIGHT - MIN_CELL_HEIGHT);
-
   // Calculate dynamic time range based on events
   const { startHour, endHour } = useMemo(() => getTimeRange(events), [events]);
   const timeSlots = useMemo(
@@ -75,6 +72,12 @@ export default function WallpaperImage({
     () => generateTimeSlots(startHour, endHour, true),
     [startHour, endHour]
   );
+
+  // Calculate max cell height based on number of time slots
+  const maxCellHeight = Math.max(MIN_CELL_HEIGHT, TARGET_MAX_TOTAL_HEIGHT / timeSlots.length);
+  
+  // Calculate the actual pixel height from percentage (0% = min, 100% = max based on time slots)
+  const cellHeightPx = MIN_CELL_HEIGHT + (cellHeight / 100) * (maxCellHeight - MIN_CELL_HEIGHT);
 
   // Group events by day of week using the days array
   const eventsByDay = events.reduce((acc, event) => {
