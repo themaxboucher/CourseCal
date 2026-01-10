@@ -84,13 +84,13 @@ declare interface ParsedEvent {
 }
 
 declare interface ScheduleEvent {
-  course: Course;
+  course: Pick<Course, "courseCode"> & Partial<Omit<Course, "courseCode">>;
   location?: string;
   type?: EventType;
   startTime: string;
   endTime: string;
   days: Day[];
-  term: Term;
+  term: Term | null;
   courseColor: { color: Color };
   recurrence?: Recurrence;
   exclusions?: string[];
@@ -139,6 +139,12 @@ declare type BackgroundType =
   | "rose"
   | "midnight";
 
-declare type FontType = "default" | "serif" | "writing" | "rounded" | "stencil" | "pixels";
+declare type FontType =
+  | "default"
+  | "serif"
+  | "writing"
+  | "rounded"
+  | "stencil"
+  | "pixels";
 
 declare type ThemeType = "light" | "dark";

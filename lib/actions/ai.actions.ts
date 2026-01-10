@@ -88,6 +88,29 @@ const RESPONSE_SCHEMA = {
   },
 } as const;
 
+/**
+ * Merges events that have identical properties except for days.
+ * Events with the same courseCode, location, type, startTime, and endTime
+ * are combined into a single event with all days merged.
+ */
+function mergeEvents(events: ParsedEvent[]): ParsedEvent[] {
+  const eventMap = new Map<string, ParsedEvent>();
+
+  for (const event of events) {
+    const key = `${event.courseCode}|${event.location}|${event.type}|${event.startTime}|${event.endTime}`;
+    const existing = eventMap.get(key);
+
+    if (existing) {
+      // Merge days, avoiding duplicates
+      existing.days = [...new Set([...existing.days, ...event.days])];
+    } else {
+      eventMap.set(key, { ...event, days: [...event.days] });
+    }
+  }
+
+  return Array.from(eventMap.values());
+}
+
 export type ScheduleAnalysisResult =
   | { success: true; isSchedule: true; events: ScheduleEvent[] }
   | { success: true; isSchedule: false }
@@ -167,13 +190,16 @@ export async function analyzeScheduleImage(
       ])
     );
 
+    // Merge events that have identical properties except for days
+    const mergedEvents = mergeEvents(parsed.events);
+
     // Validate and return events
-    const events: ScheduleEvent[] = parsed.events.map((event: ParsedEvent) => ({
+    const events: ScheduleEvent[] = mergedEvents.map((event: ParsedEvent) => ({
       course: {
         courseCode: event.courseCode,
       },
       location: event.location,
-      type: event.type,
+      type: event.type ?? undefined,
       startTime: event.startTime,
       endTime: event.endTime,
       days: event.days,
