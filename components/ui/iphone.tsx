@@ -48,14 +48,14 @@ export function Iphone({
     >
       <div
         className={cn(
-          "absolute inset-0 pt-18 size-full flex flex-col justify-start items-center gap-2 z-10 font-sf-pro tracking-tight",
-          theme === "dark" ? "text-white" : "text-black"
+          "absolute inset-0 pt-17 size-full flex flex-col justify-start items-center gap-3 z-10",
+          theme === "dark" ? "text-white" : "text-black/75"
         )}
       >
-        <div className="font-semibold opacity-95">
+        <div className="text-[15px] font-sf-pro tracking-tight font-semibold opacity-90">
           {format(date, "EEEE, MMMM d")}
         </div>
-        <div className="text-6xl font-black tracking-tighter">
+        <div className="text-6xl font-sf-pro-soft font-semibold tracking-tighter opacity-90">
           {format(date, "h:mm")}
         </div>
       </div>

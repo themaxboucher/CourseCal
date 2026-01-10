@@ -8,20 +8,15 @@ import WallpaperPreview from "./WallpaperPreview";
 import { toast } from "sonner";
 import { Label } from "../ui/label";
 import { cn } from "@/lib/utils";
+import { backgroundOptions } from "@/constants";
 
-const backgroundOptions: { value: BackgroundType; label: string; color: string }[] = [
-  { value: "plain", label: "Plain", color: "bg-zinc-500" },
-  { value: "ice", label: "Ice", color: "bg-blue-500" },
-  { value: "fire", label: "Fire", color: "bg-red-500" },
-  { value: "sunset", label: "Sunset", color: "bg-orange-500" },
-  { value: "aurora", label: "Aurora", color: "bg-emerald-500" },
-  { value: "ocean", label: "Ocean", color: "bg-teal-500" },
-  { value: "forest", label: "Forest", color: "bg-green-500" },
-  { value: "lavender", label: "Lavender", color: "bg-violet-500" },
-  { value: "mint", label: "Mint", color: "bg-cyan-500" },
-  { value: "galaxy", label: "Galaxy", color: "bg-indigo-500" },
-  { value: "rose", label: "Rose", color: "bg-pink-500" },
-  { value: "midnight", label: "Midnight", color: "bg-slate-700" },
+const fontOptions: { value: FontType; label: string; className: string }[] = [
+  { value: "default", label: "Default", className: "" },
+  { value: "serif", label: "Serif", className: "font-serif" },
+  { value: "writing", label: "Writing", className: "font-writing" },
+  { value: "rounded", label: "Rounded", className: "font-rounded" },
+  { value: "stencil", label: "Stencil", className: "font-stencil" },
+  { value: "pixels", label: "Pixels", className: "font-pixels" },
 ];
 
 interface WallpaperFormProps {
@@ -113,69 +108,46 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
 
             <div className="flex flex-col gap-4">
               <Label>Background</Label>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-4 gap-3">
                 {backgroundOptions.map((option) => (
-                  <Button
+                <Button
                     key={option.value}
-                    type="button"
+                  type="button"
                     size="sm"
-                    variant="outline"
+                  variant="outline"
                     onClick={() => setBackground(option.value)}
-                    className={cn(
+                  className={cn(
                       "normal-case font-medium",
                       background === option.value &&
-                        "ring-2 ring-sky-500 ring-offset-2 ring-offset-background"
-                    )}
-                  >
-                    <span className={cn("size-3 rounded-full", option.color)} />
+                      "ring-2 ring-sky-500 ring-offset-2 ring-offset-background"
+                  )}
+                >
+                    <span className={cn("size-3.5 min-w-3.5 rounded-[3.5px]", option.preview)} />
                     {option.label}
-                  </Button>
+                </Button>
                 ))}
               </div>
             </div>
 
             <div className="flex flex-col gap-4">
               <Label>Font</Label>
-              <div className="flex gap-4">
-                <Button
-                  type="button"
-                  size="lg"
-                  variant="outline"
-                  onClick={() => setFont("default")}
-                  className={cn(
-                    "flex-1 font-medium normal-case",
-                    font === "default" &&
-                      "ring-2 ring-sky-500 ring-offset-2 ring-offset-background"
-                  )}
-                >
-                  Default
-                </Button>
-                <Button
-                  type="button"
-                  size="lg"
-                  variant="outline"
-                  onClick={() => setFont("serif")}
-                  className={cn(
-                    "flex-1 font-serif normal-case font-medium",
-                    font === "serif" &&
-                      "ring-2 ring-sky-500 ring-offset-2 ring-offset-background"
-                  )}
-                >
-                  Serif
-                </Button>
-                <Button
-                  type="button"
-                  size="lg"
-                  variant="outline"
-                  onClick={() => setFont("mono")}
-                  className={cn(
-                    "flex-1 font-mono normal-case font-medium",
-                    font === "mono" &&
-                      "ring-2 ring-sky-500 ring-offset-2 ring-offset-background"
-                  )}
-                >
-                  Mono
-                </Button>
+              <div className="grid grid-cols-3 gap-3">
+                {fontOptions.map((option) => (
+                  <Button
+                    key={option.value}
+                    type="button"
+                    variant="outline"
+                    onClick={() => setFont(option.value)}
+                    className={cn(
+                      "normal-case font-medium",
+                      option.className,
+                      font === option.value &&
+                        "ring-2 ring-sky-500 ring-offset-2 ring-offset-background"
+                    )}
+                  >
+                    {option.label}
+                  </Button>
+                ))}
               </div>
             </div>
           </div>

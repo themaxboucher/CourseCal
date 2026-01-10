@@ -118,6 +118,99 @@ const mockTerm = {
   endDate: "2025-04-15",
 };
 
+export const backgroundOptions: {
+  value: BackgroundType;
+  label: string;
+  preview: string;
+  light: string;
+  dark: string;
+}[] = [
+  {
+    value: "plain",
+    label: "Plain",
+    preview: "bg-gradient-to-b from-white to-zinc-300",
+    light: "bg-gradient-to-b from-white to-zinc-100",
+    dark: "bg-gradient-to-b from-zinc-800 to-zinc-950",
+  },
+  {
+    value: "ice",
+    label: "Ice",
+    preview: "bg-gradient-to-b from-sky-300 to-blue-500",
+    light: "bg-gradient-to-b from-sky-100 to-blue-200",
+    dark: "bg-gradient-to-b from-sky-500 to-blue-800",
+  },
+  {
+    value: "fire",
+    label: "Fire",
+    preview: "bg-gradient-to-b from-orange-400 to-red-500",
+    light: "bg-gradient-to-b from-orange-100 to-red-200",
+    dark: "bg-gradient-to-b from-orange-500 to-red-800",
+  },
+  {
+    value: "sunset",
+    label: "Sunset",
+    preview: "bg-gradient-to-b from-amber-300 via-orange-400 to-rose-500",
+    light: "bg-gradient-to-b from-amber-100 via-orange-200 to-rose-300",
+    dark: "bg-gradient-to-b from-orange-500 via-rose-600 to-purple-800",
+  },
+  {
+    value: "aurora",
+    label: "Aurora",
+    preview: "bg-gradient-to-b from-emerald-400 via-teal-400 to-violet-500",
+    light: "bg-gradient-to-b from-emerald-100 via-teal-200 to-violet-200",
+    dark: "bg-gradient-to-b from-emerald-600 via-cyan-700 to-violet-800",
+  },
+  {
+    value: "ocean",
+    label: "Ocean",
+    preview: "bg-gradient-to-b from-cyan-400 via-sky-500 to-blue-600",
+    light: "bg-gradient-to-b from-cyan-100 via-sky-200 to-blue-300",
+    dark: "bg-gradient-to-b from-teal-600 via-cyan-700 to-indigo-900",
+  },
+  {
+    value: "forest",
+    label: "Forest",
+    preview: "bg-gradient-to-b from-lime-400 via-green-500 to-emerald-600",
+    light: "bg-gradient-to-b from-lime-100 via-green-200 to-emerald-300",
+    dark: "bg-gradient-to-b from-green-600 via-green-700 to-emerald-900",
+  },
+  {
+    value: "lavender",
+    label: "Lavender",
+    preview: "bg-gradient-to-b from-violet-400 via-purple-500 to-fuchsia-500",
+    light: "bg-gradient-to-b from-violet-100 via-purple-200 to-fuchsia-200",
+    dark: "bg-gradient-to-b from-violet-600 via-purple-700 to-fuchsia-900",
+  },
+  {
+    value: "mint",
+    label: "Mint",
+    preview: "bg-gradient-to-b from-teal-300 via-cyan-400 to-emerald-500",
+    light: "bg-gradient-to-b from-teal-100 via-cyan-100 to-emerald-200",
+    dark: "bg-gradient-to-b from-teal-600 via-cyan-700 to-emerald-800",
+  },
+  {
+    value: "galaxy",
+    label: "Galaxy",
+    preview: "bg-gradient-to-b from-indigo-400 via-purple-500 to-pink-500",
+    light: "bg-gradient-to-b from-indigo-200 via-purple-200 to-pink-200",
+    dark: "bg-gradient-to-b from-slate-900 via-purple-900 to-violet-800",
+  },
+  {
+    value: "rose",
+    label: "Rose",
+    preview: "bg-gradient-to-b from-pink-400 via-rose-500 to-red-500",
+    light: "bg-gradient-to-b from-pink-100 via-rose-200 to-red-200",
+    dark: "bg-gradient-to-b from-pink-600 via-rose-700 to-red-900",
+  },
+  {
+    value: "midnight",
+    label: "Midnight",
+    preview: "bg-gradient-to-b from-slate-500 via-blue-800 to-indigo-900",
+    light: "bg-gradient-to-b from-slate-200 via-blue-200 to-indigo-300",
+    dark: "bg-gradient-to-b from-slate-900 via-blue-950 to-indigo-950",
+  },
+];
+
 export const displayEvents: ScheduleEvent[] = [
   // Core Classes - Mixed schedule with variety
   {

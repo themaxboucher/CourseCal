@@ -139,6 +139,6 @@ declare type BackgroundType =
   | "rose"
   | "midnight";
 
-declare type FontType = "default" | "serif" | "mono";
+declare type FontType = "default" | "serif" | "writing" | "rounded" | "stencil" | "pixels";
 
 declare type ThemeType = "light" | "dark";
