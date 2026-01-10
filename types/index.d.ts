@@ -125,7 +125,19 @@ declare type CalendarEventDB = {
   term: string;
 };
 
-declare type BackgroundType = "plain" | "ice" | "fire";
+declare type BackgroundType =
+  | "plain"
+  | "ice"
+  | "fire"
+  | "sunset"
+  | "aurora"
+  | "ocean"
+  | "forest"
+  | "lavender"
+  | "mint"
+  | "galaxy"
+  | "rose"
+  | "midnight";
 
 declare type FontType = "default" | "serif" | "mono";
 

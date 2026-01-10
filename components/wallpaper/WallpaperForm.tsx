@@ -2,13 +2,27 @@
 
 import { useRef, useState } from "react";
 import { toPng } from "html-to-image";
-import { Download, Info, Moon, Sun } from "lucide-react";
+import { Download, Moon, Sun } from "lucide-react";
 import { Button } from "../ui/button";
 import WallpaperPreview from "./WallpaperPreview";
 import { toast } from "sonner";
 import { Label } from "../ui/label";
 import { cn } from "@/lib/utils";
-import { Alert, AlertTitle } from "../ui/alert";
+
+const backgroundOptions: { value: BackgroundType; label: string; color: string }[] = [
+  { value: "plain", label: "Plain", color: "bg-zinc-500" },
+  { value: "ice", label: "Ice", color: "bg-blue-500" },
+  { value: "fire", label: "Fire", color: "bg-red-500" },
+  { value: "sunset", label: "Sunset", color: "bg-orange-500" },
+  { value: "aurora", label: "Aurora", color: "bg-emerald-500" },
+  { value: "ocean", label: "Ocean", color: "bg-teal-500" },
+  { value: "forest", label: "Forest", color: "bg-green-500" },
+  { value: "lavender", label: "Lavender", color: "bg-violet-500" },
+  { value: "mint", label: "Mint", color: "bg-cyan-500" },
+  { value: "galaxy", label: "Galaxy", color: "bg-indigo-500" },
+  { value: "rose", label: "Rose", color: "bg-pink-500" },
+  { value: "midnight", label: "Midnight", color: "bg-slate-700" },
+];
 
 interface WallpaperFormProps {
   events: ScheduleEvent[];
@@ -99,54 +113,25 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
 
             <div className="flex flex-col gap-4">
               <Label>Background</Label>
-              <div className="flex gap-4">
-                <Button
-                  type="button"
-                  size="lg"
-                  variant="outline"
-                  onClick={() => setBackground("plain")}
-                  className={cn(
-                    "flex-1 normal-case font-medium",
-                    background === "plain" &&
-                      "ring-2 ring-sky-500 ring-offset-2 ring-offset-background"
-                  )}
-                >
-                  <span className="size-3.5 rounded-full bg-foreground" />
-                  Plain
-                </Button>
-                <Button
-                  type="button"
-                  size="lg"
-                  variant="outline"
-                  onClick={() => setBackground("ice")}
-                  className={cn(
-                    "flex-1 normal-case font-medium",
-                    background === "ice" &&
-                      "ring-2 ring-sky-500 ring-offset-2 ring-offset-background"
-                  )}
-                >
-                  <span className="size-3.5 rounded-full bg-blue-500" />
-                  Ice
-                </Button>
-                <Button
-                  type="button"
-                  size="lg"
-                  variant="outline"
-                  onClick={() => setBackground("fire")}
-                  className={cn(
-                    "flex-1 normal-case font-medium",
-                    background === "fire" &&
-                      "ring-2 ring-sky-500 ring-offset-2 ring-offset-background"
-                  )}
-                >
-                  <span className="size-3.5 rounded-full bg-red-500" />
-                  Fire
-                </Button>
+              <div className="grid grid-cols-4 gap-2">
+                {backgroundOptions.map((option) => (
+                  <Button
+                    key={option.value}
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setBackground(option.value)}
+                    className={cn(
+                      "normal-case font-medium",
+                      background === option.value &&
+                        "ring-2 ring-sky-500 ring-offset-2 ring-offset-background"
+                    )}
+                  >
+                    <span className={cn("size-3 rounded-full", option.color)} />
+                    {option.label}
+                  </Button>
+                ))}
               </div>
-              <Alert>
-                <Info className="size-4" />
-                <AlertTitle>More backgrounds coming soon!</AlertTitle>
-              </Alert>
             </div>
 
             <div className="flex flex-col gap-4">
