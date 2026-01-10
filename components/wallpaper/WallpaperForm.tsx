@@ -34,7 +34,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
   const [background, setBackground] = useState<BackgroundType>("plain");
   const [font, setFont] = useState<FontType>("default");
   const [theme, setTheme] = useState<ThemeType>("light");
-  const [cellHeight, setCellHeight] = useState(0);
+  const [cellHeight, setCellHeight] = useState(50);
 
   const handleDownload = async () => {
     if (!previewRef.current) return;
