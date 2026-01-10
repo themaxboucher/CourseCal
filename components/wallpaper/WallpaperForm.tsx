@@ -144,7 +144,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
 
             <div className="flex flex-col gap-4">
               <Label>Background</Label>
-              <div className="grid grid-cols-4 gap-3">
+              <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
                 {backgroundOptions.map((option) => (
                   <Button
                     key={option.value}

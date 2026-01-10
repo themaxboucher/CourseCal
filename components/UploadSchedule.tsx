@@ -112,6 +112,7 @@ export default function UploadSchedule() {
           className="hidden"
         />
 
+        {/* Desktop upload */}
         <div
           role="button"
           tabIndex={0}
@@ -127,7 +128,7 @@ export default function UploadSchedule() {
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           className={cn(
-            "group w-full h-54 border-2 border-input border-dashed hover:border-ring hover:bg-ring/5 ring-white rounded-xl flex flex-col items-center justify-center gap-4 text-muted-foreground transition-colors cursor-pointer",
+            "hidden lg:flex group w-full h-54 border-2 border-input border-dashed hover:border-ring hover:bg-ring/5 ring-white rounded-xl flex-col items-center justify-center gap-4 text-muted-foreground transition-colors cursor-pointer",
             isDragging && "border-ring bg-ring/5"
           )}
         >
@@ -148,11 +149,29 @@ export default function UploadSchedule() {
             </>
           ) : (
             <>
-              <Loader2 className="size-8 animate-spin" />
+              <Loader2 className="size-8 animate-spin text-primary" />
               <span>Analyzing schedule...</span>
             </>
           )}
         </div>
+
+        {/* Tablet & Mobile upload */}
+        {!isLoading ? (
+          <div className="flex flex-col items-center justify-center gap-3 lg:hidden">
+            <Button onClick={() => fileInputRef.current?.click()}>
+              <CalendarArrowUp className="size-4" />
+              Choose file
+            </Button>
+            <p className="text-muted-foreground text-sm">
+              Add a screenshot of your schedule
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center gap-3 text-muted-foreground lg:hidden">
+            <Loader2 className="size-6 text-primary animate-spin" />
+            <span>Analyzing schedule...</span>
+          </div>
+        )}
       </div>
 
       {/* Error state */}

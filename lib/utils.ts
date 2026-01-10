@@ -228,7 +228,7 @@ export const getTimeRange = (
   events: (UserEvent | ScheduleEvent)[]
 ): { startHour: number; endHour: number } => {
   const DEFAULT_START = 9; // 9 AM
-  const DEFAULT_END = 16; // 4 PM
+  const DEFAULT_END = 15; // 3 PM
 
   if (!events || events.length === 0) {
     return { startHour: DEFAULT_START, endHour: DEFAULT_END };

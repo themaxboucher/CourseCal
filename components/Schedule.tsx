@@ -129,12 +129,29 @@ export default function Schedule({
           )}
           <div className="flex items-center gap-2">
             {!isLoggedIn && (
-              <Button variant="outline" size="sm" asChild>
-                <Link href="/">
-                  <RotateCcw className="size-4" />
-                  Retry upload
-                </Link>
-              </Button>
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="hidden md:flex"
+                  asChild
+                >
+                  <Link href="/">
+                    <RotateCcw className="size-4" />
+                    Retry upload
+                  </Link>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="md:hidden"
+                  asChild
+                >
+                  <Link href="/">
+                    <RotateCcw className="size-4" />
+                  </Link>
+                </Button>
+              </>
             )}
             <AddEventButton
               term={selectedTermId}

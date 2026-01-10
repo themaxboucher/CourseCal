@@ -1,4 +1,4 @@
-import { Settings } from "lucide-react";
+import { CalendarFold, Settings } from "lucide-react";
 import { Logo } from "./Logo";
 import { Button } from "./ui/button";
 import Link from "next/link";
@@ -33,8 +33,13 @@ export function Navbar({
             )}
             {hasSchedule && (
               <li>
-                <Button size="sm" asChild>
+                <Button size="sm" className="hidden md:flex" asChild>
                   <Link href="/schedule">View Schedule</Link>
+                </Button>
+                <Button size="icon" className="md:hidden" asChild>
+                  <Link href="/schedule">
+                    <CalendarFold className="size-4.5" />
+                  </Link>
                 </Button>
               </li>
             )}
