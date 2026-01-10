@@ -486,7 +486,6 @@ export default function EventForm({
                 form={guestForm}
                 name="courseCode"
                 placeholder="e.g., ENGG 200"
-                className="flex-grow w-full"
                 warning={missingFields.course}
               />
             </div>

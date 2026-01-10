@@ -30,6 +30,7 @@ export function TextField({
       label={label}
       description={description}
       warning={warning}
+      className="flex-grow"
     >
       <Input
         placeholder={placeholder}
