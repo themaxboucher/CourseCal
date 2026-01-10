@@ -1,9 +1,16 @@
 "use client";
 
+import { useMemo } from "react";
 import Event from "./Event";
 import { cn } from "@/lib/utils";
 import EventBlock from "./EventBlock";
-import { weekdays, timeSlots, timeSlotsShort } from "@/constants";
+import { weekdays } from "@/constants";
+import {
+  getWeekdayIndex,
+  getEventPosition,
+  getTimeRange,
+  generateTimeSlots,
+} from "@/lib/utils";
 
 interface WeekViewProps {
   events: UserEvent[] | ScheduleEvent[];
@@ -12,39 +19,23 @@ interface WeekViewProps {
   onEventsChange?: () => void;
 }
 
-// Helper function to convert day name to weekday index
-const getWeekdayIndex = (dayName: string): number => {
-  const dayMap: Record<string, number> = {
-    monday: 0,
-    tuesday: 1,
-    wednesday: 2,
-    thursday: 3,
-    friday: 4,
-  };
-  return dayMap[dayName] ?? 0;
-};
+export default function WeekView({
+  events,
+  user,
+  isGuest = false,
+  onEventsChange,
+}: WeekViewProps) {
+  // Calculate dynamic time range based on events
+  const { startHour, endHour } = useMemo(() => getTimeRange(events), [events]);
+  const timeSlots = useMemo(
+    () => generateTimeSlots(startHour, endHour, false),
+    [startHour, endHour]
+  );
+  const timeSlotsShort = useMemo(
+    () => generateTimeSlots(startHour, endHour, true),
+    [startHour, endHour]
+  );
 
-// Helper function to convert time to minutes from midnight
-const timeToMinutes = (timeString: string): number => {
-  // Handle time strings like "16:00:00" or "16:00"
-  const [hours, minutes] = timeString.split(":").map(Number);
-  return hours * 60 + (minutes || 0);
-};
-
-// Helper function to get position and height for event
-const getEventPosition = (event: UserEvent | ScheduleEvent) => {
-  const startMinutes = timeToMinutes(event.startTime);
-  const endMinutes = timeToMinutes(event.endTime);
-  const duration = endMinutes - startMinutes;
-
-  // Convert to pixels (assuming 64px per hour)
-  const top = (startMinutes - 8 * 60) * (64 / 60); // Start from 8 AM
-  const height = duration * (64 / 60);
-
-  return { top, height };
-};
-
-export default function WeekView({ events, user, isGuest = false, onEventsChange }: WeekViewProps) {
   // Group events by day of week using the days array
   const eventsByDay = events.reduce((acc, event) => {
     if (event.days && event.days.length > 0) {
@@ -124,8 +115,13 @@ export default function WeekView({ events, user, isGuest = false, onEventsChange
 
             {/* Events for this day */}
             {eventsByDay[dayIndex]?.map((event, eventIndex) => {
-              const { top, height } = getEventPosition(event);
-              const eventId = "id" in event ? (event as ScheduleEvent & { id: number }).id : ("$id" in event ? (event as UserEvent).$id : undefined);
+              const { top, height } = getEventPosition(event, 64, startHour); // 64px per hour
+              const eventId =
+                "id" in event
+                  ? (event as ScheduleEvent & { id: number }).id
+                  : "$id" in event
+                  ? (event as UserEvent).$id
+                  : undefined;
               const isInteractive = user || isGuest;
 
               return isInteractive ? (

@@ -1,47 +1,21 @@
 "use client";
 
+import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import EventBlock from "../EventBlock";
-import { weekdays, timeSlots, timeSlotsShort } from "@/constants";
+import { weekdays } from "@/constants";
+import {
+  getWeekdayIndex,
+  getEventPosition,
+  getTimeRange,
+  generateTimeSlots,
+} from "@/lib/utils";
 
 interface WallpaperImageProps {
   events: ScheduleEvent[];
   user?: User;
   theme?: ThemeType;
 }
-
-// Helper function to convert day name to weekday index
-const getWeekdayIndex = (dayName: string): number => {
-  const dayMap: Record<string, number> = {
-    monday: 0,
-    tuesday: 1,
-    wednesday: 2,
-    thursday: 3,
-    friday: 4,
-  };
-  return dayMap[dayName] ?? 0;
-};
-
-// Helper function to convert time to minutes from midnight
-const timeToMinutes = (timeString: string): number => {
-  // Handle time strings like "16:00:00" or "16:00"
-  const [hours, minutes] = timeString.split(":").map(Number);
-  return hours * 60 + (minutes || 0);
-};
-
-// Helper function to get position and height for event
-  const getEventPosition = (event: ScheduleEvent) => {
-  const startMinutes = timeToMinutes(event.startTime);
-  const endMinutes = timeToMinutes(event.endTime);
-  const duration = endMinutes - startMinutes;
-
-  // Convert to pixels
-  const CELL_HEIGHT = 26;
-  const top = (startMinutes - 8 * 60) * (CELL_HEIGHT / 60); // Start from 8 AM
-  const height = duration * (CELL_HEIGHT / 60);
-
-  return { top, height };
-};
 
 // Light theme CSS variables from globals.css
 const lightThemeStyles: React.CSSProperties = {
@@ -78,7 +52,21 @@ const lightThemeStyles: React.CSSProperties = {
   "--sidebar-ring": "oklch(0.705 0.015 286.067)",
 } as React.CSSProperties;
 
-export default function WallpaperImage({ events, theme = "light" }: WallpaperImageProps) {
+export default function WallpaperImage({
+  events,
+  theme = "light",
+}: WallpaperImageProps) {
+  // Calculate dynamic time range based on events
+  const { startHour, endHour } = useMemo(() => getTimeRange(events), [events]);
+  const timeSlots = useMemo(
+    () => generateTimeSlots(startHour, endHour, false),
+    [startHour, endHour]
+  );
+  const timeSlotsShort = useMemo(
+    () => generateTimeSlots(startHour, endHour, true),
+    [startHour, endHour]
+  );
+
   // Group events by day of week using the days array
   const eventsByDay = events.reduce((acc, event) => {
     if (event.days && event.days.length > 0) {
@@ -100,77 +88,77 @@ export default function WallpaperImage({ events, theme = "light" }: WallpaperIma
   }, {} as Record<number, ScheduleEvent[]>);
 
   return (
-      <div 
-        className="w-full mx-auto"
-        style={theme === "light" ? lightThemeStyles : undefined}
+    <div
+      className="w-full mx-auto"
+      style={theme === "light" ? lightThemeStyles : undefined}
+    >
+      {/* Schedule grid */}
+      <div
+        className="grid grid-cols-6 overflow-hidden"
+        style={{ gridTemplateColumns: "auto 1fr 1fr 1fr 1fr 1fr" }}
       >
-        {/* Schedule grid */}
-        <div
-          className="grid grid-cols-6 overflow-hidden"
-          style={{ gridTemplateColumns: "auto 1fr 1fr 1fr 1fr 1fr" }}
-        >
-          <div />
-          {/* Time column header */}
-          {weekdays.map((day, index) => (
-            <div
-              key={day}
-              className={cn(
-                "text-[6px] text-muted-foreground font-medium p-2 bg-muted/30 text-center uppercase border-l border-t relative z-20",
-                index === 0 && "rounded-tl-lg",
-                index === weekdays.length - 1 && "border-r rounded-tr-lg"
-              )}
-            >
-              {day.slice(0, 3)}
-            </div>
-          ))}
-          {/* Time column */}
-          <div>
-            {timeSlotsShort.map((time) => (
-              <div
-                key={time}
-                className="h-6.5 py-0.5 pr-1 text-[6px] font-medium text-muted-foreground text-right text-nowrap tracking-tight"
-              >
-                {time}
-              </div>
-            ))}
+        <div />
+        {/* Time column header */}
+        {weekdays.map((day, index) => (
+          <div
+            key={day}
+            className={cn(
+              "text-[6px] text-muted-foreground font-medium p-2 bg-muted/30 text-center uppercase border-l border-t relative z-20",
+              index === 0 && "rounded-tl-lg",
+              index === weekdays.length - 1 && "border-r rounded-tr-lg"
+            )}
+          >
+            {day.slice(0, 3)}
           </div>
-          {/* Day columns */}
-          {weekdays.map((day, dayIndex) => (
+        ))}
+        {/* Time column */}
+        <div>
+          {timeSlotsShort.map((time) => (
             <div
-              key={day}
-              className={cn(
-                "relative border-l border-b",
-                dayIndex === 0 && "rounded-bl-lg",
-                dayIndex === weekdays.length - 1 && "border-r rounded-br-lg"
-              )}
+              key={time}
+              className="h-6.5 py-0.5 pr-1 text-[6px] font-medium text-muted-foreground text-right text-nowrap tracking-tight"
             >
-              {/* Time slot lines */}
-              {timeSlots.map((time) => (
-                <div key={time} className="h-6.5 border-t"></div>
-              ))}
-
-              {/* Events for this day */}
-              {eventsByDay[dayIndex]?.map((event, eventIndex) => {
-                const { top, height } = getEventPosition(event);
-
-                return (
-                  <EventBlock
-                    key={`${eventIndex}`}
-                    event={event}
-                    isWallpaper={true}
-                    wallpaperTheme={theme}
-                    style={{
-                      position: "absolute",
-                      top: `${top}px`,
-                      height: `${height}px`,
-                      zIndex: 10,
-                    }}
-                  />
-                );
-              })}
+              {time}
             </div>
           ))}
         </div>
+        {/* Day columns */}
+        {weekdays.map((day, dayIndex) => (
+          <div
+            key={day}
+            className={cn(
+              "relative border-l border-b",
+              dayIndex === 0 && "rounded-bl-lg",
+              dayIndex === weekdays.length - 1 && "border-r rounded-br-lg"
+            )}
+          >
+            {/* Time slot lines */}
+            {timeSlots.map((time) => (
+              <div key={time} className="h-6.5 border-t"></div>
+            ))}
+
+            {/* Events for this day */}
+            {eventsByDay[dayIndex]?.map((event, eventIndex) => {
+              const { top, height } = getEventPosition(event, 26, startHour); // 26px per hour
+
+              return (
+                <EventBlock
+                  key={`${eventIndex}`}
+                  event={event}
+                  isWallpaper={true}
+                  wallpaperTheme={theme}
+                  style={{
+                    position: "absolute",
+                    top: `${top}px`,
+                    height: `${height}px`,
+                    zIndex: 10,
+                  }}
+                />
+              );
+            })}
+          </div>
+        ))}
       </div>
+    </div>
   );
 }

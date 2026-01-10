@@ -200,3 +200,89 @@ export const getOverlapErrorMessage = (
   const hasMultipleEvents = uniqueEvents.length > 1;
   return hasMultipleEvents ? `${firstEventName} and others` : firstEventName;
 };
+
+// Schedule utils (for WeekView and WallpaperImage) //
+
+// Helper function to convert day name to weekday index
+export const getWeekdayIndex = (dayName: string): number => {
+  const dayMap: Record<string, number> = {
+    monday: 0,
+    tuesday: 1,
+    wednesday: 2,
+    thursday: 3,
+    friday: 4,
+  };
+  return dayMap[dayName] ?? 0;
+};
+
+// Helper function to convert time to minutes from midnight
+export const timeToMinutes = (timeString: string): number => {
+  // Handle time strings like "16:00:00" or "16:00"
+  const [hours, minutes] = timeString.split(":").map(Number);
+  return hours * 60 + (minutes || 0);
+};
+
+// Get the time range needed to display all events
+// Default: 8 AM to 4 PM, expands to accommodate events outside this range
+export const getTimeRange = (
+  events: (UserEvent | ScheduleEvent)[]
+): { startHour: number; endHour: number } => {
+  const DEFAULT_START = 8; // 8 AM
+  const DEFAULT_END = 16; // 4 PM
+
+  if (!events || events.length === 0) {
+    return { startHour: DEFAULT_START, endHour: DEFAULT_END };
+  }
+
+  let earliestStart = DEFAULT_START;
+  let latestEnd = DEFAULT_END;
+
+  events.forEach((event) => {
+    const startMinutes = timeToMinutes(event.startTime);
+    const endMinutes = timeToMinutes(event.endTime);
+
+    const startHour = Math.floor(startMinutes / 60);
+    const endHour = Math.floor(endMinutes / 60);
+
+    if (startHour < earliestStart) {
+      earliestStart = startHour;
+    }
+    if (endHour > latestEnd) {
+      latestEnd = endHour;
+    }
+  });
+
+  return { startHour: earliestStart, endHour: latestEnd };
+};
+
+// Generate time slots array from startHour to endHour
+export const generateTimeSlots = (
+  startHour: number,
+  endHour: number,
+  short: boolean = false
+): string[] => {
+  const slots: string[] = [];
+  for (let hour = startHour; hour <= endHour; hour++) {
+    const period = hour >= 12 ? "PM" : "AM";
+    const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+    slots.push(short ? `${displayHour} ${period}` : `${displayHour}:00 ${period}`);
+  }
+  return slots;
+};
+
+// Helper function to get position and height for event
+export const getEventPosition = (
+  event: UserEvent | ScheduleEvent,
+  cellHeight: number,
+  baseHour: number = 8
+) => {
+  const startMinutes = timeToMinutes(event.startTime);
+  const endMinutes = timeToMinutes(event.endTime);
+  const duration = endMinutes - startMinutes;
+
+  // Convert to pixels
+  const top = (startMinutes - baseHour * 60) * (cellHeight / 60);
+  const height = duration * (cellHeight / 60);
+
+  return { top, height };
+};
