@@ -30,6 +30,7 @@ import {
   getCurrentTerm,
 } from "@/lib/utils";
 import { getTerms } from "@/lib/actions/terms.actions";
+import { Label } from "@/components/ui/label";
 
 // Schema for guest mode - simpler course field (just a string)
 const createGuestEventFormSchema = () => {
@@ -161,7 +162,11 @@ const createEventFormSchema = (
       }
 
       if (data.days && data.days.length > 0) {
-        const overlaps = findOverlappingEvents(data, events as UserEvent[], currentEventId);
+        const overlaps = findOverlappingEvents(
+          data,
+          events as UserEvent[],
+          currentEventId
+        );
         if (overlaps.length > 0) {
           const eventNames = getOverlapErrorMessage(overlaps);
           ctx.addIssue({
@@ -180,7 +185,9 @@ const createEventFormSchema = (
 };
 
 type EventFormData = z.infer<ReturnType<typeof createEventFormSchema>>;
-type GuestEventFormData = z.infer<ReturnType<typeof createGuestEventFormSchema>>;
+type GuestEventFormData = z.infer<
+  ReturnType<typeof createGuestEventFormSchema>
+>;
 
 interface EventFormProps {
   eventToEdit?: UserEvent | ScheduleEvent | null;
@@ -251,8 +258,12 @@ export default function EventForm({
   const formValues = isGuest ? guestFormValues : userFormValues;
 
   // Watch time fields to trigger validation on both when either changes
-  const startTime = isGuest ? guestForm.watch("startTime") : userForm.watch("startTime");
-  const endTime = isGuest ? guestForm.watch("endTime") : userForm.watch("endTime");
+  const startTime = isGuest
+    ? guestForm.watch("startTime")
+    : userForm.watch("startTime");
+  const endTime = isGuest
+    ? guestForm.watch("endTime")
+    : userForm.watch("endTime");
   const days = isGuest ? guestForm.watch("days") : userForm.watch("days");
 
   // Handle course selection to update color field (only for logged-in users)
@@ -467,16 +478,22 @@ export default function EventForm({
   if (isGuest) {
     return (
       <Form {...guestForm}>
-        <form onSubmit={guestForm.handleSubmit(onGuestSubmit)} className="space-y-4">
-          <div className="flex gap-2">
-            <ColorField form={guestForm} name="color" />
-            <TextField
-              form={guestForm}
-              name="courseCode"
-              placeholder="e.g., ENGG 200"
-              className="flex-grow w-full"
-              warning={missingFields.course}
-            />
+        <form
+          onSubmit={guestForm.handleSubmit(onGuestSubmit)}
+          className="space-y-4"
+        >
+          <div className="flex flex-col gap-2 w-full">
+            <Label>Course</Label>
+            <div className="flex gap-2 w-full">
+              <ColorField form={guestForm} name="color" />
+              <TextField
+                form={guestForm}
+                name="courseCode"
+                placeholder="e.g., ENGG 200"
+                className="flex-grow w-full"
+                warning={missingFields.course}
+              />
+            </div>
           </div>
           <SelectField
             form={guestForm}
@@ -558,7 +575,10 @@ export default function EventForm({
 
   return (
     <Form {...userForm}>
-      <form onSubmit={userForm.handleSubmit(onUserSubmit)} className="space-y-4">
+      <form
+        onSubmit={userForm.handleSubmit(onUserSubmit)}
+        className="space-y-4"
+      >
         <div className="flex gap-2">
           <ColorField form={userForm} name="color" />
           <CourseField
