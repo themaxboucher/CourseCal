@@ -46,7 +46,7 @@ export default async function Home() {
             </div>
           </div>
           <div className="flex justify-center items-center w-full relative h-[500px] -mb-[100px] md:mb-0 md:h-full overflow-hidden">
-            <div className="w-full h-[60%] lg:h-[70%] absolute left-0 right-0 top-auto bottom-auto bg-muted/50 rounded-xl" />
+            <div className="w-full h-[60%] lg:h-[70%] absolute left-0 right-0 top-auto bottom-auto bg-muted/75 dark:bg-muted/50 rounded-xl" />
             <div className="w-full h-[20%] lg:h-[15%] absolute left-0 right-0 top-auto bottom-0 bg-background z-10" />
             <AnimatedContent className="w-full" distance={50} delay={0.6}>
               <div className="size-full scale-75 md:scale-90 -rotate-3 flex justify-center items-center -translate-x-10">
@@ -76,7 +76,7 @@ export default async function Home() {
               <h2 className="heading-2">How it works</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 justify-center items-center w-full">
-              <div className="flex flex-col items-center gap-2 py-10 px-6 w-full bg-muted/50 rounded-xl">
+              <div className="flex flex-col items-center gap-2 py-10 px-6 w-full bg-muted/75 dark:bg-muted/50 rounded-xl">
                 <div className="flex justify-center items-center gap-2">
                   <div className="font-bold size-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
                     1
@@ -87,7 +87,7 @@ export default async function Home() {
                   Drag and drop a screenshot of your schedule.
                 </p>
               </div>
-              <div className="flex flex-col items-center gap-2 py-10 px-6 w-full bg-muted/50 rounded-xl">
+              <div className="flex flex-col items-center gap-2 py-10 px-6 w-full bg-muted/75 dark:bg-muted/50 rounded-xl">
                 <div className="flex justify-center items-center gap-2">
                   <div className="font-bold size-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
                     2
@@ -98,7 +98,7 @@ export default async function Home() {
                   Choose a background and font for your wallpaper.
                 </p>
               </div>
-              <div className="flex flex-col items-center gap-2 py-10 px-6 w-full bg-muted/50 rounded-xl">
+              <div className="flex flex-col items-center gap-2 py-10 px-6 w-full bg-muted/75 dark:bg-muted/50 rounded-xl">
                 <div className="flex justify-center items-center gap-2">
                   <div className="font-bold size-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
                     3
