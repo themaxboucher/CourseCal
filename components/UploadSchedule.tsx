@@ -34,6 +34,7 @@ export default function UploadSchedule() {
     // Clear file input if there was an error or not a schedule
     if (!analysisResult.success || !analysisResult.isSchedule) {
       clearFileInput();
+      setIsLoading(false);
     }
 
     if (analysisResult.success && analysisResult.isSchedule) {

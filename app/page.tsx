@@ -2,7 +2,7 @@ import { LandingNavbar } from "@/components/landing-page/LandingNavbar";
 import { Footer } from "@/components/landing-page/Footer";
 import UploadSchedule from "@/components/UploadSchedule";
 import WallpaperPreview from "@/components/wallpaper/WallpaperPreview";
-import { displayEvents } from "@/constants";
+import { displayEvents1, displayEvents2 } from "@/constants";
 import { TextAnimate } from "@/components/ui/text-animate";
 import { BlurFade } from "@/components/ui/blur-fade";
 
@@ -20,6 +20,7 @@ export default async function Home() {
                 <TextAnimate
                   animation="slideUp"
                   by="word"
+                  once={true}
                   className="heading-1 md:text-6xl max-w-[18rem] md:max-w-[28rem]"
                 >
                   New schedule, new lock screen.
@@ -27,6 +28,7 @@ export default async function Home() {
                 <TextAnimate
                   animation="slideUp"
                   by="word"
+                  once={true}
                   delay={0.3}
                   className="text-muted-foreground text-lg md:text-2xl max-w-sm md:max-w-lg"
                 >
@@ -43,8 +45,8 @@ export default async function Home() {
               <div className="w-full h-[20%] lg:h-[15%] absolute left-0 right-0 top-auto bottom-0 bg-background z-10" />
               <div className="size-full scale-75 md:scale-90 -rotate-3 flex justify-center items-center -translate-x-10">
                 <WallpaperPreview
-                  events={displayEvents}
-                  background="galaxy"
+                  events={displayEvents2}
+                  background="midnight"
                   font="default"
                   theme="dark"
                   cellHeight={100}
@@ -52,7 +54,7 @@ export default async function Home() {
               </div>
               <div className="size-full absolute inset-0 flex justify-center items-center scale-65 md:scale-75 rotate-4 translate-x-14 sm:translate-x-20 translate-y-12">
                 <WallpaperPreview
-                  events={displayEvents}
+                  events={displayEvents1}
                   background="ice"
                   font="rounded"
                   theme="light"
