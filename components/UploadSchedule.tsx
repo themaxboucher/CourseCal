@@ -164,7 +164,7 @@ export default function UploadSchedule() {
               Choose file
             </Button>
             <p className="text-muted-foreground text-sm">
-              Add a screenshot of your schedule
+              Upload a screenshot of your schedule
             </p>
           </div>
         ) : (

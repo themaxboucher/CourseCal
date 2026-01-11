@@ -16,7 +16,7 @@ export default async function Home() {
         <section className="grid grid-cols-1 lg:grid-cols-2 items-center gap-4 max-w-[75rem] mx-auto md:px-8 px-2 py-12">
           <div className="flex flex-col gap-10 md:gap-20">
             <div className="flex flex-col items-center lg:items-start gap-6 lg:gap-12 px-2">
-              <div className="flex flex-col gap-4 items-center lg:items-start text-center lg:text-left">
+              <div className="flex flex-col gap-2 md:gap-4 items-center lg:items-start text-center lg:text-left">
                 <TextAnimate
                   animation="slideUp"
                   by="word"
@@ -30,7 +30,7 @@ export default async function Home() {
                   by="word"
                   once={true}
                   delay={0.3}
-                  className="text-muted-foreground text-lg md:text-2xl max-w-sm md:max-w-lg"
+                  className="text-muted-foreground text-lg md:text-2xl max-w-[18rem] md:max-w-lg"
                 >
                   Get a beautiful lock screen wallpaper of your University of
                   Calgary schedule in seconds.
