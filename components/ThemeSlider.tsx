@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Moon, Sun, Monitor } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
@@ -42,19 +42,6 @@ export function ThemeSlider() {
       >
         <Moon className="size-4" />
         <span className="sr-only">Dark theme</span>
-      </Button>
-      <Button
-        variant="ghost"
-        onClick={() => setTheme("system")}
-        className={cn(
-          "rounded-full size-7 p-0",
-          mounted && theme === "system"
-            ? "bg-popover text-foreground"
-            : "text-muted-foreground"
-        )}
-      >
-        <Monitor className="size-4" />
-        <span className="sr-only">System theme</span>
       </Button>
     </div>
   );
