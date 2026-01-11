@@ -10,6 +10,7 @@ import { Loader2, CalendarArrowUp } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import ShinyText from "./ui/ShinyText";
 
 export default function UploadSchedule() {
   const [result, setResult] = useState<ScheduleAnalysisResult | null>(null);
@@ -151,7 +152,7 @@ export default function UploadSchedule() {
           ) : (
             <>
               <Loader2 className="size-8 animate-spin text-primary" />
-              <span>Analyzing schedule...</span>
+              <ShinyText text="Analyzing schedule" speed={1.5} />
             </>
           )}
         </div>
@@ -170,7 +171,7 @@ export default function UploadSchedule() {
         ) : (
           <div className="flex flex-col items-center justify-center gap-3 text-muted-foreground lg:hidden">
             <Loader2 className="size-6 text-primary animate-spin" />
-            <span>Analyzing schedule...</span>
+            <ShinyText text="Analyzing schedule" speed={1.5} />
           </div>
         )}
       </div>
