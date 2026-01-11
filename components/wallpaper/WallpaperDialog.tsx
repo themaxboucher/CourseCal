@@ -84,11 +84,13 @@ export function WallpaperDialog({
         {trigger}
         <DrawerContent>
           <DrawerHeader className="border-b">
-            <DrawerTitle>Download wallpaper</DrawerTitle>
-            <DrawerDescription>
-              Download a wallpaper of your schedule that isn't blocked by your
-              lock screens time or widgets.
-            </DrawerDescription>
+            <VisuallyHidden>
+              <DrawerTitle>Download wallpaper</DrawerTitle>
+              <DrawerDescription>
+                Download a wallpaper of your schedule that isn't blocked by your
+                lock screens time or widgets.
+              </DrawerDescription>
+            </VisuallyHidden>
           </DrawerHeader>
           <div className="overflow-y-auto">
             <WallpaperForm events={events} />
