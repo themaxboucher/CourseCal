@@ -96,11 +96,14 @@ export default function EventBlock({
             className={cn(
               "opacity-75 flex justify-start items-center gap-0.5 flex-wrap tracking-tight",
               !isWallpaper && "md:text-xs",
-              isWallpaper ? "text-[4.5px]" : "text-xxs"
+              isWallpaper ? "text-[5.5px]" : "text-xxs"
             )}
           >
-            <span>{formatTime(event.startTime, !isWallpaper)} - </span>
-            <span>{formatTime(event.endTime, !isWallpaper)}</span>
+            <span>
+              {formatTime(event.startTime, !isWallpaper)}
+              {isWallpaper ? "-" : " - "}
+              {formatTime(event.endTime, !isWallpaper)}
+            </span>
           </div>
         </div>
       </div>
