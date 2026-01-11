@@ -1,8 +1,10 @@
 "use server";
 
 import { OpenRouter } from "@openrouter/sdk";
+import { headers } from "next/headers";
 import { getCurrentTerm } from "../utils";
 import { getTerms } from "./terms.actions";
+import { ratelimit } from "../ratelimit";
 
 const openrouter = new OpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
@@ -120,6 +122,20 @@ export async function analyzeScheduleImage(
   imageBase64: string
 ): Promise<ScheduleAnalysisResult> {
   try {
+    // Rate limiting: Get the user's IP address and check their limit
+    const headersList = await headers();
+    const ip = headersList.get("x-forwarded-for") ?? "127.0.0.1";
+
+    const { success: withinLimit } = await ratelimit.limit(ip);
+
+    if (!withinLimit) {
+      return {
+        success: false,
+        error:
+          "You've reached the limit for schedule analysis. Please try again in an hour.",
+      };
+    }
+
     const response = await openrouter.chat.send({
       model: AI_MODEL,
       messages: [
