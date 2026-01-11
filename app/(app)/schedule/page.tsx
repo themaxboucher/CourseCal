@@ -5,6 +5,7 @@ import { getLoggedInUser } from "@/lib/actions/users.actions";
 import { getTerms } from "@/lib/actions/terms.actions";
 import WelcomeDialog from "@/components/WelcomeDialog";
 import UploadSuccessDialog from "@/components/UploadSuccessDialog";
+import FeedbackBox from "@/components/FeedbackBox";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +44,8 @@ export default async function SchedulePage({
           </div>
         </div>
       </section>
+
+      <FeedbackBox />
     </>
   );
 }
