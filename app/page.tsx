@@ -4,7 +4,7 @@ import UploadSchedule from "@/components/UploadSchedule";
 import WallpaperPreview from "@/components/wallpaper/WallpaperPreview";
 import { displayEvents1, displayEvents2 } from "@/constants";
 import { TextAnimate } from "@/components/ui/text-animate";
-import { BlurFade } from "@/components/ui/blur-fade";
+import AnimatedContent from "@/components/ui/AnimatedContent";
 
 export const dynamic = "force-dynamic";
 
@@ -36,13 +36,19 @@ export default async function Home() {
                   Calgary schedule in seconds.
                 </TextAnimate>
               </div>
-              <UploadSchedule />
+              <AnimatedContent
+                className="w-full flex justify-center lg:justify-start items-center"
+                distance={50}
+                delay={0.5}
+              >
+                <UploadSchedule />
+              </AnimatedContent>
             </div>
           </div>
-          <BlurFade direction="up" inView>
-            <div className="flex justify-center items-center w-full relative h-[500px] -mb-[100px] md:h-full">
-              <div className="w-full h-[60%] lg:h-[70%] absolute left-0 right-0 top-auto bottom-auto bg-muted/50 rounded-xl" />
-              <div className="w-full h-[20%] lg:h-[15%] absolute left-0 right-0 top-auto bottom-0 bg-background z-10" />
+          <div className="flex justify-center items-center w-full relative h-[500px] -mb-[100px] md:mb-0 md:h-full overflow-hidden">
+            <div className="w-full h-[60%] lg:h-[70%] absolute left-0 right-0 top-auto bottom-auto bg-muted/50 rounded-xl" />
+            <div className="w-full h-[20%] lg:h-[15%] absolute left-0 right-0 top-auto bottom-0 bg-background z-10" />
+            <AnimatedContent className="w-full" distance={50} delay={0.6}>
               <div className="size-full scale-75 md:scale-90 -rotate-3 flex justify-center items-center -translate-x-10">
                 <WallpaperPreview
                   events={displayEvents2}
@@ -61,8 +67,8 @@ export default async function Home() {
                   cellHeight={100}
                 />
               </div>
-            </div>
-          </BlurFade>
+            </AnimatedContent>
+          </div>
         </section>
         <section className="flex flex-col gap-2 max-w-[75rem] mx-auto md:px-8 px-4 py-12 md:pt-16 pt-12">
           <div className="flex flex-col items-center gap-8 text-center">
