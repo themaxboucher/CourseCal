@@ -24,6 +24,7 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-switch": "^1.2.6",
     "@radix-ui/react-visually-hidden": "^1.2.3",
+    "@vercel/analytics": "^1.6.1",
     "appwrite": "^20.0.0",
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.1",
