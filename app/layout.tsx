@@ -66,8 +66,20 @@ const sfProSoft = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.coursecal.com"),
   title: "CourseCal",
-  description: "Easily compare your course schedule with friends.",
+  description: "Get a lock screen wallpaper of your uni schedule.",
+  openGraph: {
+    title: "CourseCal",
+    description: "Get a lock screen wallpaper of your uni schedule.",
+    images: ["/coursecal-opengraph.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CourseCal",
+    description: "Get a lock screen wallpaper of your uni schedule.",
+    images: ["/coursecal-opengraph.png"],
+  },
 };
 
 export default function RootLayout({
