@@ -26,9 +26,7 @@ import {
   findOverlappingEvents,
   isTimeInRange,
   getOverlapErrorMessage,
-  getCurrentTerm,
 } from "@/lib/utils";
-import { getTerms } from "@/lib/actions/terms.actions";
 import { Label } from "@/components/ui/label";
 
 // Schema for guest mode - simpler course field (just a string)
@@ -341,16 +339,6 @@ export default function EventForm({
         throw new Error("Color is required");
       }
 
-      // Get the current term for new events
-      let eventTerm: Term | null = (eventToEdit as ScheduleEvent)?.term || null;
-      if (!eventTerm && !eventToEdit) {
-        const terms = await getTerms();
-        eventTerm = getCurrentTerm(terms);
-      }
-      if (!eventTerm) {
-        throw new Error("No term available");
-      }
-
       const scheduleEvent: ScheduleEvent = {
         course: { courseCode: data.courseCode } as Course,
         type: data.type || undefined,
@@ -358,7 +346,6 @@ export default function EventForm({
         startTime: data.startTime,
         endTime: data.endTime,
         days: data.days,
-        term: eventTerm!,
         courseColor: { color: data.color },
         recurrence: data.recurrence,
       };

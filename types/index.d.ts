@@ -90,7 +90,7 @@ declare interface ScheduleEvent {
   startTime: string;
   endTime: string;
   days: Day[];
-  term: Term | null;
+  term?: Term;
   courseColor: { color: Color };
   recurrence?: Recurrence;
   exclusions?: string[];
