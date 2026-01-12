@@ -10,6 +10,7 @@ interface EventProps {
   className?: string;
   isWallpaper?: boolean;
   wallpaperTheme?: ThemeType;
+  eventInfo?: EventInfoType;
 }
 
 export default function EventBlock({
@@ -18,6 +19,7 @@ export default function EventBlock({
   className,
   isWallpaper = false,
   wallpaperTheme = "light",
+  eventInfo = "location",
   ...props
 }: EventProps) {
   return (
@@ -99,11 +101,17 @@ export default function EventBlock({
               isWallpaper ? "text-[5.5px]" : "text-xxs"
             )}
           >
-            <span>
-              {formatTime(event.startTime, !isWallpaper)}
-              {isWallpaper ? "-" : " - "}
-              {formatTime(event.endTime, !isWallpaper)}
-            </span>
+            {isWallpaper && eventInfo === "location" ? (
+              <span className="truncate">
+                {event.location || "No location"}
+              </span>
+            ) : (
+              <span>
+                {formatTime(event.startTime, !isWallpaper)}
+                {isWallpaper ? "-" : " - "}
+                {formatTime(event.endTime, !isWallpaper)}
+              </span>
+            )}
           </div>
         </div>
       </div>

@@ -56,6 +56,7 @@ export default async function Home() {
                   font="default"
                   theme="dark"
                   cellHeight={100}
+                  eventInfo="time"
                 />
               </div>
               <div className="size-full absolute inset-0 flex justify-center items-center scale-65 md:scale-75 rotate-4 translate-x-14 sm:translate-x-20 translate-y-12">
@@ -65,6 +66,7 @@ export default async function Home() {
                   font="rounded"
                   theme="light"
                   cellHeight={100}
+                  eventInfo="time"
                 />
               </div>
             </AnimatedContent>

@@ -5,12 +5,18 @@ import { headers } from "next/headers";
 import { getCurrentTerm } from "../utils";
 import { getTerms } from "./terms.actions";
 import { ratelimit } from "../ratelimit";
+import { buildings } from "@/constants/buildings";
 
 const openrouter = new OpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
 });
 
 const AI_MODEL = "google/gemini-2.0-flash-001";
+
+// Generate the building abbreviations mapping for the AI prompt
+const buildingAbbreviations = buildings
+  .map((b) => `"${b.name}" → ${b.code}`)
+  .join("\n");
 
 const SYSTEM_PROMPT = `You are an assistant that extracts university course schedule information from screenshots.
 
@@ -24,7 +30,18 @@ Rules:
 - Use lowercase for days: "monday", "tuesday", "wednesday", "thursday", "friday"
 - Times must be in 24-hour format with leading zeros (e.g. "09:00", "14:30")
 - Extract ALL events/classes visible in the schedule
-- If a class appears on multiple days at the same time, include all days in the "days" array`;
+- If a class appears on multiple days at the same time, include all days in the "days" array
+
+IMPORTANT - Location Abbreviation:
+When extracting location/room information, convert full building names to their abbreviated codes.
+Use the format "CODE ROOM_NUMBER" (e.g., "ICT 101" instead of "Information & Communication Technologies 101").
+
+Building abbreviations:
+${buildingAbbreviations}
+"OFF-SITE WEB-BASED" → Online
+
+If a building name matches (or closely matches) one in the list, use the abbreviation code.
+If you cannot match the building name, use the original text as-is.`;
 
 const RESPONSE_SCHEMA = {
   name: "schedule_analysis",

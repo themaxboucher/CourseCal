@@ -16,6 +16,7 @@ interface WallpaperImageProps {
   user?: User;
   theme?: ThemeType;
   cellHeight?: number;
+  eventInfo?: EventInfoType;
 }
 
 // Cell height constants
@@ -61,6 +62,7 @@ export default function WallpaperImage({
   events,
   theme = "light",
   cellHeight = 0,
+  eventInfo = "location",
 }: WallpaperImageProps) {
   // Calculate dynamic time range based on events
   const { startHour, endHour } = useMemo(() => getTimeRange(events), [events]);
@@ -160,6 +162,7 @@ export default function WallpaperImage({
                   event={event}
                   isWallpaper={true}
                   wallpaperTheme={theme}
+                  eventInfo={eventInfo}
                   style={{
                     position: "absolute",
                     top: `${top}px`,

@@ -148,3 +148,5 @@ declare type FontType =
   | "pixels";
 
 declare type ThemeType = "light" | "dark";
+
+declare type EventInfoType = "time" | "location";
