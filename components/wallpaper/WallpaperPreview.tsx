@@ -19,6 +19,7 @@ interface WallpaperPreviewProps {
   font: FontType;
   theme: ThemeType;
   cellHeight: number;
+  eventInfo: EventInfoType;
 }
 
 export default function WallpaperPreview({
@@ -28,6 +29,7 @@ export default function WallpaperPreview({
   font,
   theme,
   cellHeight,
+  eventInfo,
 }: WallpaperPreviewProps) {
   const bgOption = backgroundOptions.find((opt) => opt.value === background);
   const bgClass = bgOption?.[theme] ?? "";
@@ -46,6 +48,7 @@ export default function WallpaperPreview({
             events={events}
             theme={theme}
             cellHeight={cellHeight}
+            eventInfo={eventInfo}
           />
         </div>
       </div>
