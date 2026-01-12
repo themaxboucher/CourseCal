@@ -2,8 +2,6 @@
 
 import { OpenRouter } from "@openrouter/sdk";
 import { headers } from "next/headers";
-import { getCurrentTerm } from "../utils";
-import { getTerms } from "./terms.actions";
 import { ratelimit } from "../ratelimit";
 import { buildings } from "@/constants/buildings";
 
@@ -193,15 +191,6 @@ export async function analyzeScheduleImage(
       return { success: true, isSchedule: false };
     }
 
-    let term: Term | null = null;
-    try {
-      const terms = await getTerms();
-      term = getCurrentTerm(terms);
-    } catch (error) {
-      console.error("Error getting terms:", error);
-      return { success: false, error: "Failed to get terms" };
-    }
-
     // Create course colors - assign a unique color to each course
     const colors: Color[] = [
       "red",
@@ -236,7 +225,6 @@ export async function analyzeScheduleImage(
       startTime: event.startTime,
       endTime: event.endTime,
       days: event.days,
-      term: term,
       courseColor: { color: courseColorMap.get(event.courseCode)! },
       recurrence: "weekly",
       exclusions: [],

@@ -86,14 +86,9 @@ export default function Schedule({
     return termId === selectedTermId;
   });
 
-  const filteredLocalEvents = localEvents.filter((event) => {
-    const term = event.term as Term | null;
-    return term?.$id === selectedTermId;
-  });
-
   const hasEvents = isLoggedIn
     ? filteredServerEvents.length > 0
-    : filteredLocalEvents.length > 0;
+    : localEvents.length > 0;
 
   // Show loading state for guest users while checking IndexedDB
   if (isLoading) {
@@ -104,7 +99,7 @@ export default function Schedule({
     );
   }
 
-  const displayEvents = isLoggedIn ? filteredServerEvents : filteredLocalEvents;
+  const displayEvents = isLoggedIn ? filteredServerEvents : localEvents;
 
   return (
     <>
