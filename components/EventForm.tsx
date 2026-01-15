@@ -24,7 +24,6 @@ import { useRouter } from "next/navigation";
 import { createCourseColor } from "@/lib/actions/courseColors.actions";
 import {
   findOverlappingEvents,
-  isTimeInRange,
   getOverlapErrorMessage,
 } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
@@ -68,22 +67,6 @@ const createGuestEventFormSchema = () => {
           path: ["endTime"],
         });
         return;
-      }
-
-      if (!isTimeInRange(data.startTime, false)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Start time must be between 8:00 AM and 7:00 PM",
-          path: ["startTime"],
-        });
-      }
-
-      if (!isTimeInRange(data.endTime, true)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "End time must be between 8:00 AM and 7:00 PM",
-          path: ["endTime"],
-        });
       }
     });
 };
@@ -140,22 +123,6 @@ const createEventFormSchema = (
           path: ["endTime"],
         });
         return;
-      }
-
-      if (!isTimeInRange(data.startTime, false)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Start time must be between 8:00 AM and 7:00 PM",
-          path: ["startTime"],
-        });
-      }
-
-      if (!isTimeInRange(data.endTime, true)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "End time must be between 8:00 AM and 7:00 PM",
-          path: ["endTime"],
-        });
       }
 
       if (data.days && data.days.length > 0) {
