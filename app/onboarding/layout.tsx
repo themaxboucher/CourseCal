@@ -1,22 +1,10 @@
 import { Navbar } from "@/components/Navbar";
-import { getLoggedInUser } from "@/lib/actions/users.actions";
-import { redirect } from "next/navigation";
 
-export default async function OnboardingLayout({
+export default function OnboardingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getLoggedInUser();
-  if (!user) {
-    redirect("/");
-  }
-
-  // If the user has completed onboarding, redirect to the schedule page
-  if (user.hasCompletedOnboarding) {
-    redirect("/schedule");
-  }
-
   return (
     <main>
       <Navbar />

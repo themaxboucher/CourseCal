@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarFold, Settings } from "lucide-react";
+import { CalendarFold, LogOut, Settings } from "lucide-react";
 import { Logo } from "./Logo";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { ThemeSlider } from "./ThemeSlider";
 import { AuthDialog } from "./auth/AuthDialog";
+import { logout } from "@/lib/actions/auth.actions";
 
 interface NavbarProps {
   showSettings?: boolean;
@@ -18,7 +19,9 @@ export function Navbar({
   hasSchedule = false,
 }: NavbarProps) {
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
-  const [authDialogType, setAuthDialogType] = useState<"signup" | "login">("login");
+  const [authDialogType, setAuthDialogType] = useState<"signup" | "login">(
+    "login",
+  );
   function handleAuthDialogOpen(type: "signup" | "login") {
     setAuthDialogOpen(true);
     setAuthDialogType(type);
@@ -35,42 +38,61 @@ export function Navbar({
           <div>
             <ul className="flex items-center gap-2">
               <li>
-                <Button size="sm" variant="ghost" onClick={() => handleAuthDialogOpen("login")}>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => handleAuthDialogOpen("login")}
+                >
                   Log in
                 </Button>
               </li>
               <li>
-                <Button size="sm" onClick={() => handleAuthDialogOpen("signup")}>Join</Button>
+                <Button
+                  size="sm"
+                  onClick={() => handleAuthDialogOpen("signup")}
+                >
+                  Join
+                </Button>
               </li>
-            <li>
-              <ThemeSlider />
-            </li>
-            {showSettings && (
               <li>
-                <Button variant="ghost" size="icon" asChild>
-                  <Link href="/settings">
-                    <Settings className="size-4.5" />
-                  </Link>
+                <Button size="sm" variant="ghost" onClick={() => logout()}>
+                  <LogOut className="size-4" />
+                  Log out
                 </Button>
               </li>
-            )}
-            {hasSchedule && (
               <li>
-                <Button size="sm" className="hidden md:flex" asChild>
-                  <Link href="/schedule">View Schedule</Link>
-                </Button>
-                <Button size="icon" className="md:hidden" asChild>
-                  <Link href="/schedule">
-                    <CalendarFold className="size-4.5" />
-                  </Link>
-                </Button>
+                <ThemeSlider />
               </li>
-            )}
-          </ul>
+              {showSettings && (
+                <li>
+                  <Button variant="ghost" size="icon" asChild>
+                    <Link href="/settings">
+                      <Settings className="size-4.5" />
+                    </Link>
+                  </Button>
+                </li>
+              )}
+              {hasSchedule && (
+                <li>
+                  <Button size="sm" className="hidden md:flex" asChild>
+                    <Link href="/schedule">View Schedule</Link>
+                  </Button>
+                  <Button size="icon" className="md:hidden" asChild>
+                    <Link href="/schedule">
+                      <CalendarFold className="size-4.5" />
+                    </Link>
+                  </Button>
+                </li>
+              )}
+            </ul>
+          </div>
         </div>
-      </div>
-    </header>
-    <AuthDialog open={authDialogOpen} onOpenChange={handleAuthDialogClose} type={authDialogType} />
+      </header>
+      <AuthDialog
+        open={authDialogOpen}
+        onOpenChange={handleAuthDialogClose}
+        type={authDialogType}
+      />
     </>
   );
 }

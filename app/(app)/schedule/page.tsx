@@ -1,12 +1,11 @@
 import { Navbar } from "@/components/Navbar";
 import Schedule from "@/components/Schedule";
 import { getEvents } from "@/lib/actions/events.actions";
-import { getLoggedInUser } from "@/lib/actions/users.actions";
 import { getTerms } from "@/lib/actions/terms.actions";
 import WelcomeDialog from "@/components/WelcomeDialog";
 import UploadSuccessDialog from "@/components/UploadSuccessDialog";
 import FeedbackBox from "@/components/FeedbackBox";
-
+import { getLoggedInUser } from "@/lib/actions/users.actions";
 export const dynamic = "force-dynamic";
 
 interface SchedulePageProps {

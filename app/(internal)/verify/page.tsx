@@ -6,8 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Loading from "@/components/Loading";
-import { createUser, getUser } from "@/lib/actions/users.actions";
-import { loginWithMagicLink } from "@/lib/actions/users.actions";
+import { verifyMagicLink } from "@/lib/actions/auth.actions";
 
 // Separate component that uses useSearchParams() - must be wrapped in Suspense
 // This is required in Next.js 15 to handle client-side rendering bailout properly
@@ -22,36 +21,16 @@ function VerifyContent() {
   useEffect(() => {
     const handleVerification = async () => {
       try {
-        // Debug logging
-        console.log("Full URL:", window.location.href);
-        console.log("Search params string:", searchParams.toString());
-        console.log(
-          "All search params:",
-          Object.fromEntries(searchParams.entries())
-        );
+        const code = searchParams.get("code");
 
-        const userId = searchParams.get("userId");
-        const secret = searchParams.get("secret");
-
-        console.log("userId:", userId);
-        console.log("secret:", secret);
-        console.log("userId type:", typeof userId);
-        console.log("secret type:", typeof secret);
-
-        if (!userId || !secret) {
-          console.log(
-            "Missing parameters - userId:",
-            userId,
-            "secret:",
-            secret
-          );
+        if (!code) {
           setStatus("error");
           setError("Invalid login link. Please request a new one.");
           return;
         }
 
         // Check if the user is authenticated
-        const authUser = await loginWithMagicLink(userId, secret);
+        const authUser = await verifyMagicLink(code);
         if (!authUser) {
           console.log("Login failed - no authUser");
           setStatus("error");
@@ -59,24 +38,8 @@ function VerifyContent() {
           return;
         }
 
-        // Create a user document if it doesn't exist
-        const user = await getUser(authUser.$id);
-        if (!user) {
-          await createUser({
-            userId: authUser.$id,
-            email: authUser.email,
-            hasCompletedOnboarding: false,
-            hasBeenWelcomed: false,
-          });
-        }
-
         setStatus("success");
-
-        // Add a small delay to ensure the session is properly established
-        // This prevents flashing of the homepage during redirect
-        setTimeout(() => {
-          router.push("/onboarding/profile");
-        }, 300);
+        router.push("/onboarding/profile");
       } catch (err) {
         setStatus("error");
         setError("An unknown error occurred. Please try again.");

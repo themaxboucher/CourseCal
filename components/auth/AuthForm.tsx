@@ -10,7 +10,7 @@ import FormAlert from "../FormAlert";
 import { Button } from "../ui/button";
 import { TextField } from "../form-fields/TextField";
 import { useRouter } from "next/navigation";
-import { sendMagicLink } from "@/lib/actions/users.actions";
+import { sendMagicLink } from "@/lib/actions/auth.actions";
 
 const formSchema = z.object({
   email: z
@@ -38,6 +38,7 @@ export default function AuthForm() {
     setLoading(true);
     try {
       await sendMagicLink(data.email);
+      console.log(data.email);
       router.push("/check-email");
     } catch (error) {
       setError("An unknown error occurred. Please try again.");

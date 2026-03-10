@@ -10,7 +10,6 @@ import { useState, useRef } from "react";
 import { TextField } from "../form-fields/TextField";
 import { LoaderCircle, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { updateUser } from "@/lib/actions/users.actions";
 import {
   uploadAvatar,
   deleteAvatar,
@@ -91,13 +90,13 @@ export default function ProfileForm({ user }: { user: User }) {
         }
       }
 
-      await updateUser({
-        id: user.userId,
-        name: data.name,
-        major: data.major,
-        email: user.email,
-        avatar: avatarUrl || user.avatar,
-      });
+      // await updateUser({
+      //   id: user.userId,
+      //   name: data.name,
+      //   major: data.major,
+      //   email: user.email,
+      //   avatar: avatarUrl || user.avatar,
+      // });
       router.push("/onboarding/upload");
     } catch (error: any) {
       let errorMessage = "Error updating personal details";
