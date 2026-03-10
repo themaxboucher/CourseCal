@@ -20,3 +20,13 @@ export async function getLoggedInUser() {
   }
   return data;
 }
+
+export async function updateUser(userId: string, user: Partial<User>) {
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("users").update(user).eq("id", userId);
+  if (error) {
+    console.error(error);
+    throw new Error(error.message);
+  }
+  return data;
+}

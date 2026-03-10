@@ -10,11 +10,8 @@ import { useState, useRef } from "react";
 import { TextField } from "../form-fields/TextField";
 import { LoaderCircle, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
-import {
-  uploadAvatar,
-  deleteAvatar,
-  extractFileIdFromUrl,
-} from "@/lib/actions/avatars.actions";
+import { uploadAvatar } from "@/lib/actions/avatars.actions";
+import { updateUser } from "@/lib/actions/users.actions";
 
 const profileSchema = z.object({
   avatar: z.string().optional(),
@@ -26,7 +23,7 @@ type ProfileFormData = z.infer<typeof profileSchema>;
 
 export default function ProfileForm({ user }: { user: User }) {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(
-    user.avatar || null
+    user.avatar || null,
   );
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -42,18 +39,18 @@ export default function ProfileForm({ user }: { user: User }) {
     },
   });
 
-  const MAX_AVATAR_SIZE = 2 * 1024 * 1024; // 2 MB
-  const ALLOWED_AVATAR_TYPES = ["image/png", "image/jpeg"];
+  const MAX_AVATAR_SIZE = 5 * 1024 * 1024; // 5 MB
+  const ALLOWED_AVATAR_TYPES = ["image/png", "image/jpeg", "image/webp"];
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       if (!ALLOWED_AVATAR_TYPES.includes(file.type)) {
-        alert("Only PNG and JPG images are allowed");
+        alert("Only PNG, JPG, and WebP images are allowed");
         return;
       }
       if (file.size > MAX_AVATAR_SIZE) {
-        alert("Avatar must be under 2 MB");
+        alert("Avatar must be under 5 MB");
         return;
       }
       setAvatarFile(file);
@@ -70,33 +67,15 @@ export default function ProfileForm({ user }: { user: User }) {
     setLoading(true);
     try {
       let avatarUrl;
-      let oldAvatarFileId: string | null = null;
-
-      if (user.avatar) {
-        // Extract fileId from the old avatar URL
-        oldAvatarFileId = await extractFileIdFromUrl(user.avatar);
-      }
-
       if (avatarFile) {
-        // Upload new avatar
-        avatarUrl = await uploadAvatar(avatarFile);
-        // Delete old avatar if it exists
-        if (oldAvatarFileId) {
-          try {
-            await deleteAvatar(oldAvatarFileId);
-          } catch (error) {
-            console.error("Failed to delete old avatar:", error);
-          }
-        }
+        avatarUrl = await uploadAvatar(avatarFile, user.id);
       }
 
-      // await updateUser({
-      //   id: user.userId,
-      //   name: data.name,
-      //   major: data.major,
-      //   email: user.email,
-      //   avatar: avatarUrl || user.avatar,
-      // });
+      await updateUser(user.id, {
+        name: data.name,
+        major: data.major,
+        avatar: avatarUrl || user.avatar,
+      });
       router.push("/onboarding/upload");
     } catch (error: any) {
       let errorMessage = "Error updating personal details";

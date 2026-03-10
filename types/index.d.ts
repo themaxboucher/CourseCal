@@ -1,13 +1,6 @@
 // === Utility Types ===
 declare type Override<T, R> = Omit<T, keyof R> & R;
 
-// Appwrite document fields - used for all stored documents
-declare type AppwriteDoc = {
-  $id: string;
-  $createdAt: string;
-  $updatedAt: string;
-};
-
 // === Primitive Types ===
 declare type Color =
   | "red"
@@ -25,17 +18,19 @@ declare type Recurrence = "weekly" | "biweekly";
 declare type Season = "winter" | "spring" | "summer" | "fall";
 
 // === Domain Types ===
-declare interface User extends AppwriteDoc {
-  userId: string;
+declare interface User {
+  id: string;
   email: string;
   name: string;
   major: string;
   avatar: string;
   hasCompletedOnboarding: boolean;
   hasBeenWelcomed: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
-declare interface Course extends AppwriteDoc {
+declare interface Course {
   courseCode: string;
   subject?: string;
   title?: string;
@@ -45,7 +40,7 @@ declare interface Course extends AppwriteDoc {
   color?: CourseColor;
 }
 
-declare interface Term extends AppwriteDoc {
+declare interface Term {
   year: number;
   season: Season;
   startDate: string;
@@ -57,7 +52,7 @@ declare interface CourseColor {
   color: Color;
 }
 
-declare interface UserCourseColor extends CourseColor, AppwriteDoc {
+declare interface UserCourseColor extends CourseColor {
   user: string;
 }
 
@@ -97,7 +92,7 @@ declare interface ScheduleEvent {
 }
 
 // Full stored event with all relationships
-declare interface UserEvent extends ScheduleEvent, AppwriteDoc {
+declare interface UserEvent extends ScheduleEvent {
   user: string;
 }
 
