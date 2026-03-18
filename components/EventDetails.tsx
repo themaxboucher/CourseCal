@@ -15,8 +15,8 @@ import EventDialog from "./EventDialog";
 import { classTypeIcons, eventColors } from "@/constants";
 
 interface EventDetailsProps {
-  event: UserEvent | ScheduleEvent;
-  events?: (UserEvent | ScheduleEvent)[];
+  event: UserEvent | LocalEvent;
+  events?: (UserEvent | LocalEvent)[];
   user?: User;
   isGuest?: boolean;
   onEventsChange?: () => void;
@@ -34,7 +34,7 @@ export default function EventDetails({
 
   // Get event ID - for guests it's stored as 'id', for logged-in users it's '$id'
   const eventId = isGuest
-    ? (event as ScheduleEvent & { id: number }).id
+    ? (event as LocalEvent & { id: number }).id
     : (event as UserEvent).$id;
 
   function handleEditDialog() {

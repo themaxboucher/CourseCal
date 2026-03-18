@@ -12,7 +12,7 @@ import {
 } from "@/lib/utils";
 
 interface WallpaperImageProps {
-  events: ScheduleEvent[];
+  events: LocalEvent[];
   user?: User;
   theme?: ThemeType;
   cellHeight?: number;
@@ -99,7 +99,7 @@ export default function WallpaperImage({
     }
 
     return acc;
-  }, {} as Record<number, ScheduleEvent[]>);
+  }, {} as Record<number, LocalEvent[]>);
 
   return (
     <div

@@ -13,7 +13,7 @@ import {
 } from "@/lib/utils";
 
 interface WeekViewProps {
-  events: UserEvent[] | ScheduleEvent[];
+  events: UserEvent[] | LocalEvent[];
   user?: User;
   isGuest?: boolean;
   onEventsChange?: () => void;
@@ -54,7 +54,7 @@ export default function WeekView({
     }
 
     return acc;
-  }, {} as Record<number, (UserEvent | ScheduleEvent)[]>);
+  }, {} as Record<number, (UserEvent | LocalEvent)[]>);
 
   return (
     <div className="w-full max-w-[75rem] mx-auto">
@@ -118,7 +118,7 @@ export default function WeekView({
               const { top, height } = getEventPosition(event, 64, startHour); // 64px per hour
               const eventId =
                 "id" in event
-                  ? (event as ScheduleEvent & { id: number }).id
+                  ? (event as LocalEvent & { id: number }).id
                   : "$id" in event
                   ? (event as UserEvent).$id
                   : undefined;

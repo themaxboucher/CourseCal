@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Loading from "@/components/Loading";
 import { verifyMagicLink } from "@/lib/actions/auth.actions";
+import { getEvents as getLocalEvents, clearEvents as clearLocalEvents } from "@/lib/indexeddb";
+import { createEvents, getEvents } from "@/lib/actions/events.actions";
+import { localToDBEvents } from "@/lib/actions/utils/upload";
 
 // Separate component that uses useSearchParams() - must be wrapped in Suspense
 // This is required in Next.js 15 to handle client-side rendering bailout properly
@@ -29,18 +32,37 @@ function VerifyContent() {
           return;
         }
 
-        // Check if the user is authenticated
-        const authUser = await verifyMagicLink(code);
-        if (!authUser) {
-          console.log("Login failed - no authUser");
+        const user = await verifyMagicLink(code);
+        if (!user) {
           setStatus("error");
           setError("Invalid login link. Please request a new one.");
           return;
         }
 
+        // Save indexeddb events if they exist
+        const localEvents = await getLocalEvents();
+        const events = await getEvents(user.id);
+        const hasLocalEvents = localEvents.length > 0;
+        const hasDBEvents = events.length > 0;
+
+        // Save indexeddb events to server if they exist
+        if (hasLocalEvents && !hasDBEvents) {
+          // Convert local events to database events
+          const dbEvents = await localToDBEvents(localEvents, user.id);
+          await createEvents(dbEvents);
+        }
+
+        // Clear indexeddb events if server events exist
+        if (hasLocalEvents && hasDBEvents) {
+          await clearLocalEvents();
+        }
+
+        // If indexeddb events don't exist and server events don't exist, 
+        // the user will have to upload their schedule during onboarding
+
         setStatus("success");
         router.push("/onboarding/profile");
-      } catch (err) {
+      } catch (error) {
         setStatus("error");
         setError("An unknown error occurred. Please try again.");
       }

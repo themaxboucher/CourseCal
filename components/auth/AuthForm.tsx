@@ -38,7 +38,6 @@ export default function AuthForm() {
     setLoading(true);
     try {
       await sendMagicLink(data.email);
-      console.log(data.email);
       router.push("/check-email");
     } catch (error) {
       setError("An unknown error occurred. Please try again.");

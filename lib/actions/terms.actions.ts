@@ -1,20 +1,21 @@
 "use server";
 
-import { createAdminClient } from "../appwrite/server";
-import { parseStringify } from "../utils";
+import { createClient } from "../supabase/server";
 
-const {
-  APPWRITE_DATABASE_ID: DATABASE_ID,
-  APPWRITE_TERMS_TABLE_ID: TERMS_TABLE_ID,
-} = process.env;
-
-export async function getTerms() {
-  try {
-    const { database } = await createAdminClient();
-    const terms = await database.listDocuments(DATABASE_ID!, TERMS_TABLE_ID!);
-    return parseStringify(terms.documents);
-  } catch (error) {
-    console.error(error);
-    throw error;
+export async function getCurrentTerm() {
+    const supabase = await createClient();
+    const today = new Date().toISOString().split("T")[0]; // "YYYY-MM-DD"
+  
+    const { data, error } = await supabase
+      .from("terms")
+      .select("*")
+      .lte("start_date", today)
+      .gte("end_date", today)
+      .single();
+  
+    if (error) {
+      console.error(error);
+      throw new Error(error.message);
+    }
+    return data;
   }
-}

@@ -5,12 +5,19 @@ import {
   analyzeScheduleImage,
   ScheduleAnalysisResult,
 } from "@/lib/actions/ai.actions";
-import { saveEvents } from "@/lib/indexeddb";
+import { saveEvents as saveLocalEvents } from "@/lib/indexeddb";
 import { Loader2, CalendarArrowUp } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import ShinyText from "./ui/ShinyText";
+import { getLoggedInUser } from "@/lib/actions/users.actions";
+import { getCurrentTerm } from "@/lib/actions/terms.actions";
+import {
+  parsedToDBEvents,
+  parsedToLocalEvents,
+} from "@/lib/actions/utils/upload";
+import { createEvents } from "@/lib/actions/events.actions";
 
 export default function UploadSchedule() {
   const [result, setResult] = useState<ScheduleAnalysisResult | null>(null);
@@ -39,7 +46,24 @@ export default function UploadSchedule() {
     }
 
     if (analysisResult.success && analysisResult.isSchedule) {
-      await saveEvents(analysisResult.events);
+      const term = await getCurrentTerm();
+      const user = await getLoggedInUser();
+      // If there user is already logged in, save the events to the database
+      if (user) {
+        const dbEvents = await parsedToDBEvents(
+          analysisResult.events,
+          user.id,
+          term.id,
+        );
+        await createEvents(dbEvents);
+      } else {
+        // If the user is not logged in, save the events to IndexedDB
+        const localEvents = await parsedToLocalEvents(
+          analysisResult.events,
+          term.id,
+        );
+        await saveLocalEvents(localEvents);
+      }
       router.push("/schedule?uploadSuccess=true");
     }
   };
@@ -131,7 +155,7 @@ export default function UploadSchedule() {
           onDrop={handleDrop}
           className={cn(
             "hidden lg:flex group w-full h-54 border-2 border-input border-dashed hover:border-ring hover:bg-ring/5 ring-white rounded-xl flex-col items-center justify-center gap-4 text-muted-foreground transition-colors cursor-pointer",
-            isDragging && "border-ring bg-ring/5"
+            isDragging && "border-ring bg-ring/5",
           )}
         >
           {!isLoading ? (

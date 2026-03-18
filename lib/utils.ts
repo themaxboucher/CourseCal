@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { format } from "date-fns";
-import { eventColors } from "@/constants";
+import { colors } from "@/constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -9,34 +9,9 @@ export function cn(...inputs: ClassValue[]) {
 
 export const parseStringify = (value: any) => JSON.parse(JSON.stringify(value));
 
-export function getCurrentTerm(terms: Term[]): Term | null {
-  if (!terms || terms.length === 0) return null;
-
-  const now = new Date();
-
-  // Find term containing current date
-  const currentTerm = terms.find((term) => {
-    const startDate = new Date(term.startDate);
-    const endDate = new Date(term.endDate);
-    return now >= startDate && now <= endDate;
-  });
-
-  if (currentTerm) return currentTerm;
-
-  // Find next upcoming term
-  const upcomingTerms = terms
-    .filter((term) => new Date(term.startDate) > now)
-    .sort(
-      (a, b) =>
-        new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
-    );
-
-  return upcomingTerms[0] || terms[0] || null;
-}
-
 export function getReadableRecurrence(
   recurrence: Recurrence | undefined,
-  days: Day[] | undefined
+  days: WeekDay[] | undefined
 ): string {
   if (!recurrence || !days || days.length === 0) {
     return "No recurrence";
@@ -88,16 +63,6 @@ export function formatTime(timeString: string, includeAmPm: boolean = true) {
 }
 
 export function getRandomColor(): Color {
-  const colors: Color[] = [
-    "red",
-    "orange",
-    "yellow",
-    "green",
-    "cyan",
-    "blue",
-    "purple",
-    "pink",
-  ];
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
@@ -130,7 +95,7 @@ export const findOverlappingEvents = (
 
   events.forEach((event) => {
     // Skip the current event being edited
-    if (currentEventId && event.$id === currentEventId) {
+    if (currentEventId && event.id === currentEventId) {
       return;
     }
 
@@ -189,7 +154,7 @@ export const getOverlapErrorMessage = (
     .map((overlap) => overlap.event)
     .filter(
       (event, index, self) =>
-        index === self.findIndex((e) => e.$id === event.$id)
+        index === self.findIndex((e) => e.id === event.id)
     );
 
   const firstEvent = uniqueEvents[0];
@@ -225,7 +190,7 @@ export const timeToMinutes = (timeString: string): number => {
 // Get the time range needed to display all events
 // Default: 8 AM to 4 PM, expands to accommodate events outside this range
 export const getTimeRange = (
-  events: (UserEvent | ScheduleEvent)[]
+  events: (UserEvent | LocalEvent)[]
 ): { startHour: number; endHour: number } => {
   const DEFAULT_START = 9; // 9 AM
   const DEFAULT_END = 15; // 3 PM
@@ -272,7 +237,7 @@ export const generateTimeSlots = (
 
 // Helper function to get position and height for event
 export const getEventPosition = (
-  event: UserEvent | ScheduleEvent,
+  event: UserEvent | LocalEvent,
   cellHeight: number,
   baseHour: number = 8
 ) => {

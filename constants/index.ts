@@ -44,6 +44,17 @@ export const classTypeIcons = {
   default: Book,
 };
 
+export const colors : Color[] = [
+  "red",
+  "orange",
+  "yellow",
+  "green",
+  "cyan",
+  "blue",
+  "purple",
+  "pink",
+];
+
 export const eventColors = {
   red: "bg-red-500 border-red-300 dark:bg-red-700 dark:border-red-900 text-white hover:bg-red-500 hover:dark:bg-red-700",
   orange:
@@ -195,7 +206,7 @@ const winterTerm = {
   endDate: "2026-04-15",
 };
 
-export const displayEvents1: ScheduleEvent[] = [
+export const displayEvents1: LocalEvent[] = [
   {
     course: {
       courseCode: "ENDG 319",
@@ -341,7 +352,7 @@ export const displayEvents1: ScheduleEvent[] = [
   },
 ];
 
-export const displayEvents2: ScheduleEvent[] = [
+export const displayEvents2: LocalEvent[] = [
   {
     course: {
       courseCode: "PHYS 259",

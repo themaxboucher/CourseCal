@@ -24,7 +24,7 @@ function openDB(): Promise<IDBDatabase> {
 }
 
 // Events
-export async function saveEvents(events: ScheduleEvent[]): Promise<void> {
+export async function saveEvents(events: LocalEvent[]): Promise<void> {
   const db = await openDB();
   const tx = db.transaction(STORES.events, "readwrite");
   const store = tx.objectStore(STORES.events);
@@ -49,7 +49,7 @@ export async function saveEvents(events: ScheduleEvent[]): Promise<void> {
   });
 }
 
-export async function getEvents(): Promise<ScheduleEvent[]> {
+export async function getEvents(): Promise<LocalEvent[]> {
   const db = await openDB();
   const tx = db.transaction(STORES.events, "readonly");
   const store = tx.objectStore(STORES.events);
@@ -85,7 +85,7 @@ export async function clearEvents(): Promise<void> {
   });
 }
 
-export async function addEvent(event: ScheduleEvent): Promise<number> {
+export async function addEvent(event: LocalEvent): Promise<number> {
   const db = await openDB();
   const tx = db.transaction(STORES.events, "readwrite");
   const store = tx.objectStore(STORES.events);
@@ -103,19 +103,19 @@ export async function addEvent(event: ScheduleEvent): Promise<number> {
   });
 
   // Sync color across all events with this course
-  if (event.courseColor?.color) {
-    await updateCourseColorForAllEvents(event.course.courseCode, event.courseColor.color);
+  if (event.courseColor) {
+    await updateCourseColorForAllEvents(event.courseCode, event.courseColor);
   }
 
   return newEventId;
 }
 
-export async function updateEvent(id: number, event: Partial<ScheduleEvent>): Promise<void> {
+export async function updateEvent(id: number, event: Partial<LocalEvent>): Promise<void> {
   const db = await openDB();
   const tx = db.transaction(STORES.events, "readwrite");
   const store = tx.objectStore(STORES.events);
 
-  const updatedEvent = await new Promise<ScheduleEvent & { id: number }>((resolve, reject) => {
+  const updatedEvent = await new Promise<LocalEvent & { id: number }>((resolve, reject) => {
     // First get the existing event
     const getRequest = store.get(id);
     getRequest.onsuccess = () => {
@@ -144,8 +144,8 @@ export async function updateEvent(id: number, event: Partial<ScheduleEvent>): Pr
   });
 
   // Sync color across all events with this course
-  if (updatedEvent.courseColor?.color) {
-    await updateCourseColorForAllEvents(updatedEvent.course.courseCode, updatedEvent.courseColor.color);
+  if (updatedEvent.courseColor) {
+    await updateCourseColorForAllEvents(updatedEvent.courseCode, updatedEvent.courseColor);
   }
 }
 
@@ -172,8 +172,8 @@ export async function deleteEvent(id: number): Promise<void> {
  */
 export async function getCourseColorFromEvents(courseCode: string): Promise<Color | null> {
   const events = await getEvents();
-  const matchingEvent = events.find(e => e.course.courseCode === courseCode);
-  return matchingEvent?.courseColor?.color ?? null;
+  const matchingEvent = events.find(e => e.courseCode === courseCode);
+  return matchingEvent?.courseColor ?? null;
 }
 
 /**
@@ -191,14 +191,14 @@ export async function updateCourseColorForAllEvents(
   return new Promise((resolve, reject) => {
     const request = store.getAll();
     request.onsuccess = () => {
-      const events = request.result as (ScheduleEvent & { id: number })[];
+      const events = request.result as (LocalEvent & { id: number })[];
 
       // Update all events with matching course
       for (const event of events) {
-        if (event.course.courseCode === courseCode) {
+        if (event.courseCode === courseCode) {
           const updatedEvent = {
             ...event,
-            courseColor: { color: newColor },
+            courseColor: newColor,
           };
           store.put(updatedEvent);
         }
@@ -218,9 +218,4 @@ export async function updateCourseColorForAllEvents(
       reject(tx.error);
     };
   });
-}
-
-// Clear all data
-export async function clearAllData(): Promise<void> {
-  await clearEvents();
 }

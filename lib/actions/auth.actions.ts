@@ -30,10 +30,10 @@ export async function verifyMagicLink(code: string) {
 
   if (error) {
     console.error(error);
-    throw new Error(error.message);
+    return false;
   }
 
-  return data;
+  return data.user;
 }
 
 export async function logout() {

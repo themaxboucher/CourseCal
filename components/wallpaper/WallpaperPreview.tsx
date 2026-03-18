@@ -13,7 +13,7 @@ const fontStyles: Record<FontType, string> = {
 };
 
 interface WallpaperPreviewProps {
-  events: ScheduleEvent[];
+  events: LocalEvent[];
   imageRef?: React.RefObject<HTMLDivElement | null>;
   background: BackgroundType;
   font: FontType;

@@ -17,9 +17,9 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import EventBlock from "./EventBlock";
 
 interface EventProps {
-  event: UserEvent | ScheduleEvent;
+  event: UserEvent | LocalEvent;
   style?: React.CSSProperties;
-  events?: (UserEvent | ScheduleEvent)[];
+  events?: (UserEvent | LocalEvent)[];
   user?: User;
   isGuest?: boolean;
   onEventsChange?: () => void;

@@ -5,7 +5,7 @@ import { eventColors, lightEventColors } from "@/constants";
 import { TriangleAlert } from "lucide-react";
 
 interface EventProps {
-  event: UserEvent | ScheduleEvent;
+  event: UserEvent | LocalEvent;
   style?: React.CSSProperties;
   className?: string;
   isWallpaper?: boolean;

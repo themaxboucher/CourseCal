@@ -1,7 +1,6 @@
 // === Utility Types ===
 declare type Override<T, R> = Omit<T, keyof R> & R;
 
-// === Primitive Types ===
 declare type Color =
   | "red"
   | "orange"
@@ -11,13 +10,16 @@ declare type Color =
   | "blue"
   | "purple"
   | "pink";
-
-declare type Day = "monday" | "tuesday" | "wednesday" | "thursday" | "friday";
-declare type EventType = "lecture" | "tutorial" | "lab" | "seminar";
+declare type WeekDay =
+  | "monday"
+  | "tuesday"
+  | "wednesday"
+  | "thursday"
+  | "friday";
+declare type ClassType = "lecture" | "tutorial" | "lab" | "seminar";
 declare type Recurrence = "weekly" | "biweekly";
 declare type Season = "winter" | "spring" | "summer" | "fall";
 
-// === Domain Types ===
 declare interface User {
   id: string;
   email: string;
@@ -27,16 +29,48 @@ declare interface User {
   hasCompletedOnboarding: boolean;
   hasBeenWelcomed: boolean;
   createdAt: string;
-  updatedAt: string;
+}
+
+declare interface ParsedEvent {
+  courseCode: string;
+  location: string;
+  type: ClassType | null;
+  startTime: string;
+  endTime: string;
+  days: WeekDay[];
+}
+
+declare interface LocalEvent {
+  courseCode: string;
+  course: number | null;
+  courseColor: Color;
+  type: ClassType | null;
+  location: string;
+  startTime: string;
+  endTime: string;
+  days: WeekDay[];
+  term: number | null;
+  recurrence: Recurrence;
+}
+
+declare interface DBEvent{
+  user: string;
+  courseCode: string;
+  course: number | null;
+  type: ClassType | null;
+  location: string;
+  startTime: string;
+  endTime: string;
+  days: WeekDay[];
+  term: number | null;
+  recurrence: Recurrence;
 }
 
 declare interface Course {
-  courseCode: string;
-  subject?: string;
-  title?: string;
+  code: string;
+  title: string;
+  subject: string;
   description?: string;
-  units?: number;
-  instructionalComponents?: "lecture" | "tutorial" | "laboratory" | "seminar";
   color?: CourseColor;
 }
 
@@ -48,16 +82,9 @@ declare interface Term {
 }
 
 declare interface CourseColor {
+  user: string;
   course: string;
   color: Color;
-}
-
-declare interface UserCourseColor extends CourseColor {
-  user: string;
-}
-
-declare interface CourseColorDB extends UserCourseColor {
-  $id: string;
 }
 
 // For creating/updating course colors (no Appwrite metadata)
@@ -66,33 +93,8 @@ declare type CourseColorInput = Pick<
   "course" | "user" | "color"
 > & { $id?: string };
 
-// === Event Types ===
-
-// Event format from AI parsing
-declare interface ParsedEvent {
-  courseCode: string;
-  location: string;
-  type: EventType | null;
-  startTime: string;
-  endTime: string;
-  days: Day[];
-}
-
-declare interface ScheduleEvent {
-  course: Pick<Course, "courseCode"> & Partial<Omit<Course, "courseCode">>;
-  location?: string;
-  type?: EventType;
-  startTime: string;
-  endTime: string;
-  days: Day[];
-  term?: Term;
-  courseColor: { color: Color };
-  recurrence?: Recurrence;
-  exclusions?: string[];
-}
-
 // Full stored event with all relationships
-declare interface UserEvent extends ScheduleEvent {
+declare interface UserEvent extends LocalEvent {
   user: string;
 }
 
@@ -102,7 +104,7 @@ declare type CalendarEventInput = Omit<
   keyof AppwriteDoc | "course" | "courseColor"
 > & {
   course?: string;
-  days: Day[];
+  days: WeekDay[];
   recurrence: Recurrence;
   exclusions: string[];
 };
@@ -110,11 +112,11 @@ declare type CalendarEventInput = Omit<
 declare type CalendarEventDB = {
   user: string;
   course: string;
-  type: EventType;
+  type: ClassType;
   location: string;
   startTime: string;
   endTime: string;
-  days: Day[];
+  days: WeekDay[];
   recurrence: Recurrence;
   exclusions: string[];
   term: string;

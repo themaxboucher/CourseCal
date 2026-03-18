@@ -29,7 +29,7 @@ export default function Schedule({
 }: ScheduleProps) {
   const router = useRouter();
   const [selectedTermId, setSelectedTermId] = useState<string>("");
-  const [localEvents, setLocalEvents] = useState<ScheduleEvent[]>([]);
+  const [localEvents, setLocalEvents] = useState<LocalEvent[]>([]);
   const [isLoading, setIsLoading] = useState(!isLoggedIn);
 
   // Refresh local events from IndexedDB

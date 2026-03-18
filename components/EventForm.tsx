@@ -73,7 +73,7 @@ const createGuestEventFormSchema = () => {
 
 // Schema for logged-in users - full course object
 const createEventFormSchema = (
-  events: (UserEvent | ScheduleEvent)[],
+  events: (UserEvent | LocalEvent)[],
   currentEventId?: string
 ) => {
   return z
@@ -154,10 +154,10 @@ type GuestEventFormData = z.infer<
 >;
 
 interface EventFormProps {
-  eventToEdit?: UserEvent | ScheduleEvent | null;
+  eventToEdit?: UserEvent | LocalEvent | null;
   onCancel?: () => void;
   term?: string;
-  events?: (UserEvent | ScheduleEvent)[];
+  events?: (UserEvent | LocalEvent)[];
   user?: User;
   isGuest?: boolean;
   onEventSaved?: () => void;
@@ -177,7 +177,7 @@ export default function EventForm({
 
   // Get event ID based on mode
   const eventId = isGuest
-    ? (eventToEdit as ScheduleEvent & { id: number })?.id
+    ? (eventToEdit as LocalEvent & { id: number })?.id
     : (eventToEdit as UserEvent)?.$id;
 
   // Guest form
@@ -306,7 +306,7 @@ export default function EventForm({
         throw new Error("Color is required");
       }
 
-      const scheduleEvent: ScheduleEvent = {
+      const scheduleEvent: LocalEvent = {
         course: { courseCode: data.courseCode } as Course,
         type: data.type || undefined,
         location: data.location,

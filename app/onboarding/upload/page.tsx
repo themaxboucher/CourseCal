@@ -1,4 +1,3 @@
-import { getTerms } from "@/lib/actions/terms.actions";
 import { getLoggedInUser } from "@/lib/actions/users.actions";
 import Image from "next/image";
 import { redirect } from "next/navigation";
@@ -10,7 +9,6 @@ export default async function UploadPage() {
   if (!user) {
     redirect("/");
   }
-  const terms = await getTerms();
 
   return (
     <section className="flex flex-col gap-2 max-w-[75rem] mx-auto px-8 py-16">
@@ -23,13 +21,6 @@ export default async function UploadPage() {
             'Enrolled Courses'. Upload the .ics file here.
           </p>
         </div>
-        <Image
-          src="/download-calendar-screenshot.png"
-          alt="UCalgary portal 'Download Calendar' screenshot"
-          width={334}
-          height={166}
-          className="shadow-lg rounded-xl border-2"
-        />
       </div>
     </section>
   );

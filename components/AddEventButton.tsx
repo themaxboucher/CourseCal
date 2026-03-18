@@ -7,7 +7,7 @@ import EventDialog from "./EventDialog";
 
 interface AddEventButtonProps {
   term: string;
-  events?: (UserEvent | ScheduleEvent)[];
+  events?: (UserEvent | LocalEvent)[];
   user?: User | null;
   isGuest?: boolean;
   onEventSaved?: () => void;

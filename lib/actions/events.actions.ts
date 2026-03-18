@@ -1,123 +1,31 @@
 "use server";
 
-import { ID, Query } from "node-appwrite";
-import { createAdminClient } from "../appwrite/server";
-import { parseStringify } from "../utils";
-import { getCourseColor } from "./courseColors.actions";
-import { getRandomColor } from "../utils";
+import { fromDb, toDb } from "./utils/db";
+import { createClient } from "../supabase/server";
 
-const {
-  APPWRITE_DATABASE_ID: DATABASE_ID,
-  APPWRITE_EVENTS_TABLE_ID: EVENTS_TABLE_ID,
-  APPWRITE_COURSES_TABLE_ID: COURSES_TABLE_ID,
-  APPWRITE_COURSE_COLORS_TABLE_ID: COURSE_COLORS_TABLE_ID,
-} = process.env;
-
-export async function createEvent(event: CalendarEventDB) {
-  try {
-    const { database } = await createAdminClient();
-
-    const eventDoc = await database.createDocument(
-      DATABASE_ID!,
-      EVENTS_TABLE_ID!,
-      ID.unique(),
-      event
-    );
-    return parseStringify(eventDoc);
-  } catch (error) {
+export async function getEvents(userId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("events")
+    .select("*")
+    .eq("user_id", userId);
+  if (error) {
     console.error(error);
-    throw error;
+    throw new Error(error.message);
   }
+  return data;
 }
 
-export async function updateEvent(
-  eventId: string,
-  event: Partial<CalendarEventDB>
-) {
-  try {
-    const { database } = await createAdminClient();
-    await database.updateDocument(
-      DATABASE_ID!,
-      EVENTS_TABLE_ID!,
-      eventId,
-      event
-    );
-    return parseStringify(event);
-  } catch (error) {
+export async function createEvents(events: DBEvent[]) {
+  const supabase = await createClient();
+
+  // Make sure to create course colors
+
+  // Create course colors
+  const { data, error } = await supabase.from("events").insert(toDb(events));
+  if (error) {
     console.error(error);
-    throw error;
+    throw new Error(error.message);
   }
-}
-
-export async function getEvents(userId: string, limit: number = 5000) {
-  try {
-    const { database } = await createAdminClient();
-    const events = await database.listDocuments(
-      DATABASE_ID!,
-      EVENTS_TABLE_ID!,
-      [Query.equal("user", [userId]), Query.limit(limit)]
-    );
-
-    // Get all unique course IDs from events (filter out null values)
-    const courseIds = [
-      ...new Set(
-        events.documents
-          .map((event) => event.course)
-          .filter((courseId) => courseId !== null)
-      ),
-    ];
-
-    // Fetch all courses in one query (only if there are course IDs)
-    let courses: Record<string, any> = {};
-    if (courseIds.length > 0) {
-      const coursesResponse = await database.listDocuments(
-        DATABASE_ID!,
-        COURSES_TABLE_ID!,
-        [Query.equal("$id", courseIds)]
-      );
-      courses = coursesResponse.documents.reduce((acc, course) => {
-        acc[course.$id] = course;
-        return acc;
-      }, {} as Record<string, any>);
-    }
-
-    // Fetch course colors for each course (only if there are courses)
-    let courseColorsMap: Record<string, any> = {};
-    if (courseIds.length > 0) {
-      // Fetch course colors for each course
-      const courseColorsPromises = courseIds.map((courseId) =>
-        getCourseColor(courseId, userId)
-      );
-      const courseColorsResponses = await Promise.all(courseColorsPromises);
-
-      // Process the responses to create a map
-      courseColorsResponses.forEach((response, index) => {
-        if (response.documents && response.documents.length > 0) {
-          courseColorsMap[courseIds[index]] = response.documents[0];
-        }
-      });
-    }
-
-    // Populate course relationships and course colors
-    const eventsWithCourses = events.documents.map((event) => ({
-      ...event,
-      course: event.course ? courses[event.course] || null : null,
-      courseColor: event.course ? courseColorsMap[event.course] || null : null,
-    }));
-
-    return parseStringify(eventsWithCourses);
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-}
-
-export async function deleteEvent(eventId: string) {
-  try {
-    const { database } = await createAdminClient();
-    await database.deleteDocument(DATABASE_ID!, EVENTS_TABLE_ID!, eventId);
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+  return fromDb(data);
 }

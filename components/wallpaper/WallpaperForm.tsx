@@ -26,7 +26,7 @@ const fontOptions: { value: FontType; label: string; className: string }[] = [
 ];
 
 interface WallpaperFormProps {
-  events: ScheduleEvent[];
+  events: LocalEvent[];
 }
 
 export function WallpaperForm({ events }: WallpaperFormProps) {

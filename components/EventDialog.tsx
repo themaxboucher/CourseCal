@@ -9,9 +9,9 @@ import { useEffect, useState } from "react";
 interface EventDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  eventToEdit: UserEvent | ScheduleEvent | null;
+  eventToEdit: UserEvent | LocalEvent | null;
   term?: string;
-  events?: (UserEvent | ScheduleEvent)[];
+  events?: (UserEvent | LocalEvent)[];
   user?: User;
   isGuest?: boolean;
   onEventSaved?: () => void;

@@ -20,7 +20,7 @@ import {
 } from "../ui/drawer";
 
 interface WallpaperDialogProps {
-  events: ScheduleEvent[];
+  events: LocalEvent[];
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
