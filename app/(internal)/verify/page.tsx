@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useRef, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,8 +23,14 @@ function VerifyContent() {
   const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams(); // This hook requires Suspense boundary
   const router = useRouter();
+  // Magic link codes are single-use, so we must guard against React Strict Mode
+  // (and any other re-render) re-invoking the verification effect.
+  const hasVerified = useRef(false);
 
   useEffect(() => {
+    if (hasVerified.current) return;
+    hasVerified.current = true;
+
     const handleVerification = async () => {
       try {
         const code = searchParams.get("code");
