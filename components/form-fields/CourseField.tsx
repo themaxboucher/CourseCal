@@ -21,6 +21,9 @@ import { getCourses } from "@/lib/actions/courses.actions";
 import { FormFieldWrapper } from "./FormFieldWrapper";
 import { UseFormReturn } from "react-hook-form";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { Tables } from "@/types/supabase";
+
+type Course = Tables<"courses">;
 
 interface CourseSelectProps {
   form: UseFormReturn<any>;
@@ -30,7 +33,7 @@ interface CourseSelectProps {
   placeholder?: string;
   className?: string;
   warning?: string;
-  onCourseSelect?: (course: any) => void;
+  onCourseSelect?: (course: Course) => void;
   userId: string;
 }
 
@@ -54,7 +57,7 @@ export function CourseField({
   const fetchCourses = async (query: string = "") => {
     setIsLoading(true);
     try {
-      const coursesData = await getCourses(10, query, userId);
+      const coursesData = await getCourses(10, query);
       setCourses(coursesData || []);
     } catch (error) {
       console.error("Failed to fetch courses:", error);
@@ -73,7 +76,7 @@ export function CourseField({
       const fieldValue = form.getValues(name);
       if (fieldValue) {
         setCourses((prev) => {
-          const exists = prev.some((c) => c.$id === fieldValue.$id);
+          const exists = prev.some((c) => c.id === fieldValue.id);
           return exists ? prev : [...prev, fieldValue];
         });
       }
@@ -100,7 +103,7 @@ export function CourseField({
       className={className}
       warning={warning}
     >
-      {({ field }: { field: any }) => {
+      {({ field }: { field: { value: Course | null; onChange: (value: Course | null) => void } }) => {
         const selectedCourse = field.value;
 
         return (
@@ -117,9 +120,7 @@ export function CourseField({
                 )}
                 aria-invalid={hasError ? "true" : "false"}
               >
-                {selectedCourse
-                  ? selectedCourse.courseCode
-                  : placeholder}
+                {selectedCourse ? selectedCourse.code : placeholder}
                 <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
@@ -149,24 +150,18 @@ export function CourseField({
                     {!isLoading &&
                       courses.map((course) => (
                         <CommandItem
-                          key={course.$id}
-                          value={course.$id}
+                          key={course.id}
+                          value={course.code}
                           onSelect={() => {
-                            const selectedCourse = {
-                              $id: course.$id!,
-                              courseCode: course.courseCode,
-                              title: course.title,
-                              color: course.color,
-                            };
-                            field.onChange(selectedCourse);
-                            onCourseSelect?.(selectedCourse);
+                            field.onChange(course);
+                            onCourseSelect?.(course);
                             setOpen(false);
                           }}
                           className="flex items-center justify-between gap-2"
                         >
                           <div className="flex flex-col">
                             <span className="font-medium">
-                              {course.courseCode}
+                              {course.code}
                             </span>
                             <span className="text-xs text-muted-foreground truncate">
                               {course.title}
@@ -175,7 +170,7 @@ export function CourseField({
                           <CheckIcon
                             className={cn(
                               "mr-2 size-4",
-                              field.value?.$id === course.$id
+                              field.value?.id === course.id
                                 ? "opacity-100"
                                 : "opacity-0"
                             )}

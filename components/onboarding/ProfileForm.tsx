@@ -1,6 +1,5 @@
 "use client";
 
-import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "../ui/form";
@@ -12,22 +11,21 @@ import { LoaderCircle, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { uploadAvatar } from "@/lib/actions/avatars.actions";
 import { updateUser } from "@/lib/actions/users.actions";
+import {
+  AVATAR_INPUT_ACCEPT,
+  handleAvatarFileChange,
+  profileSchema,
+  type ProfileFormData,
+} from "@/lib/utils/profile";
+import type { Tables } from "@/types/supabase";
 
-const profileSchema = z.object({
-  avatar: z.string().optional(),
-  name: z.string().min(1, "Name is required"),
-  major: z.string().min(1, "Major is required"),
-});
-
-type ProfileFormData = z.infer<typeof profileSchema>;
-
-export default function ProfileForm({ user }: { user: User }) {
+export default function ProfileForm({ user }: { user: Tables<"users"> }) {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(
     user.avatar || null,
   );
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const router = useRouter();
 
   const form = useForm<ProfileFormData>({
@@ -39,42 +37,25 @@ export default function ProfileForm({ user }: { user: User }) {
     },
   });
 
-  const MAX_AVATAR_SIZE = 5 * 1024 * 1024; // 5 MB
-  const ALLOWED_AVATAR_TYPES = ["image/png", "image/jpeg", "image/webp"];
-
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      if (!ALLOWED_AVATAR_TYPES.includes(file.type)) {
-        alert("Only PNG, JPG, and WebP images are allowed");
-        return;
-      }
-      if (file.size > MAX_AVATAR_SIZE) {
-        alert("Avatar must be under 5 MB");
-        return;
-      }
+    handleAvatarFileChange(e, (file, dataUrl) => {
       setAvatarFile(file);
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        setAvatarPreview(ev.target?.result as string);
-        form.setValue("avatar", ev.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+      setAvatarPreview(dataUrl);
+      form.setValue("avatar", dataUrl);
+    });
   };
 
   async function onSubmit(data: ProfileFormData) {
     setLoading(true);
     try {
-      let avatarUrl;
-      if (avatarFile) {
-        avatarUrl = await uploadAvatar(avatarFile, user.id);
-      }
+      const avatarUrl = avatarFile
+        ? await uploadAvatar(avatarFile, user.id)
+        : user.avatar;
 
       await updateUser(user.id, {
         name: data.name,
         major: data.major,
-        avatar: avatarUrl || user.avatar,
+        avatar: avatarUrl,
       });
       router.push("/onboarding/upload");
     } catch (error: any) {
@@ -115,7 +96,7 @@ export default function ProfileForm({ user }: { user: User }) {
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/png, image/jpeg"
+              accept={AVATAR_INPUT_ACCEPT}
               onChange={handleAvatarChange}
               className="hidden"
             />

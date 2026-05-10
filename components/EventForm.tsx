@@ -1,164 +1,189 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useRouter } from "next/navigation";
+import { LoaderCircle } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 import { TextField } from "./form-fields/TextField";
 import { SelectField } from "./form-fields/SelectField";
-import { LoaderCircle } from "lucide-react";
-import { classTypeIcons } from "@/constants";
 import { CheckboxesField } from "./form-fields/CheckboxesField";
 import { ColorField } from "./form-fields/ColorField";
 import { CourseField } from "./form-fields/CourseField";
 import TimeField from "./form-fields/TimeField";
 import { RadioGroupField } from "./form-fields/RadioGroupField";
-import { createEvent, updateEvent } from "@/lib/actions/events.actions";
+
+import { classTypeIcons } from "@/constants";
+import { findOverlappingEvents, getOverlapErrorMessage } from "@/lib/utils";
+import {
+  type AnyEvent,
+  getEventColor,
+  isLocalEvent,
+} from "@/lib/utils/events";
 import {
   addEvent as addLocalEvent,
   updateEvent as updateLocalEvent,
 } from "@/lib/indexeddb";
-import { useRouter } from "next/navigation";
-import { createCourseColor } from "@/lib/actions/courseColors.actions";
 import {
-  findOverlappingEvents,
-  getOverlapErrorMessage,
-} from "@/lib/utils";
-import { Label } from "@/components/ui/label";
+  createEvent,
+  updateEvent,
+} from "@/lib/actions/events.actions";
+import { upsertCourseColor } from "@/lib/actions/courseColors.actions";
+import type { Tables, TablesInsert } from "@/types/supabase";
 
-// Schema for guest mode - simpler course field (just a string)
-const createGuestEventFormSchema = () => {
+// --- Constants ---
+
+const COLORS = [
+  "red",
+  "orange",
+  "yellow",
+  "green",
+  "cyan",
+  "blue",
+  "purple",
+  "pink",
+] as const;
+
+const DAYS = [
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+] as const;
+
+const CLASS_TYPES = ["lecture", "tutorial", "lab", "seminar"] as const;
+const RECURRENCES = ["weekly", "biweekly"] as const;
+
+const DAY_OPTIONS = [
+  { value: "monday", label: "Mon" },
+  { value: "tuesday", label: "Tue" },
+  { value: "wednesday", label: "Wed" },
+  { value: "thursday", label: "Thu" },
+  { value: "friday", label: "Fri" },
+];
+
+const RECURRENCE_OPTIONS = [
+  { value: "weekly", label: "Every week" },
+  { value: "biweekly", label: "Every other week" },
+];
+
+const CLASS_TYPE_OPTIONS = [
+  { value: "lecture", label: "Lecture", icon: classTypeIcons.lecture },
+  { value: "tutorial", label: "Tutorial", icon: classTypeIcons.tutorial },
+  { value: "lab", label: "Lab", icon: classTypeIcons.lab },
+  { value: "seminar", label: "Seminar", icon: classTypeIcons.seminar },
+];
+
+// --- Types ---
+
+type SelectedCourse = {
+  id: number;
+  code: string;
+  title?: string;
+};
+
+// --- Schema ---
+
+function buildSchema(
+  events: AnyEvent[],
+  isGuest: boolean,
+  currentEventId?: number
+) {
   return z
     .object({
-      courseCode: z.string().min(1, "Enter a course code"),
-      type: z.enum(["lecture", "tutorial", "lab", "seminar"]).nullable(),
+      courseCode: z.string(),
+      course: z
+        .object({
+          id: z.number(),
+          code: z.string(),
+          title: z.string().optional(),
+        })
+        .nullable(),
+      type: z.enum(CLASS_TYPES).nullable(),
       days: z
-        .array(z.enum(["monday", "tuesday", "wednesday", "thursday", "friday"]))
+        .array(z.enum(DAYS))
         .min(1, "Select at least one day for your class"),
-      recurrence: z.enum(["weekly", "biweekly"]),
+      recurrence: z.enum(RECURRENCES),
       startTime: z.string().min(1, "Select a start time for your class"),
       endTime: z.string().min(1, "Select an end time for your class"),
       location: z.string(),
       color: z
-        .enum([
-          "red",
-          "orange",
-          "yellow",
-          "green",
-          "cyan",
-          "blue",
-          "purple",
-          "pink",
-        ])
+        .enum(COLORS)
         .nullable()
         .refine((val) => val !== null, "Select a color for your class"),
     })
     .superRefine((data, ctx) => {
-      if (!data.startTime || !data.endTime) return;
-
-      const start = new Date(`2000-01-01T${data.startTime}`);
-      const end = new Date(`2000-01-01T${data.endTime}`);
-      if (end <= start) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "End time must be after start time",
-          path: ["endTime"],
-        });
-        return;
-      }
-    });
-};
-
-// Schema for logged-in users - full course object
-const createEventFormSchema = (
-  events: (UserEvent | LocalEvent)[],
-  currentEventId?: string
-) => {
-  return z
-    .object({
-      course: z
-        .object({
-          $id: z.string(),
-          courseCode: z.string(),
-          title: z.string().optional(),
-        })
-        .nullable()
-        .refine((val) => val !== null, "Select a course"),
-      type: z.enum(["lecture", "tutorial", "lab", "seminar"]),
-      days: z
-        .array(z.enum(["monday", "tuesday", "wednesday", "thursday", "friday"]))
-        .min(1, "Select at least one day for your class"),
-      recurrence: z.enum(["weekly", "biweekly"]),
-      startTime: z.string().min(1, "Select a start time for your class"),
-      endTime: z.string().min(1, "Select an end time for your class"),
-      location: z
-        .string()
-        .min(1, "Enter a location for your class")
-        .min(2, "Location must be at least 2 characters long"),
-      color: z
-        .enum([
-          "red",
-          "orange",
-          "yellow",
-          "green",
-          "cyan",
-          "blue",
-          "purple",
-          "pink",
-        ])
-        .nullable()
-        .refine((val) => val !== null, "Select a color for your class"),
-    })
-    .superRefine((data, ctx) => {
-      if (!data.startTime || !data.endTime) return;
-
-      const start = new Date(`2000-01-01T${data.startTime}`);
-      const end = new Date(`2000-01-01T${data.endTime}`);
-      if (end <= start) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "End time must be after start time",
-          path: ["endTime"],
-        });
-        return;
-      }
-
-      if (data.days && data.days.length > 0) {
-        const overlaps = findOverlappingEvents(
-          data,
-          events as UserEvent[],
-          currentEventId
-        );
-        if (overlaps.length > 0) {
-          const eventNames = getOverlapErrorMessage(overlaps);
+      // Course is required, but the source field differs by mode.
+      if (isGuest) {
+        if (!data.courseCode.trim()) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: `Overlaps with ${eventNames}`,
-            path: ["startTime"],
-          });
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: `Overlaps with ${eventNames}`,
-            path: ["endTime"],
+            message: "Enter a course code",
+            path: ["courseCode"],
           });
         }
+      } else if (!data.course) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Select a course",
+          path: ["course"],
+        });
+      }
+
+      if (!data.startTime || !data.endTime) return;
+
+      const start = new Date(`2000-01-01T${data.startTime}`);
+      const end = new Date(`2000-01-01T${data.endTime}`);
+      if (end <= start) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "End time must be after start time",
+          path: ["endTime"],
+        });
+        return;
+      }
+
+      if (data.days.length === 0) return;
+
+      const overlaps = findOverlappingEvents(
+        { days: data.days, startTime: data.startTime, endTime: data.endTime },
+        events,
+        currentEventId
+      );
+      if (overlaps.length > 0) {
+        const eventNames = getOverlapErrorMessage(overlaps);
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Overlaps with ${eventNames}`,
+          path: ["startTime"],
+        });
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Overlaps with ${eventNames}`,
+          path: ["endTime"],
+        });
       }
     });
-};
+}
 
-type EventFormData = z.infer<ReturnType<typeof createEventFormSchema>>;
-type GuestEventFormData = z.infer<
-  ReturnType<typeof createGuestEventFormSchema>
->;
+type EventFormData = z.infer<ReturnType<typeof buildSchema>>;
+
+// --- Component ---
 
 interface EventFormProps {
-  eventToEdit?: UserEvent | LocalEvent | null;
+  eventToEdit?: AnyEvent | null;
   onCancel?: () => void;
-  term?: string;
-  events?: (UserEvent | LocalEvent)[];
-  user?: User;
+  // Required when creating a new event. When editing, the term is read from
+  // the event being edited.
+  term?: number;
+  events?: AnyEvent[];
+  user?: Tables<"users">;
   isGuest?: boolean;
   onEventSaved?: () => void;
 }
@@ -172,159 +197,117 @@ export default function EventForm({
   isGuest = false,
   onEventSaved,
 }: EventFormProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const eventId = eventToEdit?.id;
 
-  // Get event ID based on mode
-  const eventId = isGuest
-    ? (eventToEdit as LocalEvent & { id: number })?.id
-    : (eventToEdit as UserEvent)?.$id;
-
-  // Guest form
-  const guestForm = useForm<GuestEventFormData>({
-    resolver: zodResolver(createGuestEventFormSchema()),
-    defaultValues: {
-      courseCode: eventToEdit?.course?.courseCode || "",
-      type: eventToEdit?.type || null,
-      days: eventToEdit?.days || [],
-      recurrence: eventToEdit?.recurrence || "weekly",
-      startTime: eventToEdit?.startTime || "",
-      endTime: eventToEdit?.endTime || "",
-      location: eventToEdit?.location || "",
-      color: (eventToEdit?.courseColor?.color as Color) || null,
-    },
-  });
-
-  // Logged-in user form
-  const userForm = useForm<EventFormData>({
-    resolver: zodResolver(createEventFormSchema(events, eventId as string)),
-    defaultValues: {
-      course: (eventToEdit as UserEvent)?.course
-        ? {
-            $id: (eventToEdit as UserEvent).course.$id!,
-            courseCode: (eventToEdit as UserEvent).course.courseCode,
-            title: (eventToEdit as UserEvent).course.title,
-          }
-        : null,
-      type: eventToEdit?.type || undefined,
-      days: eventToEdit?.days || [],
-      recurrence: eventToEdit?.recurrence || "weekly",
-      startTime: eventToEdit?.startTime || "",
-      endTime: eventToEdit?.endTime || "",
-      location: eventToEdit?.location || "",
-      color: (eventToEdit?.courseColor?.color as Color) || null,
-    },
-  });
-
-  // Use separate watch for each form to avoid type union issues
-  const guestFormValues = guestForm.watch();
-  const userFormValues = userForm.watch();
-  const formValues = isGuest ? guestFormValues : userFormValues;
-
-  // Watch time fields to trigger validation on both when either changes
-  const startTime = isGuest
-    ? guestForm.watch("startTime")
-    : userForm.watch("startTime");
-  const endTime = isGuest
-    ? guestForm.watch("endTime")
-    : userForm.watch("endTime");
-  const days = isGuest ? guestForm.watch("days") : userForm.watch("days");
-
-  // Handle course selection to update color field (only for logged-in users)
-  const handleCourseSelect = (course: any) => {
-    if (course.color && course.color.color) {
-      // If the course has a saved color, update the color field
-      userForm.setValue("color", course.color.color);
-    } else {
-      // If no saved color, reset to null to show fallback color
-      userForm.setValue("color", null);
+  // For Supabase-backed events, the joined `course` is an object containing
+  // its primary key alongside the rest of its fields. Locally-stored events
+  // only carry the foreign-key id.
+  const initialCourse = useMemo<SelectedCourse | null>(() => {
+    if (isGuest || !eventToEdit) return null;
+    if (isLocalEvent(eventToEdit)) {
+      return eventToEdit.course != null
+        ? { id: eventToEdit.course, code: eventToEdit.course_code }
+        : null;
     }
-  };
+    if (!eventToEdit.course) return null;
+    return {
+      id: eventToEdit.course.id,
+      code: eventToEdit.course.code,
+      title: eventToEdit.course.title,
+    };
+  }, [isGuest, eventToEdit]);
 
-  // Trigger validation on both time fields when either changes
+  const form = useForm<EventFormData>({
+    resolver: zodResolver(buildSchema(events, isGuest, eventId)),
+    defaultValues: {
+      courseCode: eventToEdit?.course_code ?? "",
+      course: initialCourse,
+      type: eventToEdit?.type ?? null,
+      days: eventToEdit?.days ?? [],
+      recurrence: eventToEdit?.recurrence ?? "weekly",
+      startTime: eventToEdit?.start_time ?? "",
+      endTime: eventToEdit?.end_time ?? "",
+      location: eventToEdit?.location ?? "",
+      color: eventToEdit ? getEventColor(eventToEdit) : null,
+    },
+  });
+
+  const startTime = form.watch("startTime");
+  const endTime = form.watch("endTime");
+  const days = form.watch("days");
+
+  // Re-validate time fields together so the time-order/overlap errors update
+  // when any of the time-related fields change.
   useEffect(() => {
     if (startTime && endTime) {
-      if (isGuest) {
-        guestForm.trigger(["startTime", "endTime"]);
-      } else {
-        userForm.trigger(["startTime", "endTime"]);
-      }
+      form.trigger(["startTime", "endTime"]);
     }
-  }, [startTime, endTime, days, isGuest, guestForm, userForm]);
+  }, [startTime, endTime, days, form]);
 
-  // Function to check for missing fields based on current form values
-  const getMissingFields = () => {
+  // When a course is picked from the CourseField, mirror its data into the
+  // form's flat fields so submission has everything it needs.
+  function handleCourseSelect(course: SelectedCourse & { color?: Color }) {
+    form.setValue("courseCode", course.code, { shouldValidate: true });
+    if (course.color) {
+      form.setValue("color", course.color);
+    }
+  }
+
+  // Surface warnings for fields that were originally empty (e.g. from an
+  // imported/AI-parsed event) and remain empty as the user edits.
+  const missingFields = useMemo<Record<string, string>>(() => {
     if (!eventToEdit) return {};
+    const v = form.getValues();
+    const m: Record<string, string> = {};
 
-    const missing: Record<string, string> = {};
+    if (!eventToEdit.course_code && !v.courseCode) {
+      m.course = "Course information is missing";
+    }
+    if (!eventToEdit.type && !v.type) {
+      m.type = "Class type is not specified";
+    }
+    if (!eventToEdit.days?.length && !v.days?.length) {
+      m.days = "No days selected for this class";
+    }
+    if (!eventToEdit.recurrence && !v.recurrence) {
+      m.recurrence = "Recurrence pattern is not set";
+    }
+    if (!eventToEdit.start_time && !v.startTime) {
+      m.startTime = "Start time is not specified";
+    }
+    if (!eventToEdit.end_time && !v.endTime) {
+      m.endTime = "End time is not specified";
+    }
+    if (!eventToEdit.location?.trim() && !v.location?.trim()) {
+      m.location = "Location is not provided";
+    }
+    return m;
+    // We intentionally read live form values here without subscribing to each
+    // one; warnings recompute when the fields above are watched elsewhere.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [eventToEdit, form.watch()]);
 
-    // Only show warnings for fields that were originally missing AND are still empty
-    if (isGuest) {
-      if (!eventToEdit.course?.courseCode && !guestFormValues.courseCode) {
-        missing.course = "Course information is missing";
-      }
-    } else {
-      if (!eventToEdit.course && !userFormValues.course) {
-        missing.course = "Course information is missing";
-      }
-    }
-    if (!eventToEdit.type && !formValues.type) {
-      missing.type = "Class type is not specified";
-    }
-    if (
-      (!eventToEdit.days || eventToEdit.days.length === 0) &&
-      (!formValues.days || formValues.days.length === 0)
-    ) {
-      missing.days = "No days selected for this class";
-    }
-    if (!eventToEdit.recurrence && !formValues.recurrence) {
-      missing.recurrence = "Recurrence pattern is not set";
-    }
-    if (!eventToEdit.startTime && !formValues.startTime) {
-      missing.startTime = "Start time is not specified";
-    }
-    if (!eventToEdit.endTime && !formValues.endTime) {
-      missing.endTime = "End time is not specified";
-    }
-    if (
-      (!eventToEdit.location || eventToEdit.location.trim() === "") &&
-      (!formValues.location || formValues.location.trim() === "")
-    ) {
-      missing.location = "Location is not provided";
-    }
-
-    return missing;
-  };
-
-  const missingFields = getMissingFields();
-
-  // Guest submit handler
-  async function onGuestSubmit(data: GuestEventFormData) {
+  async function onSubmit(data: EventFormData) {
+    if (!data.color) return;
     setIsSubmitting(true);
     try {
-      if (!data.color) {
-        throw new Error("Color is required");
-      }
-
-      const scheduleEvent: LocalEvent = {
-        course: { courseCode: data.courseCode } as Course,
-        type: data.type || undefined,
-        location: data.location,
-        startTime: data.startTime,
-        endTime: data.endTime,
-        days: data.days,
-        courseColor: { color: data.color },
-        recurrence: data.recurrence,
-      };
-
-      if (eventToEdit && eventId !== undefined) {
-        // Update existing event
-        await updateLocalEvent(eventId as number, scheduleEvent);
+      if (isGuest) {
+        await saveGuestEvent(data, eventId);
       } else {
-        // Add new event
-        await addLocalEvent(scheduleEvent);
+        if (!user) throw new Error("User not found");
+        if (!data.course) throw new Error("Course not selected");
+        // When editing an existing event we keep its existing term; only
+        // creation requires the caller to specify the term up front.
+        const eventTerm =
+          eventId !== undefined ? eventToEdit?.term ?? null : term ?? null;
+        if (eventId === undefined && eventTerm === null) {
+          throw new Error("Term not found");
+        }
+        await saveUserEvent(data, user.id, eventTerm, eventId);
+        router.refresh();
       }
-
       onEventSaved?.();
       onCancel?.();
     } catch (error) {
@@ -334,222 +317,47 @@ export default function EventForm({
     }
   }
 
-  // Logged-in user submit handler
-  async function onUserSubmit(data: EventFormData) {
-    setIsSubmitting(true);
-    try {
-      if (!data.course) {
-        throw new Error("Course ID not found");
-      }
-      if (!data.color) {
-        throw new Error("Color is required");
-      }
-      if (!user) {
-        throw new Error("User not found");
-      }
-
-      if (eventToEdit) {
-        if (!eventId) {
-          throw new Error("Event ID not found");
-        }
-        const newEvent: Partial<CalendarEventDB> = {
-          user: user.$id,
-          course: data.course.$id,
-          type: data.type,
-          location: data.location,
-          startTime: data.startTime,
-          endTime: data.endTime,
-          days: data.days,
-          recurrence: data.recurrence,
-          exclusions: [],
-        };
-        await updateEvent(eventId as string, newEvent);
-        // Update course color (if changed)
-        const userEvent = eventToEdit as UserEvent;
-        if (
-          userEvent.courseColor &&
-          data.color !== userEvent.courseColor.color
-        ) {
-          // Create new course color (server will handle upsert)
-          await createCourseColor({
-            course: data.course.$id,
-            user: user.$id,
-            color: data.color,
-          });
-        } else if (!userEvent.courseColor) {
-          await createCourseColor({
-            course: data.course.$id,
-            user: user.$id,
-            color: data.color,
-          });
-        }
-      } else {
-        if (!term) {
-          throw new Error("Term not found");
-        }
-        const newEvent: CalendarEventDB = {
-          user: user.$id,
-          course: data.course.$id,
-          type: data.type,
-          location: data.location,
-          startTime: data.startTime,
-          endTime: data.endTime,
-          days: data.days,
-          recurrence: data.recurrence,
-          exclusions: [],
-          term: term,
-        };
-        await createEvent(newEvent);
-        // Create course color
-        if (data.color) {
-          await createCourseColor({
-            course: data.course.$id,
-            user: user.$id,
-            color: data.color,
-          });
-        }
-      }
-      router.refresh();
-      onCancel?.();
-    } catch (error) {
-      console.error("Error creating event:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
-  const classTypeOptions = [
-    { value: "lecture", label: "Lecture", icon: classTypeIcons.lecture },
-    { value: "tutorial", label: "Tutorial", icon: classTypeIcons.tutorial },
-    { value: "lab", label: "Lab", icon: classTypeIcons.lab },
-    { value: "seminar", label: "Seminar", icon: classTypeIcons.seminar },
-  ];
-
-  if (isGuest) {
-    return (
-      <Form {...guestForm}>
-        <form
-          onSubmit={guestForm.handleSubmit(onGuestSubmit)}
-          className="space-y-4"
-        >
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {isGuest ? (
           <div className="flex flex-col gap-2 w-full">
             <Label>Course</Label>
             <div className="flex gap-2 w-full">
-              <ColorField form={guestForm} name="color" />
+              <ColorField form={form} name="color" />
               <TextField
-                form={guestForm}
+                form={form}
                 name="courseCode"
                 placeholder="e.g., ENGG 200"
                 warning={missingFields.course}
               />
             </div>
           </div>
-          <SelectField
-            form={guestForm}
-            name="type"
-            label="Class Type"
-            placeholder="Select class type"
-            options={classTypeOptions}
-            warning={missingFields.type}
-          />
-
-          <TextField
-            form={guestForm}
-            name="location"
-            label="Location"
-            placeholder="e.g., Room 101, Online"
-            warning={missingFields.location}
-          />
-
-          <div className="grid grid-cols-2 gap-4">
-            <TimeField
-              form={guestForm}
-              name="startTime"
-              label="Start Time"
-              warning={missingFields.startTime}
-            />
-            <TimeField
-              form={guestForm}
-              name="endTime"
-              label="End Time"
-              warning={missingFields.endTime}
+        ) : (
+          <div className="flex gap-2">
+            <ColorField form={form} name="color" />
+            <CourseField
+              form={form}
+              name="course"
+              className="flex-grow"
+              warning={missingFields.course}
+              onCourseSelect={handleCourseSelect}
+              userId={user!.id}
             />
           </div>
+        )}
 
-          <CheckboxesField
-            form={guestForm}
-            name="days"
-            label="Days"
-            options={[
-              { value: "monday", label: "Mon" },
-              { value: "tuesday", label: "Tue" },
-              { value: "wednesday", label: "Wed" },
-              { value: "thursday", label: "Thu" },
-              { value: "friday", label: "Fri" },
-            ]}
-            warning={missingFields.days}
-          />
-
-          <RadioGroupField
-            form={guestForm}
-            name="recurrence"
-            label="Recurrence"
-            options={[
-              { value: "weekly", label: "Every week" },
-              { value: "biweekly", label: "Every other week" },
-            ]}
-            warning={missingFields.recurrence}
-          />
-
-          <div className="flex justify-between gap-2 pt-4">
-            {onCancel && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onCancel}
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
-            )}
-            <Button type="submit" disabled={isSubmitting}>
-              {!isSubmitting && "Save"}
-              {isSubmitting && <LoaderCircle className="size-4 animate-spin" />}
-            </Button>
-          </div>
-        </form>
-      </Form>
-    );
-  }
-
-  return (
-    <Form {...userForm}>
-      <form
-        onSubmit={userForm.handleSubmit(onUserSubmit)}
-        className="space-y-4"
-      >
-        <div className="flex gap-2">
-          <ColorField form={userForm} name="color" />
-          <CourseField
-            form={userForm}
-            name="course"
-            className="flex-grow"
-            warning={missingFields.course}
-            onCourseSelect={handleCourseSelect}
-            userId={user!.$id}
-          />
-        </div>
         <SelectField
-          form={userForm}
+          form={form}
           name="type"
           label="Class Type"
           placeholder="Select class type"
-          options={classTypeOptions}
+          options={CLASS_TYPE_OPTIONS}
           warning={missingFields.type}
         />
 
         <TextField
-          form={userForm}
+          form={form}
           name="location"
           label="Location"
           placeholder="e.g., Room 101, Online"
@@ -558,13 +366,13 @@ export default function EventForm({
 
         <div className="grid grid-cols-2 gap-4">
           <TimeField
-            form={userForm}
+            form={form}
             name="startTime"
             label="Start Time"
             warning={missingFields.startTime}
           />
           <TimeField
-            form={userForm}
+            form={form}
             name="endTime"
             label="End Time"
             warning={missingFields.endTime}
@@ -572,27 +380,18 @@ export default function EventForm({
         </div>
 
         <CheckboxesField
-          form={userForm}
+          form={form}
           name="days"
           label="Days"
-          options={[
-            { value: "monday", label: "Mon" },
-            { value: "tuesday", label: "Tue" },
-            { value: "wednesday", label: "Wed" },
-            { value: "thursday", label: "Thu" },
-            { value: "friday", label: "Fri" },
-          ]}
+          options={DAY_OPTIONS}
           warning={missingFields.days}
         />
 
         <RadioGroupField
-          form={userForm}
+          form={form}
           name="recurrence"
           label="Recurrence"
-          options={[
-            { value: "weekly", label: "Every week" },
-            { value: "biweekly", label: "Every other week" },
-          ]}
+          options={RECURRENCE_OPTIONS}
           warning={missingFields.recurrence}
         />
 
@@ -608,11 +407,73 @@ export default function EventForm({
             </Button>
           )}
           <Button type="submit" disabled={isSubmitting}>
-            {!isSubmitting && "Save"}
-            {isSubmitting && <LoaderCircle className="size-4 animate-spin" />}
+            {isSubmitting ? (
+              <LoaderCircle className="size-4 animate-spin" />
+            ) : (
+              "Save"
+            )}
           </Button>
         </div>
       </form>
     </Form>
   );
+}
+
+// --- Save helpers ---
+
+async function saveGuestEvent(data: EventFormData, eventId?: number) {
+  const localEvent: LocalEvent = {
+    course_code: data.courseCode.trim(),
+    course: null,
+    course_color: data.color!,
+    type: data.type,
+    location: data.location,
+    start_time: data.startTime,
+    end_time: data.endTime,
+    days: data.days,
+    term: null,
+    recurrence: data.recurrence,
+  };
+
+  if (eventId !== undefined) {
+    await updateLocalEvent(eventId, localEvent);
+  } else {
+    await addLocalEvent(localEvent);
+  }
+}
+
+async function saveUserEvent(
+  data: EventFormData,
+  userId: string,
+  term: number | null,
+  eventId?: number
+) {
+  if (!data.course) throw new Error("Course not selected");
+
+  const dbEvent: TablesInsert<"events"> = {
+    user: userId,
+    course_code: data.course.code,
+    course: data.course.id,
+    type: data.type,
+    location: data.location,
+    start_time: data.startTime,
+    end_time: data.endTime,
+    days: data.days,
+    term,
+    recurrence: data.recurrence,
+  };
+
+  if (eventId !== undefined) {
+    await updateEvent(eventId, dbEvent);
+  } else {
+    await createEvent(dbEvent);
+  }
+
+  if (data.color) {
+    await upsertCourseColor({
+      user: userId,
+      course: data.course.id,
+      color: data.color,
+    });
+  }
 }

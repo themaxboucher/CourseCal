@@ -22,6 +22,7 @@ import { CircleCheck, CircleX, LoaderCircle, Trash } from "lucide-react";
 import { deleteAccount } from "@/lib/actions/users.actions";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import type { Tables } from "@/types/supabase";
 
 const deleteSchema = z.object({
   confirm: z.string().refine((val) => val === "DELETE", {
@@ -32,7 +33,7 @@ const deleteSchema = z.object({
 type DeleteFormData = { confirm: string };
 
 interface DeleteAccountProps {
-  user: User;
+  user: Tables<"users">;
 }
 
 export default function DeleteAccount({ user }: DeleteAccountProps) {
@@ -47,18 +48,16 @@ export default function DeleteAccount({ user }: DeleteAccountProps) {
   async function onDelete() {
     setLoading(true);
     try {
-      const authUserId = user.userId;
-      const docUserId = user.$id;
-      if (!authUserId || !docUserId) {
+      if (!user.id) {
         throw new Error("User not found");
       }
-      await deleteAccount(authUserId, docUserId, user.avatar);
+      await deleteAccount(user.id);
 
       toast("Account deleted", {
         icon: <CircleCheck className="text-green-500 size-5" />,
       });
       router.push("/");
-    } catch (error) {
+    } catch {
       toast("Error deleting account", {
         icon: <CircleX className="text-destructive size-5" />,
       });

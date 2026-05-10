@@ -2,6 +2,8 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { format } from "date-fns";
 import { colors } from "@/constants";
+import type { Tables } from "@/types/supabase";
+import type { AnyEvent } from "@/lib/utils/events";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -83,11 +85,11 @@ export const checkTimeOverlap = (
 
 // Helper function to find overlapping events
 export const findOverlappingEvents = (
-  formData: any,
-  events: UserEvent[],
-  currentEventId?: string
-): { day: string; event: UserEvent }[] => {
-  const overlaps: { day: string; event: UserEvent }[] = [];
+  formData: { days?: WeekDay[]; startTime?: string; endTime?: string },
+  events: AnyEvent[],
+  currentEventId?: number
+): { day: string; event: AnyEvent }[] => {
+  const overlaps: { day: string; event: AnyEvent }[] = [];
 
   if (!formData.days || !formData.startTime || !formData.endTime) {
     return overlaps;
@@ -95,27 +97,26 @@ export const findOverlappingEvents = (
 
   events.forEach((event) => {
     // Skip the current event being edited
-    if (currentEventId && event.id === currentEventId) {
+    if (currentEventId !== undefined && event.id === currentEventId) {
       return;
     }
 
     // Check if events share any days
-    const sharedDays = formData.days.filter(
-      (day: "monday" | "tuesday" | "wednesday" | "thursday" | "friday") =>
-        event.days?.includes(day)
+    const sharedDays = formData.days!.filter((day) =>
+      event.days?.includes(day)
     );
 
     if (sharedDays.length > 0) {
       // Check for time overlap
       if (
         checkTimeOverlap(
-          formData.startTime,
-          formData.endTime,
-          event.startTime,
-          event.endTime
+          formData.startTime!,
+          formData.endTime!,
+          event.start_time,
+          event.end_time
         )
       ) {
-        sharedDays.forEach((day: string) => {
+        sharedDays.forEach((day) => {
           overlaps.push({
             day: day.charAt(0).toUpperCase() + day.slice(1),
             event,
@@ -145,7 +146,7 @@ export const isTimeInRange = (
 
 // Get formatted overlap error message
 export const getOverlapErrorMessage = (
-  overlaps: { day: string; event: UserEvent }[]
+  overlaps: { day: string; event: AnyEvent }[]
 ): string => {
   if (overlaps.length === 0) return "";
 
@@ -158,9 +159,7 @@ export const getOverlapErrorMessage = (
     );
 
   const firstEvent = uniqueEvents[0];
-  const firstEventName = firstEvent.course
-    ? `${firstEvent.course.courseCode}`
-    : "Unknown event";
+  const firstEventName = firstEvent.course_code || "Unknown event";
 
   const hasMultipleEvents = uniqueEvents.length > 1;
   return hasMultipleEvents ? `${firstEventName} and others` : firstEventName;
@@ -190,7 +189,7 @@ export const timeToMinutes = (timeString: string): number => {
 // Get the time range needed to display all events
 // Default: 8 AM to 4 PM, expands to accommodate events outside this range
 export const getTimeRange = (
-  events: (UserEvent | LocalEvent)[]
+  events: AnyEvent[]
 ): { startHour: number; endHour: number } => {
   const DEFAULT_START = 9; // 9 AM
   const DEFAULT_END = 15; // 3 PM
@@ -203,8 +202,8 @@ export const getTimeRange = (
   let latestEnd = DEFAULT_END;
 
   events.forEach((event) => {
-    const startMinutes = timeToMinutes(event.startTime);
-    const endMinutes = timeToMinutes(event.endTime);
+    const startMinutes = timeToMinutes(event.start_time);
+    const endMinutes = timeToMinutes(event.end_time);
 
     const startHour = Math.floor(startMinutes / 60);
     const endHour = Math.floor(endMinutes / 60);
@@ -237,12 +236,12 @@ export const generateTimeSlots = (
 
 // Helper function to get position and height for event
 export const getEventPosition = (
-  event: UserEvent | LocalEvent,
+  event: AnyEvent,
   cellHeight: number,
   baseHour: number = 8
 ) => {
-  const startMinutes = timeToMinutes(event.startTime);
-  const endMinutes = timeToMinutes(event.endTime);
+  const startMinutes = timeToMinutes(event.start_time);
+  const endMinutes = timeToMinutes(event.end_time);
   const duration = endMinutes - startMinutes;
 
   // Convert to pixels
@@ -251,3 +250,33 @@ export const getEventPosition = (
 
   return { top, height };
 };
+
+
+export function getRelevantTerm(terms: Tables<"terms">[]): Tables<"terms"> {
+  if (terms.length === 0) {
+    throw new Error("No terms found");
+  }
+
+  const today = new Date().toISOString().split("T")[0]; // "YYYY-MM-DD"
+
+  const currentTerm = terms.find(
+    (term) => term.start_date <= today && term.end_date >= today
+  );
+  if (currentTerm) {
+    return currentTerm;
+  }
+
+  const upcomingTerms = terms.filter((term) => term.start_date > today);
+  if (upcomingTerms.length > 0) {
+    upcomingTerms.sort((a, b) => a.start_date.localeCompare(b.start_date));
+    return upcomingTerms[0];
+  }
+
+  const previousTerms = terms.filter((term) => term.end_date < today);
+  if (previousTerms.length > 0) {
+    previousTerms.sort((a, b) => b.end_date.localeCompare(a.end_date));
+    return previousTerms[0];
+  }
+
+  throw new Error("Unable to determine relevant term");
+}

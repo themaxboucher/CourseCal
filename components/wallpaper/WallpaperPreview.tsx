@@ -12,8 +12,10 @@ const fontStyles: Record<FontType, string> = {
   pixels: "font-pixels",
 };
 
+import type { AnyEvent } from "@/lib/utils/events";
+
 interface WallpaperPreviewProps {
-  events: LocalEvent[];
+  events: AnyEvent[];
   imageRef?: React.RefObject<HTMLDivElement | null>;
   background: BackgroundType;
   font: FontType;

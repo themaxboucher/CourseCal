@@ -25,8 +25,10 @@ const fontOptions: { value: FontType; label: string; className: string }[] = [
   { value: "pixels", label: "Pixels", className: "font-pixels" },
 ];
 
+import type { AnyEvent } from "@/lib/utils/events";
+
 interface WallpaperFormProps {
-  events: LocalEvent[];
+  events: AnyEvent[];
 }
 
 export function WallpaperForm({ events }: WallpaperFormProps) {

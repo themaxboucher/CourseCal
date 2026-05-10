@@ -19,8 +19,10 @@ import {
   DrawerDescription,
 } from "../ui/drawer";
 
+import type { AnyEvent } from "@/lib/utils/events";
+
 interface WallpaperDialogProps {
-  events: LocalEvent[];
+  events: AnyEvent[];
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }

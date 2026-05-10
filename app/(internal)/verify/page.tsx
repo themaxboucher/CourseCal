@@ -9,7 +9,7 @@ import Loading from "@/components/Loading";
 import { verifyMagicLink } from "@/lib/actions/auth.actions";
 import { getEvents as getLocalEvents, clearEvents as clearLocalEvents } from "@/lib/indexeddb";
 import { createEvents, getEvents } from "@/lib/actions/events.actions";
-import { localToDBEvents } from "@/lib/actions/utils/upload";
+import { localToDBEvents } from "@/lib/utils/upload";
 
 // Separate component that uses useSearchParams() - must be wrapped in Suspense
 // This is required in Next.js 15 to handle client-side rendering bailout properly

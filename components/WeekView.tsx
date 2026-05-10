@@ -11,10 +11,12 @@ import {
   getTimeRange,
   generateTimeSlots,
 } from "@/lib/utils";
+import { Tables } from "@/types/supabase";
+import type { AnyEvent } from "@/lib/utils/events";
 
 interface WeekViewProps {
-  events: UserEvent[] | LocalEvent[];
-  user?: User;
+  events: AnyEvent[];
+  user?: Tables<"users"> | null;
   isGuest?: boolean;
   onEventsChange?: () => void;
 }
@@ -54,7 +56,7 @@ export default function WeekView({
     }
 
     return acc;
-  }, {} as Record<number, (UserEvent | LocalEvent)[]>);
+  }, {} as Record<number, AnyEvent[]>);
 
   return (
     <div className="w-full max-w-[75rem] mx-auto">
@@ -115,18 +117,13 @@ export default function WeekView({
 
             {/* Events for this day */}
             {eventsByDay[dayIndex]?.map((event, eventIndex) => {
-              const { top, height } = getEventPosition(event, 64, startHour); // 64px per hour
-              const eventId =
-                "id" in event
-                  ? (event as LocalEvent & { id: number }).id
-                  : "$id" in event
-                  ? (event as UserEvent).$id
-                  : undefined;
+              const PX_PER_HOUR = 64;
+              const { top, height } = getEventPosition(event, PX_PER_HOUR, startHour);
               const isInteractive = user || isGuest;
 
               return isInteractive ? (
                 <Event
-                  key={`${eventId || eventIndex}`}
+                  key={eventIndex}
                   event={event}
                   events={events}
                   user={user}

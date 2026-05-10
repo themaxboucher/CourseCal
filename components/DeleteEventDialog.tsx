@@ -18,7 +18,7 @@ import { deleteEvent } from "@/lib/actions/events.actions";
 import { deleteEvent as deleteLocalEvent } from "@/lib/indexeddb";
 
 interface DeleteEventDialogProps {
-  eventId: string | number;
+  eventId: number;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   onEventDeleted?: () => void;
@@ -39,9 +39,9 @@ export default function DeleteEventDialog({
     setDeleting(true);
     try {
       if (isGuest) {
-        await deleteLocalEvent(eventId as number);
+        await deleteLocalEvent(eventId);
       } else {
-        await deleteEvent(eventId as string);
+        await deleteEvent(eventId);
         router.refresh();
       }
       onEventDeleted?.();

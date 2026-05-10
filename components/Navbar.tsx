@@ -1,22 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarFold, LogOut, Settings } from "lucide-react";
+import { CalendarFold, Settings } from "lucide-react";
 import { Logo } from "./Logo";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { ThemeSlider } from "./ThemeSlider";
 import { AuthDialog } from "./auth/AuthDialog";
-import { logout } from "@/lib/actions/auth.actions";
 
 interface NavbarProps {
   showSettings?: boolean;
   hasSchedule?: boolean;
+  isLoggedIn?: boolean;
 }
 
 export function Navbar({
   showSettings = false,
   hasSchedule = false,
+  isLoggedIn = false,
 }: NavbarProps) {
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [authDialogType, setAuthDialogType] = useState<"signup" | "login">(
@@ -37,41 +38,6 @@ export function Navbar({
         <div>
           <div>
             <ul className="flex items-center gap-2">
-              <li>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => handleAuthDialogOpen("login")}
-                >
-                  Log in
-                </Button>
-              </li>
-              <li>
-                <Button
-                  size="sm"
-                  onClick={() => handleAuthDialogOpen("signup")}
-                >
-                  Join
-                </Button>
-              </li>
-              <li>
-                <Button size="sm" variant="ghost" onClick={() => logout()}>
-                  <LogOut className="size-4" />
-                  Log out
-                </Button>
-              </li>
-              <li>
-                <ThemeSlider />
-              </li>
-              {showSettings && (
-                <li>
-                  <Button variant="ghost" size="icon" asChild>
-                    <Link href="/settings">
-                      <Settings className="size-4.5" />
-                    </Link>
-                  </Button>
-                </li>
-              )}
               {hasSchedule && (
                 <li>
                   <Button size="sm" className="hidden md:flex" asChild>
@@ -84,6 +50,39 @@ export function Navbar({
                   </Button>
                 </li>
               )}
+              {!isLoggedIn && !hasSchedule && (
+                <>
+                  <li>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleAuthDialogOpen("login")}
+                    >
+                      Log in
+                    </Button>
+                  </li>
+                  <li>
+                    <Button
+                      size="sm"
+                      onClick={() => handleAuthDialogOpen("signup")}
+                    >
+                      Join
+                    </Button>
+                  </li>
+                </>
+              )}
+              {showSettings && (
+                <li>
+                  <Button variant="ghost" size="icon" asChild>
+                    <Link href="/settings">
+                      <Settings className="size-4.5" />
+                    </Link>
+                  </Button>
+                </li>
+              )}
+              <li>
+                <ThemeSlider />
+              </li>
             </ul>
           </div>
         </div>

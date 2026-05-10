@@ -103,8 +103,8 @@ export async function addEvent(event: LocalEvent): Promise<number> {
   });
 
   // Sync color across all events with this course
-  if (event.courseColor) {
-    await updateCourseColorForAllEvents(event.courseCode, event.courseColor);
+  if (event.course_color) {
+    await updateCourseColorForAllEvents(event.course_code, event.course_color);
   }
 
   return newEventId;
@@ -144,8 +144,8 @@ export async function updateEvent(id: number, event: Partial<LocalEvent>): Promi
   });
 
   // Sync color across all events with this course
-  if (updatedEvent.courseColor) {
-    await updateCourseColorForAllEvents(updatedEvent.courseCode, updatedEvent.courseColor);
+  if (updatedEvent.course_color) {
+    await updateCourseColorForAllEvents(updatedEvent.course_code, updatedEvent.course_color);
   }
 }
 
@@ -172,8 +172,8 @@ export async function deleteEvent(id: number): Promise<void> {
  */
 export async function getCourseColorFromEvents(courseCode: string): Promise<Color | null> {
   const events = await getEvents();
-  const matchingEvent = events.find(e => e.courseCode === courseCode);
-  return matchingEvent?.courseColor ?? null;
+  const matchingEvent = events.find(e => e.course_code === courseCode);
+  return matchingEvent?.course_color ?? null;
 }
 
 /**
@@ -195,10 +195,10 @@ export async function updateCourseColorForAllEvents(
 
       // Update all events with matching course
       for (const event of events) {
-        if (event.courseCode === courseCode) {
+        if (event.course_code === courseCode) {
           const updatedEvent = {
             ...event,
-            courseColor: newColor,
+            course_color: newColor,
           };
           store.put(updatedEvent);
         }

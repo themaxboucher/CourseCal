@@ -15,12 +15,14 @@ import {
 import EventDetails from "./EventDetails";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import EventBlock from "./EventBlock";
+import { Tables } from "@/types/supabase";
+import type { AnyEvent } from "@/lib/utils/events";
 
 interface EventProps {
-  event: UserEvent | LocalEvent;
+  event: AnyEvent;
   style?: React.CSSProperties;
-  events?: (UserEvent | LocalEvent)[];
-  user?: User;
+  events?: AnyEvent[];
+  user?: Tables<"users"> | null;
   isGuest?: boolean;
   onEventsChange?: () => void;
 }
@@ -77,7 +79,7 @@ export default function Event({
             <VisuallyHidden>
               <DrawerHeader>
                 <DrawerTitle>
-                  {event.course.courseCode}
+                  {event.course_code}
                 </DrawerTitle>
               </DrawerHeader>
             </VisuallyHidden>

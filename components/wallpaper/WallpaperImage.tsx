@@ -10,10 +10,12 @@ import {
   getTimeRange,
   generateTimeSlots,
 } from "@/lib/utils";
+import { Tables } from "@/types/supabase";
+import type { AnyEvent } from "@/lib/utils/events";
 
 interface WallpaperImageProps {
-  events: LocalEvent[];
-  user?: User;
+  events: AnyEvent[];
+  user?: Tables<"users">;
   theme?: ThemeType;
   cellHeight?: number;
   eventInfo?: EventInfoType;
@@ -99,7 +101,7 @@ export default function WallpaperImage({
     }
 
     return acc;
-  }, {} as Record<number, LocalEvent[]>);
+  }, {} as Record<number, AnyEvent[]>);
 
   return (
     <div

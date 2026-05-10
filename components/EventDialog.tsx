@@ -5,14 +5,18 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "./ui/drawer";
 import EventForm from "./EventForm";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useEffect, useState } from "react";
+import { Tables } from "@/types/supabase";
+import type { AnyEvent } from "@/lib/utils/events";
 
 interface EventDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  eventToEdit: UserEvent | LocalEvent | null;
-  term?: string;
-  events?: (UserEvent | LocalEvent)[];
-  user?: User;
+  eventToEdit: AnyEvent | null;
+  // Term is only required when creating a new event. When editing, the term
+  // is taken from the event being edited.
+  term?: number;
+  events?: AnyEvent[];
+  user?: Tables<"users">;
   isGuest?: boolean;
   onEventSaved?: () => void;
 }

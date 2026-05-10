@@ -16,7 +16,7 @@ import { getCurrentTerm } from "@/lib/actions/terms.actions";
 import {
   parsedToDBEvents,
   parsedToLocalEvents,
-} from "@/lib/actions/utils/upload";
+} from "@/lib/utils/upload";
 import { createEvents } from "@/lib/actions/events.actions";
 
 export default function UploadSchedule() {

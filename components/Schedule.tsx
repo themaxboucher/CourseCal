@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { getCurrentTerm } from "@/lib/utils";
-import { getEvents } from "@/lib/indexeddb";
+import { getRelevantTerm } from "@/lib/utils";
+import { getEvents as getLocalEvents } from "@/lib/indexeddb";
 import { AddEventButton } from "./AddEventButton";
 import { TermSelector } from "./TermSelector";
 import { UploadDialog } from "./UploadDialog";
@@ -13,11 +13,13 @@ import { Loader2, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import Link from "next/link";
+import { Tables } from "@/types/supabase";
+import { EventWithCourse } from "@/lib/actions/events.actions";
 
 interface ScheduleProps {
-  events: UserEvent[];
-  terms: Term[];
-  user: User | null;
+  events: EventWithCourse[];
+  terms: Tables<"terms">[];
+  user: Tables<"users"> | null;
   isLoggedIn: boolean;
 }
 
@@ -28,7 +30,8 @@ export default function Schedule({
   isLoggedIn,
 }: ScheduleProps) {
   const router = useRouter();
-  const [selectedTermId, setSelectedTermId] = useState<string>("");
+  const relevantTerm = getRelevantTerm(terms);
+  const [selectedTermId, setSelectedTermId] = useState<number>(relevantTerm.id);
   const [localEvents, setLocalEvents] = useState<LocalEvent[]>([]);
   const [isLoading, setIsLoading] = useState(!isLoggedIn);
 
@@ -36,7 +39,7 @@ export default function Schedule({
   const refreshLocalEvents = useCallback(async () => {
     if (isLoggedIn) return;
     try {
-      const events = await getEvents();
+      const events = await getLocalEvents();
       setLocalEvents(events);
     } catch (error) {
       console.error("Error refreshing local events:", error);
@@ -49,7 +52,7 @@ export default function Schedule({
 
     const checkLocalData = async () => {
       try {
-        const events = await getEvents();
+        const events = await getLocalEvents();
 
         // Redirect if no local data
         if (events.length === 0) {
@@ -69,25 +72,10 @@ export default function Schedule({
     checkLocalData();
   }, [isLoggedIn, router]);
 
-  // Set default term based on current date
-  useEffect(() => {
-    if (terms.length > 0 && !selectedTermId) {
-      const currentTerm = getCurrentTerm(terms);
-      if (currentTerm) {
-        setSelectedTermId(currentTerm.$id || "");
-      }
-    }
-  }, [terms, selectedTermId]);
-
-  // Filter events by selected term (term can be string ID or Term object)
-  const filteredServerEvents = serverEvents.filter((event) => {
-    const termId =
-      typeof event.term === "string" ? event.term : (event.term as Term)?.$id;
-    return termId === selectedTermId;
-  });
+  const selectedTermServerEvents = serverEvents.filter((event) => event.term === selectedTermId);
 
   const hasEvents = isLoggedIn
-    ? filteredServerEvents.length > 0
+    ? selectedTermServerEvents.length > 0
     : localEvents.length > 0;
 
   // Show loading state for guest users while checking IndexedDB
@@ -99,7 +87,7 @@ export default function Schedule({
     );
   }
 
-  const displayEvents = isLoggedIn ? filteredServerEvents : localEvents;
+  const displayEvents = isLoggedIn ? selectedTermServerEvents : localEvents;
 
   return (
     <>
@@ -108,7 +96,7 @@ export default function Schedule({
           <TermSelector
             terms={terms}
             selectedTermId={selectedTermId}
-            onTermChange={setSelectedTermId}
+            setSelectedTermId={setSelectedTermId}
           />
         )}
         <div

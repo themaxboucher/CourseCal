@@ -1,16 +1,19 @@
 import { colors } from "@/constants";
 import { getRandomColor } from "@/lib/utils";
-import { findCourseByCode } from "../courses.actions";
+import type { TablesInsert } from "@/types/supabase";
+import { findCourseByCode } from "../actions/courses.actions";
+
+type EventInsert = TablesInsert<"events">;
 
 async function buildCourseCodeToIdMap(
   courseCodes: readonly string[],
 ): Promise<Map<string, number | null>> {
   const uniqueCodes = [...new Set(courseCodes)];
-  const courseIds = await Promise.all(
+  const courses = await Promise.all(
     uniqueCodes.map((code) => findCourseByCode(code)),
   );
   return new Map(
-    uniqueCodes.map((code, index) => [code, courseIds[index]]),
+    uniqueCodes.map((code, index) => [code, courses[index]?.id ?? null]),
   );
 }
 
@@ -35,15 +38,15 @@ export async function parsedToLocalEvents(
   );
   const courseColorMap = getCourseColorMap(parsedEvents);
   return parsedEvents.map((event) => ({
-    courseCode: event.courseCode,
+    course_code: event.courseCode,
     course: courseCodeToId.get(event.courseCode) ?? null,
     location: event.location,
     type: event.type ?? null,
-    startTime: event.startTime,
-    endTime: event.endTime,
+    start_time: event.startTime,
+    end_time: event.endTime,
     days: event.days,
     term: termId,
-    courseColor: courseColorMap.get(event.courseCode) ?? getRandomColor(),
+    course_color: courseColorMap.get(event.courseCode) ?? getRandomColor(),
     recurrence: "weekly",
   }));
 }
@@ -52,17 +55,17 @@ export async function parsedToDBEvents(
   parsedEvents: ParsedEvent[],
   userId: string,
   termId: number,
-): Promise<DBEvent[]> {
+): Promise<EventInsert[]> {
   const courseCodeToId = await buildCourseCodeToIdMap(
     parsedEvents.map((e) => e.courseCode),
   );
 
   return parsedEvents.map((event) => ({
     user: userId,
-    courseCode: event.courseCode,
+    course_code: event.courseCode,
     course: courseCodeToId.get(event.courseCode) ?? null,
-    startTime: event.startTime,
-    endTime: event.endTime,
+    start_time: event.startTime,
+    end_time: event.endTime,
     days: event.days,
     type: event.type ?? null,
     location: event.location,
@@ -74,19 +77,19 @@ export async function parsedToDBEvents(
 export async function localToDBEvents(
   localEvents: LocalEvent[],
   userId: string,
-): Promise<DBEvent[]> {
+): Promise<EventInsert[]> {
   const courseCodeToId = await buildCourseCodeToIdMap(
-    localEvents.map((e) => e.courseCode),
+    localEvents.map((e) => e.course_code),
   );
 
   return localEvents.map((event) => ({
     user: userId,
-    courseCode: event.courseCode,
-    course: event.course ?? courseCodeToId.get(event.courseCode) ?? null,
+    course_code: event.course_code,
+    course: event.course ?? courseCodeToId.get(event.course_code) ?? null,
     type: event.type,
     location: event.location,
-    startTime: event.startTime,
-    endTime: event.endTime,
+    start_time: event.start_time,
+    end_time: event.end_time,
     days: event.days,
     term: event.term,
     recurrence: event.recurrence,
