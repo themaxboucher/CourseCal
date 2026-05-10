@@ -18,6 +18,8 @@ import {
   type ProfileFormData,
 } from "@/lib/utils/profile";
 import type { Tables } from "@/types/supabase";
+import { getEvents } from "@/lib/actions/events.actions";
+import { markUserCompletedOnboarding } from "@/lib/actions/users.actions";
 
 export default function ProfileForm({ user }: { user: Tables<"users"> }) {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(
@@ -57,7 +59,16 @@ export default function ProfileForm({ user }: { user: Tables<"users"> }) {
         major: data.major,
         avatar: avatarUrl,
       });
-      router.push("/onboarding/upload");
+
+      // If the user already has a schedule, redirect to the schedule page
+      const events = await getEvents(user.id);
+      if (events.length > 0) {
+        await markUserCompletedOnboarding(user.id);
+        router.push("/schedule");
+      } else {
+        // If the user doesn't have a schedule, redirect to the upload page
+        router.push("/onboarding/upload"); 
+      }
     } catch (error: any) {
       let errorMessage = "Error updating personal details";
       if (error?.message?.includes("already exists")) {

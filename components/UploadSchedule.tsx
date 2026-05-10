@@ -13,11 +13,9 @@ import { useRouter } from "next/navigation";
 import ShinyText from "./ui/ShinyText";
 import { getLoggedInUser } from "@/lib/actions/users.actions";
 import { getCurrentTerm } from "@/lib/actions/terms.actions";
-import {
-  parsedToDBEvents,
-  parsedToLocalEvents,
-} from "@/lib/utils/upload";
+import { parsedToDBEvents, parsedToLocalEvents } from "@/lib/utils/upload";
 import { createEvents } from "@/lib/actions/events.actions";
+import { markUserCompletedOnboarding } from "@/lib/actions/users.actions";
 
 export default function UploadSchedule() {
   const [result, setResult] = useState<ScheduleAnalysisResult | null>(null);
@@ -36,19 +34,21 @@ export default function UploadSchedule() {
     setIsLoading(true);
     setResult(null);
 
-    const analysisResult = await analyzeScheduleImage(imageBase64);
-    setResult(analysisResult);
+    try {
+      const analysisResult = await analyzeScheduleImage(imageBase64);
+      setResult(analysisResult);
 
-    // Clear file input if there was an error or not a schedule
-    if (!analysisResult.success || !analysisResult.isSchedule) {
-      clearFileInput();
-      setIsLoading(false);
-    }
+      if (!analysisResult.success || !analysisResult.isSchedule) {
+        clearFileInput();
+        return;
+      }
 
-    if (analysisResult.success && analysisResult.isSchedule) {
-      const term = await getCurrentTerm();
-      const user = await getLoggedInUser();
-      // If there user is already logged in, save the events to the database
+      const [term, user] = await Promise.all([
+        getCurrentTerm(),
+        getLoggedInUser(),
+      ]);
+
+      // If the user is already logged in, save the events to the database
       if (user) {
         const dbEvents = await parsedToDBEvents(
           analysisResult.events,
@@ -64,7 +64,22 @@ export default function UploadSchedule() {
         );
         await saveLocalEvents(localEvents);
       }
+
+      // If the user is logged in and has a name and major, mark them as completed onboarding
+      if (user && user.name && user.major) {
+        await markUserCompletedOnboarding(user.id);
+      }
+
       router.push("/schedule?uploadSuccess=true");
+    } catch (error) {
+      console.error("Failed to save schedule:", error);
+      setResult({
+        success: false,
+        error: "Failed to save schedule. Please try again.",
+      });
+      clearFileInput();
+    } finally {
+      setIsLoading(false);
     }
   };
 

@@ -16,6 +16,7 @@ export default async function SchedulePage({
   searchParams,
 }: SchedulePageProps) {
   const { uploadSuccess } = await searchParams;
+  const justUploaded = uploadSuccess === "true";
   const user = await getLoggedInUser();
   const terms = await getTerms();
   const events = user ? await getEvents(user.id) : [];
@@ -23,10 +24,10 @@ export default async function SchedulePage({
 
   return (
     <>
-      {isLoggedIn && (
-        <WelcomeDialog userId={user.id} show={!user.has_been_welcomed} />
+      {isLoggedIn && !justUploaded && (
+        <WelcomeDialog user={user} show={!user.has_been_welcomed} />
       )}
-      <UploadSuccessDialog show={uploadSuccess === "true"} />
+      <UploadSuccessDialog show={justUploaded} />
 
       <Navbar showSettings={isLoggedIn} isLoggedIn={isLoggedIn} />
       <section className="flex flex-col gap-2 max-w-[90rem] mx-auto md:px-8 px-2 md:py-8 py-2">

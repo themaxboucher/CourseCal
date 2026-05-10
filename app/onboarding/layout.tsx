@@ -7,7 +7,7 @@ export default function OnboardingLayout({
 }) {
   return (
     <main>
-      <Navbar />
+      <Navbar isLoggedIn={true} />
       <section className="flex flex-col items-center gap-2 max-w-[75rem] mx-auto px-8 py-16">
         {children}
       </section>

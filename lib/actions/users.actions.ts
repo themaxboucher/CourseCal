@@ -6,7 +6,9 @@ import { createClient } from "../supabase/server";
 export async function getLoggedInUser() {
   const supabase = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) {
     return false;
   }
@@ -22,9 +24,15 @@ export async function getLoggedInUser() {
   return data;
 }
 
-export async function updateUser(userId: string, user: Partial<TablesUpdate<"users">>) {
+export async function updateUser(
+  userId: string,
+  user: Partial<TablesUpdate<"users">>,
+) {
   const supabase = await createClient();
-  const { data, error } = await supabase.from("users").update(user).eq("id", userId);
+  const { data, error } = await supabase
+    .from("users")
+    .update(user)
+    .eq("id", userId);
   if (error) {
     console.error(error);
     throw new Error(error.message);
@@ -37,6 +45,19 @@ export async function markUserWelcomed(userId: string) {
   const { data, error } = await supabase
     .from("users")
     .update({ has_been_welcomed: true })
+    .eq("id", userId);
+  if (error) {
+    console.error(error);
+    throw new Error(error.message);
+  }
+  return data;
+}
+
+export async function markUserCompletedOnboarding(userId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("users")
+    .update({ has_completed_onboarding: true })
     .eq("id", userId);
   if (error) {
     console.error(error);

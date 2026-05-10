@@ -87,7 +87,7 @@ export default function UpdateProfileForm({ user }: { user: Tables<"users"> }) {
                 className="object-cover shadow-inner"
                 src={avatarPreview || undefined}
               />
-              <AvatarFallback className="font-bold text-primary bg-primary/20">
+              <AvatarFallback className="font-bold text-xl text-ring bg-ring/20">
                 {user.name?.charAt(0)}
               </AvatarFallback>
             </Avatar>

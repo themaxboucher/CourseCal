@@ -182,7 +182,7 @@ export async function analyzeScheduleImage(
 
     const messageContent = response.choices[0]?.message?.content;
     if (!messageContent || typeof messageContent !== "string") {
-      return { success: false, error: "No response from AI" };
+      return { success: false, error: "No response from AI. Please try again." };
     }
 
     const parsed = JSON.parse(messageContent);
@@ -200,8 +200,7 @@ export async function analyzeScheduleImage(
     console.error("OpenRouter error:", error);
     return {
       success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to analyze schedule",
+      error: "Failed to analyze schedule. Please try again.",
     };
   }
 }
