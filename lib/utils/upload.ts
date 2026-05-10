@@ -2,6 +2,7 @@ import { colors } from "@/constants";
 import { getRandomColor } from "@/lib/utils";
 import type { TablesInsert } from "@/types/supabase";
 import { findCourseByCode } from "../actions/courses.actions";
+import type { CourseColor } from "../actions/events.actions";
 
 type EventInsert = TablesInsert<"events">;
 
@@ -55,12 +56,13 @@ export async function parsedToDBEvents(
   parsedEvents: ParsedEvent[],
   userId: string,
   termId: number,
-): Promise<EventInsert[]> {
+): Promise<{ events: EventInsert[]; courseColors: CourseColor[] }> {
   const courseCodeToId = await buildCourseCodeToIdMap(
     parsedEvents.map((e) => e.courseCode),
   );
+  const courseColorMap = getCourseColorMap(parsedEvents);
 
-  return parsedEvents.map((event) => ({
+  const events: EventInsert[] = parsedEvents.map((event) => ({
     user: userId,
     course_code: event.courseCode,
     course: courseCodeToId.get(event.courseCode) ?? null,
@@ -72,17 +74,30 @@ export async function parsedToDBEvents(
     recurrence: "weekly",
     term: termId,
   }));
+
+  const courseColors: CourseColor[] = [];
+  const seenCourseIds = new Set<number>();
+  for (const event of parsedEvents) {
+    const courseId = courseCodeToId.get(event.courseCode);
+    if (courseId == null || seenCourseIds.has(courseId)) continue;
+    const color = courseColorMap.get(event.courseCode);
+    if (!color) continue;
+    seenCourseIds.add(courseId);
+    courseColors.push({ course: courseId, color });
+  }
+
+  return { events, courseColors };
 }
 
 export async function localToDBEvents(
   localEvents: LocalEvent[],
   userId: string,
-): Promise<EventInsert[]> {
+): Promise<{ events: EventInsert[]; courseColors: CourseColor[] }> {
   const courseCodeToId = await buildCourseCodeToIdMap(
     localEvents.map((e) => e.course_code),
   );
 
-  return localEvents.map((event) => ({
+  const events: EventInsert[] = localEvents.map((event) => ({
     user: userId,
     course_code: event.course_code,
     course: event.course ?? courseCodeToId.get(event.course_code) ?? null,
@@ -94,4 +109,16 @@ export async function localToDBEvents(
     term: event.term,
     recurrence: event.recurrence,
   }));
+
+  const courseColors: CourseColor[] = [];
+  const seenCourseIds = new Set<number>();
+  for (const event of localEvents) {
+    const courseId =
+      event.course ?? courseCodeToId.get(event.course_code) ?? null;
+    if (courseId == null || seenCourseIds.has(courseId)) continue;
+    seenCourseIds.add(courseId);
+    courseColors.push({ course: courseId, color: event.course_color });
+  }
+
+  return { events, courseColors };
 }

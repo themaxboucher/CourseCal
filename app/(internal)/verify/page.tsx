@@ -48,12 +48,12 @@ function VerifyContent() {
         // Save indexeddb events to server if they exist
         if (hasLocalEvents && !hasDBEvents) {
           // Convert local events to database events
-          const dbEvents = await localToDBEvents(localEvents, user.id);
-          await createEvents(dbEvents);
-        }
-
-        // Clear indexeddb events if server events exist
-        if (hasLocalEvents && hasDBEvents) {
+          const { events: dbEvents, courseColors } = await localToDBEvents(
+            localEvents,
+            user.id,
+          );
+          await createEvents(dbEvents, courseColors);
+          // Clear local events
           await clearLocalEvents();
         }
 

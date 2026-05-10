@@ -465,15 +465,16 @@ async function saveUserEvent(
 
   if (eventId !== undefined) {
     await updateEvent(eventId, dbEvent);
+    if (data.color) {
+      await upsertCourseColor({
+        user: userId,
+        course: data.course.id,
+        color: data.color,
+      });
+    }
   } else {
-    await createEvent(dbEvent);
-  }
-
-  if (data.color) {
-    await upsertCourseColor({
-      user: userId,
-      course: data.course.id,
-      color: data.color,
-    });
+    // Creation goes through createEvent, which ensures the course_colors row
+    // exists (and overwrites it with the chosen color when provided).
+    await createEvent(dbEvent, data.color ?? undefined);
   }
 }

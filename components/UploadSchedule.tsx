@@ -50,12 +50,12 @@ export default function UploadSchedule() {
 
       // If the user is already logged in, save the events to the database
       if (user) {
-        const dbEvents = await parsedToDBEvents(
+        const { events: dbEvents, courseColors } = await parsedToDBEvents(
           analysisResult.events,
           user.id,
           term.id,
         );
-        await createEvents(dbEvents);
+        await createEvents(dbEvents, courseColors);
       } else {
         // If the user is not logged in, save the events to IndexedDB
         const localEvents = await parsedToLocalEvents(
