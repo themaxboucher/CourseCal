@@ -4,7 +4,10 @@ import { createClient } from "../supabase/server";
 
 export async function getTerms() {
   const supabase = await createClient();
-  const { data, error } = await supabase.from("terms").select("*");
+  const { data, error } = await supabase
+    .from("terms")
+    .select("*")
+    .order("start_date", { ascending: false });
   if (error) {
     console.error(error);
     throw new Error(error.message);
