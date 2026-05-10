@@ -19,7 +19,7 @@ export default async function SettingsPage() {
 
   return (
     <>
-      <Navbar />
+      <Navbar isLoggedIn={true} />
       <section className="flex flex-col gap-2 max-w-[45rem] mx-auto px-8 py-12">
         <div className="space-y-8">
           <div className="space-y-2">
