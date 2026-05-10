@@ -7,7 +7,10 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Loading from "@/components/Loading";
 import { verifyMagicLink } from "@/lib/actions/auth.actions";
-import { getEvents as getLocalEvents, clearEvents as clearLocalEvents } from "@/lib/indexeddb";
+import {
+  getEvents as getLocalEvents,
+  clearEvents as clearLocalEvents,
+} from "@/lib/indexeddb";
 import { createEvents, getEvents } from "@/lib/actions/events.actions";
 import { localToDBEvents } from "@/lib/utils/upload";
 
@@ -15,7 +18,7 @@ import { localToDBEvents } from "@/lib/utils/upload";
 // This is required in Next.js 15 to handle client-side rendering bailout properly
 function VerifyContent() {
   const [status, setStatus] = useState<"loading" | "success" | "error">(
-    "loading"
+    "loading",
   );
   const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams(); // This hook requires Suspense boundary
@@ -45,6 +48,11 @@ function VerifyContent() {
         const hasLocalEvents = localEvents.length > 0;
         const hasDBEvents = events.length > 0;
 
+        if (hasLocalEvents) {
+          // Clear local events
+          await clearLocalEvents();
+        }
+
         // Save indexeddb events to server if they exist
         if (hasLocalEvents && !hasDBEvents) {
           // Convert local events to database events
@@ -53,11 +61,9 @@ function VerifyContent() {
             user.id,
           );
           await createEvents(dbEvents, courseColors);
-          // Clear local events
-          await clearLocalEvents();
         }
 
-        // If indexeddb events don't exist and server events don't exist, 
+        // If indexeddb events don't exist and server events don't exist,
         // the user will have to upload their schedule during onboarding
 
         setStatus("success");
