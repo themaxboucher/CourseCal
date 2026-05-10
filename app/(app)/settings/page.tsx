@@ -34,7 +34,7 @@ export default async function SettingsPage() {
             <p className="text-muted-foreground">
               💬 Got feedback? Send questions, feature requests, bug reports,
               love letters, or hate mail to{" "}
-              <a href="mailto:max@maxboucher.com" className="text-primary">
+              <a href="mailto:max@maxboucher.com" className="text-ring hover:underline">
                 max@maxboucher.com
               </a>
               .
