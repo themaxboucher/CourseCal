@@ -5,17 +5,19 @@ import { Navbar } from "../Navbar";
 import { getEvents as getLocalEvents } from "@/lib/indexeddb";
 import { getEvents as getServerEvents } from "@/lib/actions/events.actions";
 import { getLoggedInUser } from "@/lib/actions/users.actions";
+import { Tables } from "@/types/supabase";
 
 export function LandingNavbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [hasSchedule, setHasSchedule] = useState(false);
-
+  const [user, setUser] = useState<Tables<"users"> | null>(null);
   useEffect(() => {
     async function checkSchedule() {
       try {
         const user = await getLoggedInUser();
         if (user) {
           setIsLoggedIn(true);
+          setUser(user);
           const serverEvents = await getServerEvents(user.id);
           setHasSchedule(serverEvents.length > 0);
         } else {
@@ -30,6 +32,6 @@ export function LandingNavbar() {
     checkSchedule();
   }, []);
 
-  return <Navbar hasSchedule={hasSchedule} />;
+  return <Navbar hasSchedule={hasSchedule} user={user} />;
 }
 

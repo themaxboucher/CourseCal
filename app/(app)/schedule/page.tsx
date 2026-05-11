@@ -29,7 +29,7 @@ export default async function SchedulePage({
       )}
       <UploadSuccessDialog show={justUploaded} />
 
-      <Navbar showSettings={isLoggedIn} isLoggedIn={isLoggedIn} />
+      <Navbar isLoggedIn={isLoggedIn} user={user || null} />
       <section className="flex flex-col gap-2 max-w-[90rem] mx-auto md:px-8 px-2 md:py-8 py-2">
         <div className="flex flex-col items-center gap-8">
           <div className="flex flex-col items-center gap-4 w-full">

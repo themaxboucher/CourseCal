@@ -1,23 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarFold, Settings } from "lucide-react";
+import { CalendarFold } from "lucide-react";
 import { Logo } from "./Logo";
 import { Button } from "./ui/button";
 import Link from "next/link";
-import { ThemeSlider } from "./ThemeSlider";
 import { AuthDialog } from "./auth/AuthDialog";
+import UserAvatar from "./UserAvatar";
+import { Tables } from "@/types/supabase";
 
 interface NavbarProps {
-  showSettings?: boolean;
   hasSchedule?: boolean;
   isLoggedIn?: boolean;
+  user?: Tables<"users"> | null;
 }
 
 export function Navbar({
-  showSettings = false,
   hasSchedule = false,
   isLoggedIn = false,
+  user = null,
 }: NavbarProps) {
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [authDialogType, setAuthDialogType] = useState<"signup" | "login">(
@@ -50,7 +51,7 @@ export function Navbar({
                   </Button>
                 </li>
               )}
-              {!isLoggedIn && !hasSchedule && (
+              {!isLoggedIn && user === null && !hasSchedule && (
                 <>
                   <li>
                     <Button
@@ -71,18 +72,13 @@ export function Navbar({
                   </li>
                 </>
               )}
-              {showSettings && (
+              {user && (
                 <li>
-                  <Button variant="ghost" size="icon" asChild>
                     <Link href="/settings">
-                      <Settings className="size-4.5" />
+                      <UserAvatar avatarUrl={user?.avatar} name={user?.name} size="sm" />
                     </Link>
-                  </Button>
                 </li>
               )}
-              <li>
-                <ThemeSlider />
-              </li>
             </ul>
           </div>
         </div>

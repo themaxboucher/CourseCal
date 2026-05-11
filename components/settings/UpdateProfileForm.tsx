@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "../ui/form";
 import { Button } from "../ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useState, useRef } from "react";
 import { TextField } from "../form-fields/TextField";
 import { CircleCheck, LoaderCircle } from "lucide-react";
@@ -19,10 +18,11 @@ import {
   type ProfileFormData,
 } from "@/lib/utils/profile";
 import type { Tables } from "@/types/supabase";
+import UserAvatar from "../UserAvatar";
 
 export default function UpdateProfileForm({ user }: { user: Tables<"users"> }) {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(
-    user.avatar || null
+    user.avatar || null,
   );
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -82,15 +82,7 @@ export default function UpdateProfileForm({ user }: { user: Tables<"users"> }) {
         <div className="space-y-2">
           <Label>Your avatar</Label>
           <div className="flex items-center gap-2">
-            <Avatar className="size-12 border border-border">
-              <AvatarImage
-                className="object-cover shadow-inner"
-                src={avatarPreview || undefined}
-              />
-              <AvatarFallback className="font-bold text-xl text-ring bg-ring/20">
-                {user.name?.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
+            <UserAvatar avatarUrl={avatarPreview} name={user.name} />
             <Button
               variant="outline"
               size="sm"
