@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC_ROUTES = ["/", "/verify", "/check-email", "/schedule"];
+const PUBLIC_ROUTES = ["/", "/verify", "/check-email"];
 
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -34,8 +34,9 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isPublicRoute = PUBLIC_ROUTES.includes(pathname);
   const isOnboardingRoute = pathname.startsWith("/onboarding");
+  const isScheduleRoute = pathname.startsWith("/schedule");
 
-  if (!user && !isPublicRoute) {
+  if (!user && !isPublicRoute && !isScheduleRoute) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/";
     return NextResponse.redirect(redirectUrl);
