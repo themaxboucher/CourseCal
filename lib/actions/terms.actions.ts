@@ -12,7 +12,11 @@ export async function getTerms() {
     console.error(error);
     throw new Error(error.message);
   }
-  return data;
+  // Only get terms up to and including the next term
+  const today = new Date().toISOString().split("T")[0];
+  const nextTerm = data.findLast((term) => term.start_date > today);
+  if (!nextTerm) return data;
+  return data.filter((term) => term.start_date <= nextTerm.start_date);
 }
 
 export async function getCurrentTerm() {
