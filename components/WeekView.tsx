@@ -6,11 +6,11 @@ import { cn } from "@/lib/utils";
 import EventBlock from "./EventBlock";
 import { weekdays } from "@/constants";
 import {
-  getWeekdayIndex,
+  generateTimeSlots,
   getEventPosition,
   getTimeRange,
-  generateTimeSlots,
-} from "@/lib/utils";
+  getWeekdayIndex,
+} from "@/lib/utils/schedule";
 import { Tables } from "@/types/supabase";
 import type { AnyEvent } from "@/lib/utils/events";
 

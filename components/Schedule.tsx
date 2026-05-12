@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { getRelevantTerm } from "@/lib/utils";
+import { getRelevantTerm } from "@/lib/utils/schedule";
 import { getEvents as getLocalEvents } from "@/lib/indexeddb";
 import { AddEventButton } from "./AddEventButton";
 import { TermSelector } from "./TermSelector";

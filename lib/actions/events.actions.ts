@@ -3,7 +3,7 @@
 import { QueryData } from "@supabase/supabase-js";
 import { TablesInsert } from "@/types/supabase";
 import { createClient } from "../supabase/server";
-import { pickNextColor } from "@/lib/utils";
+import { pickNextColor } from "@/lib/utils/colors";
 
 export type CourseColor = { course: number; color: Color };
 

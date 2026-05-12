@@ -1,4 +1,5 @@
-import { cn, getReadableRecurrence, formatTime } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { formatTime, getReadableRecurrence } from "@/lib/utils/schedule";
 import {
   Clock,
   MapPin,

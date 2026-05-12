@@ -1,6 +1,7 @@
 "use client";
 
-import { cn, formatTime } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { formatTime } from "@/lib/utils/schedule";
 import { eventColors, lightEventColors } from "@/constants";
 import { TriangleAlert } from "lucide-react";
 import {

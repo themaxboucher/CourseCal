@@ -19,7 +19,10 @@ import TimeField from "./form-fields/TimeField";
 import { RadioGroupField } from "./form-fields/RadioGroupField";
 
 import { classTypeIcons } from "@/constants";
-import { findOverlappingEvents, getOverlapErrorMessage } from "@/lib/utils";
+import {
+  findOverlappingEvents,
+  getOverlapErrorMessage,
+} from "@/lib/utils/schedule";
 import {
   type AnyEvent,
   getEventColor,

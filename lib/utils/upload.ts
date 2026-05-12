@@ -1,5 +1,5 @@
 import { colors } from "@/constants";
-import { getRandomColor } from "@/lib/utils";
+import { getRandomColor } from "@/lib/utils/colors";
 import type { TablesInsert } from "@/types/supabase";
 import { findCourseByCode } from "../actions/courses.actions";
 import type { CourseColor } from "../actions/events.actions";
