@@ -1,5 +1,5 @@
 import { Navbar } from "@/components/Navbar";
-import Schedule from "@/components/Schedule";
+import Schedule from "@/components/schedule/Schedule";
 import { getEvents } from "@/lib/actions/events.actions";
 import { getTerms } from "@/lib/actions/terms.actions";
 import WelcomeDialog from "@/components/WelcomeDialog";
