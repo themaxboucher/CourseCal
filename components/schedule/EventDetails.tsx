@@ -8,8 +8,8 @@ import {
   Trash2,
   TriangleAlert,
 } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
-import { Button } from "./ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import DeleteEventDialog from "./DeleteEventDialog";
 import EventDialog from "./EventDialog";

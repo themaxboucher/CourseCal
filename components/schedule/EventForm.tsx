@@ -10,13 +10,13 @@ import { LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
-import { TextField } from "./form-fields/TextField";
-import { SelectField } from "./form-fields/SelectField";
-import { CheckboxesField } from "./form-fields/CheckboxesField";
-import { ColorField } from "./form-fields/ColorField";
-import { CourseField } from "./form-fields/CourseField";
-import TimeField from "./form-fields/TimeField";
-import { RadioGroupField } from "./form-fields/RadioGroupField";
+import { TextField } from "@/components/form-fields/TextField";
+import { SelectField } from "@/components/form-fields/SelectField";
+import { CheckboxesField } from "@/components/form-fields/CheckboxesField";
+import { ColorField } from "@/components/form-fields/ColorField";
+import { CourseField } from "@/components/form-fields/CourseField";
+import TimeField from "@/components/form-fields/TimeField";
+import { RadioGroupField } from "@/components/form-fields/RadioGroupField";
 
 import { classTypeIcons } from "@/constants";
 import {

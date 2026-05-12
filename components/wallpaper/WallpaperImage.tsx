@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { cn } from "@/lib/utils";
-import EventBlock from "../EventBlock";
+import EventBlock from "@/components/schedule/EventBlock";
 import { weekdays } from "@/constants";
 import {
   generateTimeSlots,

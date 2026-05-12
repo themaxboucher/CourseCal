@@ -7,7 +7,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
+} from "@/components/ui/select";
 import { seasonColors, seasonIcons } from "@/constants";
 
 interface TermSelectorProps {
