@@ -2,8 +2,13 @@ import { Upload } from "lucide-react";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 import UploadSchedule from "./UploadSchedule";
+import { Tables } from "@/types/supabase";
 
-export function UploadDialog() {
+interface UploadDialogProps {
+  term: Tables<"terms">;
+}
+
+export function UploadDialog({ term }: UploadDialogProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -22,7 +27,7 @@ export function UploadDialog() {
           </p>
         </div>
         <div className="w-full min-w-[28rem] space-y-4">
-          <UploadSchedule />
+          <UploadSchedule term={term} />
         </div>  
       </DialogContent>
     </Dialog>

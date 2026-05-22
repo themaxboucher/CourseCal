@@ -72,6 +72,7 @@ export default function Schedule({
     checkLocalData();
   }, [isLoggedIn, router]);
 
+  const selectedTerm = terms.find((term) => term.id === selectedTermId) ?? relevantTerm;
   const selectedTermServerEvents = serverEvents.filter((event) => event.term === selectedTermId);
 
   const hasEvents = isLoggedIn
@@ -106,7 +107,7 @@ export default function Schedule({
           )}
         >
           {!hasEvents ? (
-            <UploadDialog />
+            <UploadDialog term={selectedTerm} />
           ) : (
             <WallpaperDialog events={displayEvents} />
           )}

@@ -16,8 +16,13 @@ import { getCurrentTerm } from "@/lib/actions/terms.actions";
 import { parsedToDBEvents, parsedToLocalEvents } from "@/lib/utils/upload";
 import { createEvents } from "@/lib/actions/events.actions";
 import { markUserCompletedOnboarding } from "@/lib/actions/users.actions";
+import { Tables } from "@/types/supabase";
 
-export default function UploadSchedule() {
+interface UploadScheduleProps {
+  term?: Tables<"terms"> | null;
+}
+
+export default function UploadSchedule({ term }: UploadScheduleProps) {
   const [result, setResult] = useState<ScheduleAnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -43,24 +48,22 @@ export default function UploadSchedule() {
         return;
       }
 
-      const [term, user] = await Promise.all([
-        getCurrentTerm(),
-        getLoggedInUser(),
-      ]);
+      const user = await getLoggedInUser();
+      const effectiveTerm = term ?? (await getCurrentTerm());
 
       // If the user is already logged in, save the events to the database
       if (user) {
         const { events: dbEvents, courseColors } = await parsedToDBEvents(
           analysisResult.events,
           user.id,
-          term.id,
+          effectiveTerm.id,
         );
         await createEvents(dbEvents, courseColors);
       } else {
         // If the user is not logged in, save the events to IndexedDB
         const localEvents = await parsedToLocalEvents(
           analysisResult.events,
-          term.id,
+          effectiveTerm.id,
         );
         await saveLocalEvents(localEvents);
       }
