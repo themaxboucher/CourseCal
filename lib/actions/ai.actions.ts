@@ -9,7 +9,7 @@ const openrouter = new OpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
 });
 
-const AI_MODEL = "google/gemini-2.0-flash-001";
+const AI_MODEL = "google/gemini-3.5-flash";
 
 // Generate the building abbreviations mapping for the AI prompt
 const buildingAbbreviations = buildings
