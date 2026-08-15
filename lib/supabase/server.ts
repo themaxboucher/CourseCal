@@ -43,6 +43,11 @@ export async function createClient() {
 export function createAdminClient() {
   return createSupabaseClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SECRET_KEY!
+    process.env.SUPABASE_SECRET_KEY!,
+    {
+      // The secret key is not a user session: there is nothing to refresh and
+      // nothing that should be written to storage shared across requests.
+      auth: { autoRefreshToken: false, persistSession: false },
+    }
   );
 }

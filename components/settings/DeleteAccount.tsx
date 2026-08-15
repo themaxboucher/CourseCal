@@ -22,7 +22,6 @@ import { CircleCheck, CircleX, LoaderCircle, Trash } from "lucide-react";
 import { deleteAccount } from "@/lib/actions/users.actions";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Tables } from "@/types/supabase";
 
 const deleteSchema = z.object({
   confirm: z.string().refine((val) => val === "DELETE", {
@@ -32,11 +31,7 @@ const deleteSchema = z.object({
 
 type DeleteFormData = { confirm: string };
 
-interface DeleteAccountProps {
-  user: Tables<"users">;
-}
-
-export default function DeleteAccount({ user }: DeleteAccountProps) {
+export default function DeleteAccount() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -48,15 +43,15 @@ export default function DeleteAccount({ user }: DeleteAccountProps) {
   async function onDelete() {
     setLoading(true);
     try {
-      if (!user.id) {
-        throw new Error("User not found");
-      }
-      await deleteAccount(user.id);
+      await deleteAccount();
 
       toast("Account deleted", {
         icon: <CircleCheck className="text-green-500 size-5" />,
       });
       router.push("/");
+      // Drop the cached RSC payload so the landing page is not rendered from
+      // the signed-in version of the tree.
+      router.refresh();
     } catch {
       toast("Error deleting account", {
         icon: <CircleX className="text-destructive size-5" />,

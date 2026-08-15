@@ -67,7 +67,7 @@ export default async function SettingsPage() {
               </p>
             </div>
 
-            <DeleteAccount user={user} />
+            <DeleteAccount />
           </div>
         </div>
       </section>
