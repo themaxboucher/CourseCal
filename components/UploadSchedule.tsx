@@ -12,11 +12,12 @@ import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import ShinyText from "./ui/ShinyText";
 import { getLoggedInUser } from "@/lib/actions/users.actions";
-import { getCurrentTerm } from "@/lib/actions/terms.actions";
+import { getTerms } from "@/lib/actions/terms.actions";
 import { parsedToDBEvents, parsedToLocalEvents } from "@/lib/utils/upload";
 import { createEvents } from "@/lib/actions/events.actions";
 import { markUserCompletedOnboarding } from "@/lib/actions/users.actions";
 import { Tables } from "@/types/supabase";
+import { getRelevantTerm } from "@/lib/utils/schedule";
 
 interface UploadScheduleProps {
   term?: Tables<"terms"> | null;
@@ -49,7 +50,8 @@ export default function UploadSchedule({ term }: UploadScheduleProps) {
       }
 
       const user = await getLoggedInUser();
-      const effectiveTerm = term ?? (await getCurrentTerm());
+      const terms = await getTerms();
+      const effectiveTerm = term ?? getRelevantTerm(terms);
 
       // If the user is already logged in, save the events to the database
       if (user) {
