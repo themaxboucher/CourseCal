@@ -9,7 +9,7 @@ const openrouter = new OpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
 });
 
-const AI_MODEL = "google/gemini-2.0-flash-001";
+const AI_MODEL = "google/gemini-3.5-flash";
 
 // Generate the building abbreviations mapping for the AI prompt
 const buildingAbbreviations = buildings
@@ -134,7 +134,7 @@ export type ScheduleAnalysisResult =
   | { success: false; error: string };
 
 export async function analyzeScheduleImage(
-  imageBase64: string
+  imageBase64: string,
 ): Promise<ScheduleAnalysisResult> {
   try {
     // Rate limiting: Get the user's IP address and check their limit
@@ -182,7 +182,10 @@ export async function analyzeScheduleImage(
 
     const messageContent = response.choices[0]?.message?.content;
     if (!messageContent || typeof messageContent !== "string") {
-      return { success: false, error: "No response from AI. Please try again." };
+      return {
+        success: false,
+        error: "No response from AI. Please try again.",
+      };
     }
 
     const parsed = JSON.parse(messageContent);
