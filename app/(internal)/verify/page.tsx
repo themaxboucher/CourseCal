@@ -12,6 +12,7 @@ import {
   clearEvents as clearLocalEvents,
 } from "@/lib/indexeddb";
 import { createEvents, getEvents } from "@/lib/actions/events.actions";
+import { getLoggedInUser } from "@/lib/actions/users.actions";
 import { localToDBEvents } from "@/lib/utils/upload";
 
 // Separate component that uses useSearchParams() - must be wrapped in Suspense
@@ -73,7 +74,15 @@ function VerifyContent() {
         // the user will have to upload their schedule during onboarding
 
         setStatus("success");
-        router.push("/onboarding/profile");
+
+        // Returning users who already finished onboarding go straight to their
+        // schedule. Everyone else resumes onboarding where they left off.
+        const profile = await getLoggedInUser();
+        router.push(
+          profile && profile.has_completed_onboarding
+            ? "/schedule"
+            : "/onboarding/profile",
+        );
       } catch (error) {
         setStatus("error");
         setError("An unknown error occurred. Please try again.");

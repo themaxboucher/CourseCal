@@ -4,13 +4,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
-import { LoaderCircle } from "lucide-react";
+import { ArrowRight, LoaderCircle } from "lucide-react";
 import { Form } from "../ui/form";
 import FormAlert from "../FormAlert";
 import { Button } from "../ui/button";
 import { TextField } from "../form-fields/TextField";
 import { useRouter } from "next/navigation";
-import { sendMagicLink } from "@/lib/actions/auth.actions";
+import {
+  sendMagicLink,
+  type AuthIntent,
+  type SendMagicLinkResult,
+} from "@/lib/actions/auth.actions";
 
 const formSchema = z.object({
   email: z
@@ -22,8 +26,17 @@ const formSchema = z.object({
     }),
 });
 
-export default function AuthForm() {
-  const [error, setError] = useState<string | null>(null);
+type FailureReason = Extract<SendMagicLinkResult, { ok: false }>["reason"];
+
+const ERROR_MESSAGES: Record<FailureReason, string> = {
+  invalid_domain: "Please use your ucalgary.ca email address.",
+  no_account: "No account exists for that email.",
+  rate_limited: "Too many attempts. Please try again in a few minutes.",
+  unknown: "An unknown error occurred. Please try again.",
+};
+
+export default function AuthForm({ type }: { type: AuthIntent }) {
+  const [error, setError] = useState<FailureReason | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
@@ -34,17 +47,33 @@ export default function AuthForm() {
     },
   });
 
-  async function onSubmitHandler(data: z.infer<typeof formSchema>) {
+  async function submit(email: string, intent: AuthIntent) {
     setLoading(true);
+    setError(null);
     try {
-      await sendMagicLink(data.email);
-      router.push("/check-email");
-    } catch (error) {
-      setError("An unknown error occurred. Please try again.");
+      const result = await sendMagicLink(email, intent);
+      if (!result.ok) {
+        setError(result.reason);
+        return;
+      }
+      router.push(`/check-email?intent=${intent}`);
+    } catch {
+      setError("unknown");
     } finally {
       setLoading(false);
     }
   }
+
+  async function onSubmitHandler(data: z.infer<typeof formSchema>) {
+    await submit(data.email, type);
+  }
+
+  // The login path refuses to create accounts, so offer the user a one-click
+  // way to sign up with the address they already typed.
+  async function signUpInstead() {
+    await submit(form.getValues("email"), "signup");
+  }
+
   return (
     <Form {...form}>
       <form
@@ -59,7 +88,19 @@ export default function AuthForm() {
             {!loading && "Continue"}
           </Button>
         </div>
-        {error && <FormAlert message={error} type="error" />}
+        {error && (
+          <div className="flex flex-col items-stretch gap-2 w-full">
+            <FormAlert message={ERROR_MESSAGES[error]} type="error" />
+            {error === "no_account" && (
+              <div
+                className="w-full text-sm flex items-center justify-center cursor-pointer hover:underline"
+                onClick={signUpInstead}
+              >
+                <span>Create an account instead</span>
+              </div>
+            )}
+          </div>
+        )}
       </form>
     </Form>
   );

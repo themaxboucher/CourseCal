@@ -28,10 +28,6 @@ export function Navbar({
     setAuthDialogOpen(true);
     setAuthDialogType(type);
   }
-  function handleAuthDialogClose() {
-    setAuthDialogOpen(false);
-    setAuthDialogType("login");
-  }
   return (
     <>
       <header className="flex justify-between items-center px-4 md:px-6 py-4 relative z-50">
@@ -85,7 +81,7 @@ export function Navbar({
       </header>
       <AuthDialog
         open={authDialogOpen}
-        onOpenChange={handleAuthDialogClose}
+        onOpenChange={setAuthDialogOpen}
         type={authDialogType}
       />
     </>

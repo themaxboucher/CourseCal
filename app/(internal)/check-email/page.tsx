@@ -2,7 +2,16 @@ import { Button } from "@/components/ui/button";
 import { OutlookIcon } from "@/components/icons/OutlookIcon";
 import { Inbox } from "lucide-react";
 
-export default function CheckEmailPage() {
+interface CheckEmailPageProps {
+  searchParams: Promise<{ intent?: string }>;
+}
+
+export default async function CheckEmailPage({
+  searchParams,
+}: CheckEmailPageProps) {
+  const { intent } = await searchParams;
+  const isSignup = intent === "signup";
+
   return (
     <>
       <section className="flex flex-col gap-2 max-w-[75rem] mx-auto px-8 py-16">
@@ -12,10 +21,14 @@ export default function CheckEmailPage() {
           </div>
           <div className="flex flex-col items-center gap-2 max-w-md">
             <h1 className="heading-3 text-center max-w-64">
-              A login link has been sent to your email!
+              {isSignup
+                ? "Almost there! Check your email."
+                : "A login link has been sent to your email!"}
             </h1>
             <p className="text-sm text-muted-foreground text-center">
-              Click the link in your email to login.
+              {isSignup
+                ? "Click the link in your email to finish creating your account."
+                : "Click the link in your email to login."}
             </p>
           </div>
           <div className="hidden md:flex justify-center">
