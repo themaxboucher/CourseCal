@@ -11,7 +11,9 @@ export async function findCourseByCode(
     .from("courses")
     .select("*")
     .eq("code", courseCode)
-    .single();
+    .order("id", { ascending: true })
+    .limit(1)
+    .maybeSingle();
   if (error) {
     console.error(error);
     throw new Error(error.message);
@@ -19,7 +21,10 @@ export async function findCourseByCode(
   return data;
 }
 
-export async function getCourses(limit: number, query: string = ""): Promise<Tables<"courses">[]> {
+export async function getCourses(
+  limit: number,
+  query: string = "",
+): Promise<Tables<"courses">[]> {
   const supabase = await createClient();
   let request = supabase.from("courses").select("*").limit(limit);
 
