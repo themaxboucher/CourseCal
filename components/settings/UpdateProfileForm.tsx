@@ -62,9 +62,10 @@ export default function UpdateProfileForm({ user }: { user: Tables<"users"> }) {
       toast("Profile updated", {
         icon: <CircleCheck className="text-green-500 size-5" />,
       });
-    } catch (error: any) {
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "";
       let errorMessage = "Error updating personal details";
-      if (error?.message?.includes("already exists")) {
+      if (message.includes("already exists")) {
         errorMessage = "An account with this email already exists";
       }
       alert(errorMessage);

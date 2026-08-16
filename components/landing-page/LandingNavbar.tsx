@@ -8,7 +8,6 @@ import { getLoggedInUser } from "@/lib/actions/users.actions";
 import { Tables } from "@/types/supabase";
 
 export function LandingNavbar() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [hasSchedule, setHasSchedule] = useState(false);
   const [user, setUser] = useState<Tables<"users"> | null>(null);
   useEffect(() => {
@@ -16,7 +15,6 @@ export function LandingNavbar() {
       try {
         const user = await getLoggedInUser();
         if (user) {
-          setIsLoggedIn(true);
           setUser(user);
           const serverEvents = await getServerEvents(user.id);
           setHasSchedule(serverEvents.length > 0);

@@ -49,7 +49,7 @@ export default function WelcomeDialog({ user, show }: WelcomeDialogProps) {
           Your schedule is saved. You can now log in from any device to view it.
         </p>
         <Button onClick={() => setOpen(false)} className="w-full">
-          Let's go!
+          Let&apos;s go!
         </Button>
       </DialogContent>
     </Dialog>

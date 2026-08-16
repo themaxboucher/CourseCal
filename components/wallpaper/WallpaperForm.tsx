@@ -77,7 +77,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
         <div className="space-y-1 hidden md:block">
           <h2 className="heading-3">Download wallpaper</h2>
           <p className="text-muted-foreground">
-            Download a wallpaper of your schedule that isn't blocked by your
+            Download a wallpaper of your schedule that isn&apos;t blocked by your
             lock screens time or widgets.
           </p>
         </div>
@@ -95,7 +95,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
                     <HoverCardContent align="start">
                       <p className="text-sm">
                         The schedule will take up more or less space, depending
-                        on your phone's dimensions.
+                        on your phone&apos;s dimensions.
                       </p>
                     </HoverCardContent>
                   </HoverCard>

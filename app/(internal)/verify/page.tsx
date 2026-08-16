@@ -83,7 +83,7 @@ function VerifyContent() {
             ? "/schedule"
             : "/onboarding/profile",
         );
-      } catch (error) {
+      } catch {
         setStatus("error");
         setError("An unknown error occurred. Please try again.");
       }

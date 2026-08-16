@@ -89,7 +89,7 @@ export function WallpaperDialog({
             <VisuallyHidden>
               <DrawerTitle>Download wallpaper</DrawerTitle>
               <DrawerDescription>
-                Download a wallpaper of your schedule that isn't blocked by your
+                Download a wallpaper of your schedule that isn&apos;t blocked by your
                 lock screens time or widgets.
               </DrawerDescription>
             </VisuallyHidden>
