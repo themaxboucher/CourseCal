@@ -35,7 +35,6 @@ export async function sendMagicLink(
       // Only the signup path may create an account. Logging in with an unknown
       // address must fail so we can offer to sign the user up instead.
       shouldCreateUser: intent === "signup",
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL!}/verify`,
     },
   });
 
@@ -54,18 +53,6 @@ export async function sendMagicLink(
   }
 
   return { ok: true };
-}
-
-export async function verifyMagicLink(code: string) {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-
-  if (error) {
-    console.error(error);
-    return false;
-  }
-
-  return data.user;
 }
 
 export async function logout() {

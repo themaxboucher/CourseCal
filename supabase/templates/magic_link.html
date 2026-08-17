@@ -1,0 +1,11 @@
+<h2>Log in to CourseCal</h2>
+
+<p>Click the link below to log in. It works on any device, and expires in an hour.</p>
+
+<p>
+  <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=magiclink">
+    Log in to CourseCal
+  </a>
+</p>
+
+<p>If you didn't request this, you can ignore this email.</p>
