@@ -34,7 +34,7 @@ export default function TimeField({
         {...form.register(name)}
         className={cn(
           "bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none",
-          hasError && "border-destructive focus-visible:ring-destructive"
+          hasError && "border-destructive focus-visible:ring-destructive",
         )}
         aria-invalid={hasError ? "true" : "false"}
       />

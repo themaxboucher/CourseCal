@@ -72,8 +72,11 @@ export default function Schedule({
     checkLocalData();
   }, [isLoggedIn, router]);
 
-  const selectedTerm = terms.find((term) => term.id === selectedTermId) ?? relevantTerm;
-  const selectedTermServerEvents = serverEvents.filter((event) => event.term === selectedTermId);
+  const selectedTerm =
+    terms.find((term) => term.id === selectedTermId) ?? relevantTerm;
+  const selectedTermServerEvents = serverEvents.filter(
+    (event) => event.term === selectedTermId,
+  );
 
   const hasEvents = isLoggedIn
     ? selectedTermServerEvents.length > 0
@@ -103,7 +106,7 @@ export default function Schedule({
         <div
           className={cn(
             "flex items-center gap-2",
-            !isLoggedIn && "justify-between w-full"
+            !isLoggedIn && "justify-between w-full",
           )}
         >
           {!hasEvents ? (

@@ -43,7 +43,7 @@ export default function WallpaperPreview({
           className={cn(
             "overflow-hidden w-full aspect-18/39 py-3.5 px-2 flex flex-col justify-end items-stretch",
             bgClass,
-            fontStyles[font]
+            fontStyles[font],
           )}
         >
           <WallpaperImage

@@ -18,7 +18,6 @@ export function UploadDialog({ term }: UploadDialogProps) {
         </Button>
       </DialogTrigger>
       <DialogContent className="flex flex-col items-center gap-8">
-
         <div className="space-y-2 text-center max-w-md">
           <h1 className="heading-3">Upload your schedule</h1>
           <p className="text-muted-foreground">
@@ -28,7 +27,7 @@ export function UploadDialog({ term }: UploadDialogProps) {
         </div>
         <div className="w-full min-w-[28rem] space-y-4">
           <UploadSchedule term={term} />
-        </div>  
+        </div>
       </DialogContent>
     </Dialog>
   );

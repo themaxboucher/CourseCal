@@ -41,7 +41,7 @@ export function CheckboxesField({
                 key={option.value}
                 className={cn(
                   "flex items-center cursor-pointer",
-                  hasError && "text-destructive"
+                  hasError && "text-destructive",
                 )}
               >
                 <Checkbox
@@ -57,8 +57,8 @@ export function CheckboxesField({
                       // Remove the option from the array
                       field.onChange(
                         currentValue.filter(
-                          (item: string) => item !== option.value
-                        )
+                          (item: string) => item !== option.value,
+                        ),
                       );
                     }
                   }}

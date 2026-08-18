@@ -4,7 +4,7 @@ import type { AnyEvent } from "@/lib/utils/events";
 
 export function getReadableRecurrence(
   recurrence: Recurrence | undefined,
-  days: WeekDay[] | undefined
+  days: WeekDay[] | undefined,
 ): string {
   if (!recurrence || !days || days.length === 0) {
     return "No recurrence";
@@ -60,7 +60,7 @@ export const checkTimeOverlap = (
   startTime1: string,
   endTime1: string,
   startTime2: string,
-  endTime2: string
+  endTime2: string,
 ): boolean => {
   const start1 = new Date(`2000-01-01T${startTime1}`);
   const end1 = new Date(`2000-01-01T${endTime1}`);
@@ -74,7 +74,7 @@ export const checkTimeOverlap = (
 export const findOverlappingEvents = (
   formData: { days?: WeekDay[]; startTime?: string; endTime?: string },
   events: AnyEvent[],
-  currentEventId?: number
+  currentEventId?: number,
 ): { day: string; event: AnyEvent }[] => {
   const overlaps: { day: string; event: AnyEvent }[] = [];
 
@@ -95,12 +95,7 @@ export const findOverlappingEvents = (
     if (sharedDays.length > 0) {
       // Check for time overlap
       if (
-        checkTimeOverlap(
-          startTime,
-          endTime,
-          event.start_time,
-          event.end_time
-        )
+        checkTimeOverlap(startTime, endTime, event.start_time, event.end_time)
       ) {
         sharedDays.forEach((day) => {
           overlaps.push({
@@ -118,7 +113,7 @@ export const findOverlappingEvents = (
 // Check if time is within allowed range (8 AM - 7 PM)
 export const isTimeInRange = (
   timeString: string,
-  isEndTime: boolean = false
+  isEndTime: boolean = false,
 ): boolean => {
   const time = new Date(`2000-01-01T${timeString}`);
   const hour = time.getHours();
@@ -132,7 +127,7 @@ export const isTimeInRange = (
 
 // Get formatted overlap error message
 export const getOverlapErrorMessage = (
-  overlaps: { day: string; event: AnyEvent }[]
+  overlaps: { day: string; event: AnyEvent }[],
 ): string => {
   if (overlaps.length === 0) return "";
 
@@ -141,7 +136,7 @@ export const getOverlapErrorMessage = (
     .map((overlap) => overlap.event)
     .filter(
       (event, index, self) =>
-        index === self.findIndex((e) => e.id === event.id)
+        index === self.findIndex((e) => e.id === event.id),
     );
 
   const firstEvent = uniqueEvents[0];
@@ -175,7 +170,7 @@ export const timeToMinutes = (timeString: string): number => {
 // Get the time range needed to display all events
 // Default: 8 AM to 4 PM, expands to accommodate events outside this range
 export const getTimeRange = (
-  events: AnyEvent[]
+  events: AnyEvent[],
 ): { startHour: number; endHour: number } => {
   const DEFAULT_START = 9; // 9 AM
   const DEFAULT_END = 15; // 3 PM
@@ -209,13 +204,15 @@ export const getTimeRange = (
 export const generateTimeSlots = (
   startHour: number,
   endHour: number,
-  short: boolean = false
+  short: boolean = false,
 ): string[] => {
   const slots: string[] = [];
   for (let hour = startHour; hour <= endHour; hour++) {
     const period = hour >= 12 ? "PM" : "AM";
     const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
-    slots.push(short ? `${displayHour} ${period}` : `${displayHour}:00 ${period}`);
+    slots.push(
+      short ? `${displayHour} ${period}` : `${displayHour}:00 ${period}`,
+    );
   }
   return slots;
 };
@@ -224,7 +221,7 @@ export const generateTimeSlots = (
 export const getEventPosition = (
   event: AnyEvent,
   cellHeight: number,
-  baseHour: number = 8
+  baseHour: number = 8,
 ) => {
   const startMinutes = timeToMinutes(event.start_time);
   const endMinutes = timeToMinutes(event.end_time);
@@ -245,7 +242,7 @@ export function getRelevantTerm(terms: Tables<"terms">[]): Tables<"terms"> {
   const today = new Date().toISOString().split("T")[0]; // "YYYY-MM-DD"
 
   const currentTerm = terms.find(
-    (term) => term.start_date <= today && term.end_date >= today
+    (term) => term.start_date <= today && term.end_date >= today,
   );
   if (currentTerm) {
     return currentTerm;

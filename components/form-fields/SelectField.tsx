@@ -51,7 +51,7 @@ export function SelectField({
       acc[group].push(option);
       return acc;
     },
-    {}
+    {},
   );
 
   return (
@@ -64,14 +64,14 @@ export function SelectField({
     >
       {({ field }: { field: ControllerRenderProps<any, string> }) => {
         const selectedOption = options.find(
-          (option) => option.value === field.value
+          (option) => option.value === field.value,
         );
         return (
           <Select value={field.value || ""} onValueChange={field.onChange}>
             <SelectTrigger
               className={cn(
                 "w-full disabled:opacity-100",
-                hasError && "border-destructive focus:ring-destructive"
+                hasError && "border-destructive focus:ring-destructive",
               )}
               disabled={disabled}
               aria-invalid={hasError ? "true" : "false"}
@@ -126,7 +126,7 @@ export function SelectField({
                       <span className="truncate">{option.label}</span>
                     </SelectItem>
                   ))
-                )
+                ),
               )}
             </SelectContent>
           </Select>

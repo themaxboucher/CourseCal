@@ -42,7 +42,7 @@ export function RadioGroupField({
               key={option.value}
               className={cn(
                 "flex items-center space-x-2 cursor-pointer",
-                hasError && "text-destructive"
+                hasError && "text-destructive",
               )}
             >
               <RadioGroupItem value={option.value} />

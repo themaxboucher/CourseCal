@@ -7,8 +7,13 @@ interface UserAvatarProps {
   size?: "sm" | "md" | "lg";
 }
 
-export default function UserAvatar({ avatarUrl, name, size = "md" }: UserAvatarProps) {
-  const sizeClass = size === "sm" ? "size-8" : size === "md" ? "size-12" : "size-16";
+export default function UserAvatar({
+  avatarUrl,
+  name,
+  size = "md",
+}: UserAvatarProps) {
+  const sizeClass =
+    size === "sm" ? "size-8" : size === "md" ? "size-12" : "size-16";
   const firstLetterOfName = name?.charAt(0);
   return (
     <Avatar className={cn(sizeClass, "border border-border")}>

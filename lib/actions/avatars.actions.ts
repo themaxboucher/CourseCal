@@ -14,7 +14,9 @@ export async function uploadAvatar(file: File, userId: string) {
   const fileExists = existing && existing.length > 0;
 
   const { error } = fileExists
-    ? await supabase.storage.from("avatars").update(filePath, file, { upsert: true })
+    ? await supabase.storage
+        .from("avatars")
+        .update(filePath, file, { upsert: true })
     : await supabase.storage.from("avatars").upload(filePath, file);
 
   if (error) {

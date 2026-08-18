@@ -17,7 +17,10 @@ function openDB(): Promise<IDBDatabase> {
 
       // Create events store
       if (!db.objectStoreNames.contains(STORES.events)) {
-        db.createObjectStore(STORES.events, { keyPath: "id", autoIncrement: true });
+        db.createObjectStore(STORES.events, {
+          keyPath: "id",
+          autoIncrement: true,
+        });
       }
     };
   });
@@ -110,42 +113,50 @@ export async function addEvent(event: LocalEvent): Promise<number> {
   return newEventId;
 }
 
-export async function updateEvent(id: number, event: Partial<LocalEvent>): Promise<void> {
+export async function updateEvent(
+  id: number,
+  event: Partial<LocalEvent>,
+): Promise<void> {
   const db = await openDB();
   const tx = db.transaction(STORES.events, "readwrite");
   const store = tx.objectStore(STORES.events);
 
-  const updatedEvent = await new Promise<LocalEvent & { id: number }>((resolve, reject) => {
-    // First get the existing event
-    const getRequest = store.get(id);
-    getRequest.onsuccess = () => {
-      const existingEvent = getRequest.result;
-      if (!existingEvent) {
-        db.close();
-        reject(new Error(`Event with id ${id} not found`));
-        return;
-      }
-      // Merge and update
-      const merged = { ...existingEvent, ...event, id };
-      const putRequest = store.put(merged);
-      putRequest.onsuccess = () => {
-        db.close();
-        resolve(merged);
+  const updatedEvent = await new Promise<LocalEvent & { id: number }>(
+    (resolve, reject) => {
+      // First get the existing event
+      const getRequest = store.get(id);
+      getRequest.onsuccess = () => {
+        const existingEvent = getRequest.result;
+        if (!existingEvent) {
+          db.close();
+          reject(new Error(`Event with id ${id} not found`));
+          return;
+        }
+        // Merge and update
+        const merged = { ...existingEvent, ...event, id };
+        const putRequest = store.put(merged);
+        putRequest.onsuccess = () => {
+          db.close();
+          resolve(merged);
+        };
+        putRequest.onerror = () => {
+          db.close();
+          reject(putRequest.error);
+        };
       };
-      putRequest.onerror = () => {
+      getRequest.onerror = () => {
         db.close();
-        reject(putRequest.error);
+        reject(getRequest.error);
       };
-    };
-    getRequest.onerror = () => {
-      db.close();
-      reject(getRequest.error);
-    };
-  });
+    },
+  );
 
   // Sync color across all events with this course
   if (updatedEvent.course_color) {
-    await updateCourseColorForAllEvents(updatedEvent.course_code, updatedEvent.course_color);
+    await updateCourseColorForAllEvents(
+      updatedEvent.course_code,
+      updatedEvent.course_color,
+    );
   }
 }
 
@@ -170,9 +181,11 @@ export async function deleteEvent(id: number): Promise<void> {
 /**
  * Get the color for a course by checking existing events
  */
-export async function getCourseColorFromEvents(courseCode: string): Promise<Color | null> {
+export async function getCourseColorFromEvents(
+  courseCode: string,
+): Promise<Color | null> {
   const events = await getEvents();
-  const matchingEvent = events.find(e => e.course_code === courseCode);
+  const matchingEvent = events.find((e) => e.course_code === courseCode);
   return matchingEvent?.course_color ?? null;
 }
 
@@ -182,7 +195,7 @@ export async function getCourseColorFromEvents(courseCode: string): Promise<Colo
  */
 export async function updateCourseColorForAllEvents(
   courseCode: string,
-  newColor: Color
+  newColor: Color,
 ): Promise<void> {
   const db = await openDB();
   const tx = db.transaction(STORES.events, "readwrite");

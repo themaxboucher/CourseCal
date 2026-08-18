@@ -36,10 +36,7 @@ export async function createEvents(
   courseColors: CourseColor[] = [],
 ) {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("events")
-    .insert(events)
-    .select();
+  const { data, error } = await supabase.from("events").insert(events).select();
   if (error) {
     console.error(error);
     throw new Error(error.message);
@@ -70,7 +67,10 @@ export async function createEvent(
   return data;
 }
 
-export async function updateEvent(id: number, event: Partial<TablesInsert<"events">>) {
+export async function updateEvent(
+  id: number,
+  event: Partial<TablesInsert<"events">>,
+) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("events")

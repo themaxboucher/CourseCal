@@ -57,7 +57,7 @@ export function ColorField({
                 "size-9 p-0 border-[1.5px]",
                 field.value
                   ? eventColors[field.value as keyof typeof eventColors]
-                  : eventColors.fallback
+                  : eventColors.fallback,
               )}
             >
               <div className="w-full h-full rounded-sm" />
@@ -75,7 +75,7 @@ export function ColorField({
                     "size-6 p-0 border-2 hover:scale-103 transition-transform hover:cursor-pointer",
                     eventColors[colorName as keyof typeof eventColors],
                     field.value === colorName &&
-                      "ring-2 ring-offset-2 ring-ring"
+                      "ring-2 ring-offset-2 ring-ring",
                   )}
                   onClick={() => {
                     field.onChange(colorName);

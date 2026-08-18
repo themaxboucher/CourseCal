@@ -19,10 +19,12 @@
       "!public",
     ],
   },
-  // Biome is used here as a linter only, standing in for ESLint. Formatting
-  // stays out of scope: enable `formatter` to opt in, which will rewrite
-  // every file in the repo.
-  "formatter": { "enabled": false },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 80,
+  },
   "assist": { "enabled": false },
   "css": {
     // `@theme`, `@custom-variant`, `@apply` in app/globals.css (Tailwind v4).
@@ -38,9 +40,10 @@
   "overrides": [
     {
       // Vendored shadcn/ui, @magicui and @react-bits components. These are
-      // pulled from registries and re-pulled on update, so fixing lints here
-      // only creates conflicts with upstream.
+      // pulled from registries and re-pulled on update, so reformatting them
+      // or fixing lints here only creates conflicts with upstream.
       "includes": ["components/ui/**"],
+      "formatter": { "enabled": false },
       "linter": { "enabled": false },
     },
     {

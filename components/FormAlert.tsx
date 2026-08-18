@@ -21,8 +21,8 @@ export default function FormAlert({ message, type = "error" }: FormAlertProps) {
         isError
           ? "bg-destructive/5 border-destructive/50"
           : isInfo
-          ? "bg-blue-500/5 border-blue-500/50"
-          : "bg-green-500/5 border-green-500/50"
+            ? "bg-blue-500/5 border-blue-500/50"
+            : "bg-green-500/5 border-green-500/50",
       )}
     >
       <span>
@@ -40,8 +40,8 @@ export default function FormAlert({ message, type = "error" }: FormAlertProps) {
           isError
             ? "text-destructive"
             : isInfo
-            ? "text-blue-500"
-            : "text-green-500"
+              ? "text-blue-500"
+              : "text-green-500",
         )}
       >
         {message}

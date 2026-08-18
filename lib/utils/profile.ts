@@ -18,7 +18,11 @@ export const profileSchema = z.object({
 export type ProfileFormData = z.infer<typeof profileSchema>;
 
 export function validateAvatarFile(file: File): string | null {
-  if (!ALLOWED_AVATAR_TYPES.includes(file.type as (typeof ALLOWED_AVATAR_TYPES)[number])) {
+  if (
+    !ALLOWED_AVATAR_TYPES.includes(
+      file.type as (typeof ALLOWED_AVATAR_TYPES)[number],
+    )
+  ) {
     return "Only PNG, JPG, and WebP images are allowed";
   }
   if (file.size > MAX_AVATAR_SIZE) {
@@ -38,7 +42,7 @@ export function readFileAsDataURL(file: File): Promise<string> {
 
 export async function handleAvatarFileChange(
   e: React.ChangeEvent<HTMLInputElement>,
-  onSelect: (file: File, dataUrl: string) => void
+  onSelect: (file: File, dataUrl: string) => void,
 ): Promise<void> {
   const file = e.target.files?.[0];
   if (!file) return;

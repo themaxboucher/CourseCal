@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
+    "format": "biome format .",
+    "format:fix": "biome format --write .",
     "types:gen": "supabase gen types typescript --project-id khungawtrlpyzggshvoy --schema public > types/supabase.ts"
   },
   "dependencies": {

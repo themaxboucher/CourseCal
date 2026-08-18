@@ -24,7 +24,7 @@ export function ThemeSlider() {
           "rounded-full size-7 p-0",
           mounted && theme === "light"
             ? "bg-popover text-foreground"
-            : "text-muted-foreground"
+            : "text-muted-foreground",
         )}
       >
         <Sun className="size-4" />
@@ -37,7 +37,7 @@ export function ThemeSlider() {
           "rounded-full size-7 p-0",
           mounted && theme === "dark"
             ? "bg-popover text-foreground"
-            : "text-muted-foreground"
+            : "text-muted-foreground",
         )}
       >
         <Moon className="size-4" />

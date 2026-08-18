@@ -25,11 +25,10 @@ export function LandingNavbar() {
       } catch {
         setHasSchedule(false);
       }
-    };
+    }
 
     checkSchedule();
   }, []);
 
   return <Navbar hasSchedule={hasSchedule} user={user} />;
 }
-

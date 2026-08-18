@@ -3,7 +3,9 @@
 import type { TablesInsert } from "@/types/supabase";
 import { createClient } from "../supabase/server";
 
-export async function createCourseColors(courseColors: TablesInsert<"course_colors">[]) {
+export async function createCourseColors(
+  courseColors: TablesInsert<"course_colors">[],
+) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("course_colors")
@@ -16,7 +18,9 @@ export async function createCourseColors(courseColors: TablesInsert<"course_colo
   return data;
 }
 
-export async function upsertCourseColor(courseColor: TablesInsert<"course_colors">) {
+export async function upsertCourseColor(
+  courseColor: TablesInsert<"course_colors">,
+) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("course_colors")

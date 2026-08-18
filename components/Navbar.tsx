@@ -70,9 +70,13 @@ export function Navbar({
               )}
               {user && (
                 <li>
-                    <Link href="/settings">
-                      <UserAvatar avatarUrl={user?.avatar} name={user?.name} size="sm" />
-                    </Link>
+                  <Link href="/settings">
+                    <UserAvatar
+                      avatarUrl={user?.avatar}
+                      name={user?.name}
+                      size="sm"
+                    />
+                  </Link>
                 </li>
               )}
             </ul>

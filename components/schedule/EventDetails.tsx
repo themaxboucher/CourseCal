@@ -60,7 +60,7 @@ export default function EventDetails({
               "min-h-full w-1.5 rounded-[0.2rem]",
               color
                 ? eventColors[color as keyof typeof eventColors]
-                : eventColors.fallback
+                : eventColors.fallback,
             )}
           />
           <div>

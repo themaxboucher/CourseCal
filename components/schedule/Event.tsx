@@ -78,9 +78,7 @@ export default function Event({
           <DrawerContent className="border-[1.5px]">
             <VisuallyHidden>
               <DrawerHeader>
-                <DrawerTitle>
-                  {event.course_code}
-                </DrawerTitle>
+                <DrawerTitle>{event.course_code}</DrawerTitle>
               </DrawerHeader>
             </VisuallyHidden>
             <div className="px-4 pb-4 pt-6">

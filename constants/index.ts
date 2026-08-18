@@ -44,7 +44,7 @@ export const classTypeIcons = {
   default: Book,
 };
 
-export const colors : Color[] = [
+export const colors: Color[] = [
   "red",
   "orange",
   "yellow",

@@ -11,7 +11,7 @@ export function FormWarning({ message, className }: FormWarningProps) {
     <div
       className={cn(
         "flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400",
-        className
+        className,
       )}
     >
       <AlertTriangle className="h-3 w-3" />

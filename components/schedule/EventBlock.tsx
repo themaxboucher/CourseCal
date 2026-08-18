@@ -34,7 +34,8 @@ export default function EventBlock({
   const colorPalette =
     isWallpaper && wallpaperTheme === "light" ? lightEventColors : eventColors;
   const colorClass = color
-    ? colorPalette[color as keyof typeof colorPalette] ?? colorPalette.fallback
+    ? (colorPalette[color as keyof typeof colorPalette] ??
+      colorPalette.fallback)
     : colorPalette.fallback;
 
   return (
@@ -48,7 +49,7 @@ export default function EventBlock({
           : "rounded-lg p-[0.3rem] my-[0.2rem]",
         colorClass,
         event.recurrence !== "weekly" && "opacity-75",
-        className
+        className,
       )}
       style={style}
       {...props}
@@ -63,7 +64,7 @@ export default function EventBlock({
           className={cn(
             "w-full",
             !isWallpaper && "md:space-y-1",
-            isWallpaper ? "space-y-0" : "space-y-0.5"
+            isWallpaper ? "space-y-0" : "space-y-0.5",
           )}
         >
           <div className="w-full flex items-center justify-between gap-2">
@@ -72,7 +73,7 @@ export default function EventBlock({
                 className={cn(
                   "font-bold truncate",
                   !isWallpaper && "md:text-xs",
-                  isWallpaper ? "text-[6px]" : "text-xxs"
+                  isWallpaper ? "text-[6px]" : "text-xxs",
                 )}
               >
                 {event.course_code}
@@ -82,7 +83,7 @@ export default function EventBlock({
                 className={cn(
                   "font-bold truncate",
                   !isWallpaper && "md:text-xs",
-                  isWallpaper ? "text-[6px]" : "text-xxs"
+                  isWallpaper ? "text-[6px]" : "text-xxs",
                 )}
               >
                 {courseTitle}
@@ -92,7 +93,7 @@ export default function EventBlock({
               <div
                 className={cn(
                   "hidden text-xxs opacity-75 capitalize",
-                  !isWallpaper && "md:block md:text-xs"
+                  !isWallpaper && "md:block md:text-xs",
                 )}
               >
                 {event.type}
@@ -103,7 +104,7 @@ export default function EventBlock({
             className={cn(
               "opacity-75 flex justify-start items-center gap-0.5 flex-wrap tracking-tight",
               !isWallpaper && "md:text-xs",
-              isWallpaper ? "text-[5.5px]" : "text-xxs"
+              isWallpaper ? "text-[5.5px]" : "text-xxs",
             )}
           >
             {isWallpaper && eventInfo === "location" ? (
