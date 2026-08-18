@@ -19,7 +19,7 @@ export default async function SettingsPage() {
 
   return (
     <>
-      <Navbar />
+      <Navbar isLoggedIn={true} />
       <section className="flex flex-col gap-2 max-w-[45rem] mx-auto px-8 py-12">
         <div className="space-y-8">
           <div className="space-y-2">
@@ -34,7 +34,10 @@ export default async function SettingsPage() {
             <p className="text-muted-foreground">
               💬 Got feedback? Send questions, feature requests, bug reports,
               love letters, or hate mail to{" "}
-              <a href="mailto:max@maxboucher.com" className="text-primary">
+              <a
+                href="mailto:max@maxboucher.com"
+                className="text-ring hover:underline"
+              >
                 max@maxboucher.com
               </a>
               .
@@ -67,7 +70,7 @@ export default async function SettingsPage() {
               </p>
             </div>
 
-            <DeleteAccount user={user} />
+            <DeleteAccount />
           </div>
         </div>
       </section>

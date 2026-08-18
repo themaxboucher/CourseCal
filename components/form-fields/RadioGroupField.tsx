@@ -1,7 +1,7 @@
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Label } from "../ui/label";
 import { FormFieldWrapper } from "./FormFieldWrapper";
-import { UseFormReturn, ControllerRenderProps } from "react-hook-form";
+import type { UseFormReturn, ControllerRenderProps } from "react-hook-form";
 import { cn } from "@/lib/utils";
 
 interface RadioGroupFieldProps {
@@ -42,7 +42,7 @@ export function RadioGroupField({
               key={option.value}
               className={cn(
                 "flex items-center space-x-2 cursor-pointer",
-                hasError && "text-destructive"
+                hasError && "text-destructive",
               )}
             >
               <RadioGroupItem value={option.value} />

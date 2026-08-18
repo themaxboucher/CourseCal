@@ -12,4 +12,3 @@ export const ratelimit = new Ratelimit({
   redis: redis,
   limiter: Ratelimit.slidingWindow(3, "1 h"),
 });
-

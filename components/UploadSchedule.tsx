@@ -3,16 +3,27 @@
 import { useState, useRef } from "react";
 import {
   analyzeScheduleImage,
-  ScheduleAnalysisResult,
+  type ScheduleAnalysisResult,
 } from "@/lib/actions/ai.actions";
-import { saveEvents } from "@/lib/indexeddb";
+import { saveEvents as saveLocalEvents } from "@/lib/indexeddb";
 import { Loader2, CalendarArrowUp } from "lucide-react";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import ShinyText from "./ui/ShinyText";
+import { getLoggedInUser } from "@/lib/actions/users.actions";
+import { getTerms } from "@/lib/actions/terms.actions";
+import { parsedToDBEvents, parsedToLocalEvents } from "@/lib/utils/upload";
+import { createEvents } from "@/lib/actions/events.actions";
+import { markUserCompletedOnboarding } from "@/lib/actions/users.actions";
+import type { Tables } from "@/types/supabase";
+import { getRelevantTerm } from "@/lib/utils/schedule";
 
-export default function UploadSchedule() {
+interface UploadScheduleProps {
+  term?: Tables<"terms"> | null;
+}
+
+export default function UploadSchedule({ term }: UploadScheduleProps) {
   const [result, setResult] = useState<ScheduleAnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -29,18 +40,52 @@ export default function UploadSchedule() {
     setIsLoading(true);
     setResult(null);
 
-    const analysisResult = await analyzeScheduleImage(imageBase64);
-    setResult(analysisResult);
+    try {
+      const analysisResult = await analyzeScheduleImage(imageBase64);
+      setResult(analysisResult);
 
-    // Clear file input if there was an error or not a schedule
-    if (!analysisResult.success || !analysisResult.isSchedule) {
-      clearFileInput();
-      setIsLoading(false);
-    }
+      if (!analysisResult.success || !analysisResult.isSchedule) {
+        clearFileInput();
+        return;
+      }
 
-    if (analysisResult.success && analysisResult.isSchedule) {
-      await saveEvents(analysisResult.events);
+      const user = await getLoggedInUser();
+      const terms = await getTerms();
+      const effectiveTerm = term ?? getRelevantTerm(terms);
+
+      // If the user is already logged in, save the events to the database
+      if (user) {
+        const { events: dbEvents, courseColors } = await parsedToDBEvents(
+          analysisResult.events,
+          user.id,
+          effectiveTerm.id,
+        );
+        await createEvents(dbEvents, courseColors);
+      } else {
+        // If the user is not logged in, save the events to IndexedDB
+        const localEvents = await parsedToLocalEvents(
+          analysisResult.events,
+          effectiveTerm.id,
+        );
+        await saveLocalEvents(localEvents);
+      }
+
+      // If the user is logged in and has a name and major, mark them as completed onboarding
+      // biome-ignore lint/complexity/useOptionalChain: `user` is `T | false`, not nullable — `?.` wouldn't narrow away the `false` branch the way `&&` does.
+      if (user && user.name && user.major) {
+        await markUserCompletedOnboarding(user.id);
+      }
+
       router.push("/schedule?uploadSuccess=true");
+    } catch (error) {
+      console.error("Failed to save schedule:", error);
+      setResult({
+        success: false,
+        error: "Failed to save schedule. Please try again.",
+      });
+      clearFileInput();
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -115,6 +160,7 @@ export default function UploadSchedule() {
         />
 
         {/* Desktop upload */}
+        {/* biome-ignore lint/a11y/useSemanticElements: the zone contains its own <Button>, so it cannot be one. */}
         <div
           role="button"
           tabIndex={0}
@@ -131,7 +177,7 @@ export default function UploadSchedule() {
           onDrop={handleDrop}
           className={cn(
             "hidden lg:flex group w-full h-54 border-2 border-input border-dashed hover:border-ring hover:bg-ring/5 ring-white rounded-xl flex-col items-center justify-center gap-4 text-muted-foreground transition-colors cursor-pointer",
-            isDragging && "border-ring bg-ring/5"
+            isDragging && "border-ring bg-ring/5",
           )}
         >
           {!isLoading ? (
@@ -184,7 +230,7 @@ export default function UploadSchedule() {
       )}
 
       {/* Not a schedule */}
-      {result && result.success && !result.isSchedule && (
+      {result?.success && !result.isSchedule && (
         <div className="p-4 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 text-sm">
           This doesn&apos;t appear to be a university schedule. Please upload a
           screenshot of your course schedule.

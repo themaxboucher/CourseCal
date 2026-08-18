@@ -1,7 +1,7 @@
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
 import { FormFieldWrapper } from "./FormFieldWrapper";
-import { UseFormReturn, ControllerRenderProps } from "react-hook-form";
+import type { UseFormReturn, ControllerRenderProps } from "react-hook-form";
 import { cn } from "@/lib/utils";
 
 interface CheckboxesFieldProps {
@@ -41,7 +41,7 @@ export function CheckboxesField({
                 key={option.value}
                 className={cn(
                   "flex items-center cursor-pointer",
-                  hasError && "text-destructive"
+                  hasError && "text-destructive",
                 )}
               >
                 <Checkbox
@@ -57,8 +57,8 @@ export function CheckboxesField({
                       // Remove the option from the array
                       field.onChange(
                         currentValue.filter(
-                          (item: string) => item !== option.value
-                        )
+                          (item: string) => item !== option.value,
+                        ),
                       );
                     }
                   }}

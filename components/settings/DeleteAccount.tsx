@@ -31,11 +31,7 @@ const deleteSchema = z.object({
 
 type DeleteFormData = { confirm: string };
 
-interface DeleteAccountProps {
-  user: User;
-}
-
-export default function DeleteAccount({ user }: DeleteAccountProps) {
+export default function DeleteAccount() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -47,18 +43,16 @@ export default function DeleteAccount({ user }: DeleteAccountProps) {
   async function onDelete() {
     setLoading(true);
     try {
-      const authUserId = user.userId;
-      const docUserId = user.$id;
-      if (!authUserId || !docUserId) {
-        throw new Error("User not found");
-      }
-      await deleteAccount(authUserId, docUserId, user.avatar);
+      await deleteAccount();
 
       toast("Account deleted", {
         icon: <CircleCheck className="text-green-500 size-5" />,
       });
       router.push("/");
-    } catch (error) {
+      // Drop the cached RSC payload so the landing page is not rendered from
+      // the signed-in version of the tree.
+      router.refresh();
+    } catch {
       toast("Error deleting account", {
         icon: <CircleX className="text-destructive size-5" />,
       });

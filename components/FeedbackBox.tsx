@@ -16,6 +16,7 @@ export default function FeedbackBox() {
             <a
               href="https://www.instagram.com/maximeboucher_/"
               target="_blank"
+              rel="noopener"
               className="text-sky-500 hover:underline"
             >
               Instagram
@@ -25,6 +26,7 @@ export default function FeedbackBox() {
               href="https://www.linkedin.com/in/maxboucher/"
               target="_blank"
               className="text-sky-500 hover:underline"
+              rel="noopener"
             >
               LinkedIn
             </a>{" "}
@@ -32,13 +34,14 @@ export default function FeedbackBox() {
             mail.
           </p>
           <p className="text-sm text-muted-foreground">
-            You can also vote on new features and make a public feature requests{" "}
+            You can also{" "}
             <a
               href="https://coursecal.featurebase.app/"
               target="_blank"
+              rel="noopener"
               className="text-sky-500 hover:underline"
             >
-              here
+              vote on and submit feature requests
             </a>
             .
           </p>

@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,8 +19,11 @@ import {
 } from "@/components/ui/popover";
 import { getCourses } from "@/lib/actions/courses.actions";
 import { FormFieldWrapper } from "./FormFieldWrapper";
-import { UseFormReturn } from "react-hook-form";
+import type { UseFormReturn } from "react-hook-form";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { Tables } from "@/types/supabase";
+
+type Course = Tables<"courses">;
 
 interface CourseSelectProps {
   form: UseFormReturn<any>;
@@ -30,8 +33,7 @@ interface CourseSelectProps {
   placeholder?: string;
   className?: string;
   warning?: string;
-  onCourseSelect?: (course: any) => void;
-  userId: string;
+  onCourseSelect?: (course: Course) => void;
 }
 
 export function CourseField({
@@ -43,7 +45,6 @@ export function CourseField({
   className,
   warning,
   onCourseSelect,
-  userId,
 }: CourseSelectProps) {
   const [open, setOpen] = useState(false);
   const [courses, setCourses] = useState<Course[]>([]);
@@ -51,19 +52,19 @@ export function CourseField({
   const [isLoading, setIsLoading] = useState(false);
   const hasError = form.formState.errors[name];
 
-  const fetchCourses = async (query: string = "") => {
+  const fetchCourses = useCallback(async (query: string = "") => {
     setIsLoading(true);
     try {
-      const coursesData = await getCourses(10, query, userId);
+      const COURSE_LIMIT = 10;
+      const coursesData = await getCourses(COURSE_LIMIT, query);
       setCourses(coursesData || []);
     } catch (error) {
       console.error("Failed to fetch courses:", error);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  // Fetch courses on mount and when userId changes
   useEffect(() => {
     const initializeCourses = async () => {
       // Fetch initial courses with user colors
@@ -73,23 +74,25 @@ export function CourseField({
       const fieldValue = form.getValues(name);
       if (fieldValue) {
         setCourses((prev) => {
-          const exists = prev.some((c) => c.$id === fieldValue.$id);
+          const exists = prev.some((c) => c.id === fieldValue.id);
           return exists ? prev : [...prev, fieldValue];
         });
       }
     };
 
     initializeCourses();
-  }, [userId]);
+  }, [fetchCourses, form, name]);
 
   // Debounced search
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      fetchCourses(searchQuery);
+      if (searchQuery) {
+        fetchCourses(searchQuery);
+      }
     }, 100);
 
     return () => clearTimeout(timeoutId);
-  }, [searchQuery]);
+  }, [searchQuery, fetchCourses]);
 
   return (
     <FormFieldWrapper
@@ -100,7 +103,14 @@ export function CourseField({
       className={className}
       warning={warning}
     >
-      {({ field }: { field: any }) => {
+      {({
+        field,
+      }: {
+        field: {
+          value: Course | null;
+          onChange: (value: Course | null) => void;
+        };
+      }) => {
         const selectedCourse = field.value;
 
         return (
@@ -113,13 +123,11 @@ export function CourseField({
                 className={cn(
                   "active:scale-100 font-medium normal-case justify-between",
                   !selectedCourse && "font-normal text-muted-foreground",
-                  hasError && "border-destructive focus:ring-destructive"
+                  hasError && "border-destructive focus:ring-destructive",
                 )}
                 aria-invalid={hasError ? "true" : "false"}
               >
-                {selectedCourse
-                  ? selectedCourse.courseCode
-                  : placeholder}
+                {selectedCourse ? selectedCourse.code : placeholder}
                 <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
@@ -136,6 +144,7 @@ export function CourseField({
                     {isLoading && // Loading skeleton with pulsing animation
                       Array.from({ length: 5 }).map((_, index) => (
                         <CommandItem
+                          // biome-ignore lint/suspicious/noArrayIndexKey: placeholder skeletons are interchangeable and never reorder.
                           key={`loading-${index}`}
                           disabled
                           className="flex items-center justify-between gap-2"
@@ -149,25 +158,17 @@ export function CourseField({
                     {!isLoading &&
                       courses.map((course) => (
                         <CommandItem
-                          key={course.$id}
-                          value={course.$id}
+                          key={course.id}
+                          value={course.code}
                           onSelect={() => {
-                            const selectedCourse = {
-                              $id: course.$id!,
-                              courseCode: course.courseCode,
-                              title: course.title,
-                              color: course.color,
-                            };
-                            field.onChange(selectedCourse);
-                            onCourseSelect?.(selectedCourse);
+                            field.onChange(course);
+                            onCourseSelect?.(course);
                             setOpen(false);
                           }}
                           className="flex items-center justify-between gap-2"
                         >
                           <div className="flex flex-col">
-                            <span className="font-medium">
-                              {course.courseCode}
-                            </span>
+                            <span className="font-medium">{course.code}</span>
                             <span className="text-xs text-muted-foreground truncate">
                               {course.title}
                             </span>
@@ -175,9 +176,9 @@ export function CourseField({
                           <CheckIcon
                             className={cn(
                               "mr-2 size-4",
-                              field.value?.$id === course.$id
+                              field.value?.id === course.id
                                 ? "opacity-100"
-                                : "opacity-0"
+                                : "opacity-0",
                             )}
                           />
                         </CommandItem>

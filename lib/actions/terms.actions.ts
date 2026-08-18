@@ -1,20 +1,20 @@
 "use server";
 
-import { createAdminClient } from "../appwrite/server";
-import { parseStringify } from "../utils";
-
-const {
-  APPWRITE_DATABASE_ID: DATABASE_ID,
-  APPWRITE_TERMS_TABLE_ID: TERMS_TABLE_ID,
-} = process.env;
+import { createClient } from "../supabase/server";
 
 export async function getTerms() {
-  try {
-    const { database } = await createAdminClient();
-    const terms = await database.listDocuments(DATABASE_ID!, TERMS_TABLE_ID!);
-    return parseStringify(terms.documents);
-  } catch (error) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("terms")
+    .select("*")
+    .order("start_date", { ascending: false });
+  if (error) {
     console.error(error);
-    throw error;
+    throw new Error(error.message);
   }
+  // Only get terms up to and including the next term
+  const today = new Date().toISOString().split("T")[0];
+  const nextTerm = data.findLast((term) => term.start_date > today);
+  if (!nextTerm) return data;
+  return data.filter((term) => term.start_date <= nextTerm.start_date);
 }

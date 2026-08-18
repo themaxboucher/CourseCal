@@ -1,83 +1,89 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useRef, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Loading from "@/components/Loading";
-import { createUser, getUser } from "@/lib/actions/users.actions";
-import { loginWithMagicLink } from "@/lib/actions/users.actions";
+import {
+  getEvents as getLocalEvents,
+  clearEvents as clearLocalEvents,
+} from "@/lib/indexeddb";
+import { createEvents, getEvents } from "@/lib/actions/events.actions";
+import { getLoggedInUser } from "@/lib/actions/users.actions";
+import { localToDBEvents } from "@/lib/utils/upload";
+
+const INVALID_LINK_MESSAGE = "Invalid login link. Please request a new one.";
 
 // Separate component that uses useSearchParams() - must be wrapped in Suspense
 // This is required in Next.js 15 to handle client-side rendering bailout properly
 function VerifyContent() {
   const [status, setStatus] = useState<"loading" | "success" | "error">(
-    "loading"
+    "loading",
   );
   const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams(); // This hook requires Suspense boundary
   const router = useRouter();
+  // This effect clears IndexedDB and inserts the events it read from it, so a
+  // second pass under React Strict Mode would race the first and duplicate them.
+  const hasRun = useRef(false);
 
   useEffect(() => {
+    if (hasRun.current) return;
+    hasRun.current = true;
+
     const handleVerification = async () => {
       try {
-        // Debug logging
-        console.log("Full URL:", window.location.href);
-        console.log("Search params string:", searchParams.toString());
-        console.log(
-          "All search params:",
-          Object.fromEntries(searchParams.entries())
-        );
-
-        const userId = searchParams.get("userId");
-        const secret = searchParams.get("secret");
-
-        console.log("userId:", userId);
-        console.log("secret:", secret);
-        console.log("userId type:", typeof userId);
-        console.log("secret type:", typeof secret);
-
-        if (!userId || !secret) {
-          console.log(
-            "Missing parameters - userId:",
-            userId,
-            "secret:",
-            secret
-          );
+        // `/auth/confirm` redirects here with `?error=` when a token is missing,
+        // expired, or already spent.
+        if (searchParams.get("error")) {
           setStatus("error");
-          setError("Invalid login link. Please request a new one.");
+          setError(INVALID_LINK_MESSAGE);
           return;
         }
 
-        // Check if the user is authenticated
-        const authUser = await loginWithMagicLink(userId, secret);
-        if (!authUser) {
-          console.log("Login failed - no authUser");
-          setStatus("error");
-          setError("Invalid login link. Please request a new one.");
-          return;
-        }
-
-        // Create a user document if it doesn't exist
-        const user = await getUser(authUser.$id);
+        // `/auth/confirm` has already established the session by this point, so
+        // the profile row is what tells us who we are.
+        const user = await getLoggedInUser();
         if (!user) {
-          await createUser({
-            userId: authUser.$id,
-            email: authUser.email,
-            hasCompletedOnboarding: false,
-            hasBeenWelcomed: false,
-          });
+          setStatus("error");
+          setError(INVALID_LINK_MESSAGE);
+          return;
         }
+
+        // Save indexeddb events if they exist
+        const localEvents = await getLocalEvents();
+        const events = await getEvents(user.id);
+        const hasLocalEvents = localEvents.length > 0;
+        const hasDBEvents = events.length > 0;
+
+        if (hasLocalEvents) {
+          // Clear local events
+          await clearLocalEvents();
+        }
+
+        // Save indexeddb events to server if they exist
+        if (hasLocalEvents && !hasDBEvents) {
+          // Convert local events to database events
+          const { events: dbEvents, courseColors } = await localToDBEvents(
+            localEvents,
+            user.id,
+          );
+          await createEvents(dbEvents, courseColors);
+        }
+
+        // If indexeddb events don't exist and server events don't exist,
+        // the user will have to upload their schedule during onboarding
 
         setStatus("success");
 
-        // Add a small delay to ensure the session is properly established
-        // This prevents flashing of the homepage during redirect
-        setTimeout(() => {
-          router.push("/onboarding/profile");
-        }, 300);
-      } catch (err) {
+        // Returning users who already finished onboarding go straight to their
+        // schedule. Everyone else resumes onboarding where they left off.
+        router.push(
+          user.has_completed_onboarding ? "/schedule" : "/onboarding/profile",
+        );
+      } catch {
         setStatus("error");
         setError("An unknown error occurred. Please try again.");
       }

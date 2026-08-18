@@ -1,4 +1,5 @@
-import { cn, getReadableRecurrence, formatTime } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { formatTime, getReadableRecurrence } from "@/lib/utils/schedule";
 import {
   Clock,
   MapPin,
@@ -7,17 +8,23 @@ import {
   Trash2,
   TriangleAlert,
 } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
-import { Button } from "./ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import DeleteEventDialog from "./DeleteEventDialog";
 import EventDialog from "./EventDialog";
 import { classTypeIcons, eventColors } from "@/constants";
+import type { Tables } from "@/types/supabase";
+import {
+  type AnyEvent,
+  getCourseTitle,
+  getEventColor,
+} from "@/lib/utils/events";
 
 interface EventDetailsProps {
-  event: UserEvent | ScheduleEvent;
-  events?: (UserEvent | ScheduleEvent)[];
-  user?: User;
+  event: AnyEvent;
+  events?: AnyEvent[];
+  user?: Tables<"users"> | null;
   isGuest?: boolean;
   onEventsChange?: () => void;
 }
@@ -32,10 +39,9 @@ export default function EventDetails({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  // Get event ID - for guests it's stored as 'id', for logged-in users it's '$id'
-  const eventId = isGuest
-    ? (event as ScheduleEvent & { id: number }).id
-    : (event as UserEvent).$id;
+  const eventId = event.id;
+  const color = getEventColor(event);
+  const courseTitle = getCourseTitle(event);
 
   function handleEditDialog() {
     setIsDialogOpen(true);
@@ -52,23 +58,23 @@ export default function EventDetails({
           <div
             className={cn(
               "min-h-full w-1.5 rounded-[0.2rem]",
-              event.courseColor
-                ? eventColors[
-                    event.courseColor.color as keyof typeof eventColors
-                  ]
-                : eventColors.fallback
+              color
+                ? eventColors[color as keyof typeof eventColors]
+                : eventColors.fallback,
             )}
           />
           <div>
             <div className="w-full flex items-center justify-between gap-2">
               <div>
                 <div className="font-semibold truncate">
-                  {event.course.courseCode}
+                  {event.course_code}
                 </div>
 
-                <div className="text-sm opacity-75 text-muted-foreground">
-                  {event.course?.title}
-                </div>
+                {courseTitle && (
+                  <div className="text-sm opacity-75 text-muted-foreground">
+                    {courseTitle}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -93,7 +99,7 @@ export default function EventDetails({
               <Clock className="size-3 min-w-3" />
             </div>
             <div className="text-sm">
-              {formatTime(event.startTime)} - {formatTime(event.endTime)}
+              {formatTime(event.start_time)} - {formatTime(event.end_time)}
             </div>
           </div>
           {event.location && (
@@ -115,7 +121,7 @@ export default function EventDetails({
             )}
           </div>
         </div>
-        {(!event.course || !event.type) && (
+        {(!event.course_code || !event.type) && (
           <Alert className="border-[1.5px] bg-amber-100 border-amber-400 dark:bg-amber-800/20 text-amber-600">
             <TriangleAlert className="size-3" />
             <AlertTitle>Incomplete details</AlertTitle>
@@ -147,21 +153,24 @@ export default function EventDetails({
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
         eventToEdit={event}
+        term={event.term ?? undefined}
         events={events}
-        user={user}
+        user={user ?? undefined}
         isGuest={isGuest}
         onEventSaved={onEventsChange}
       />
-      <DeleteEventDialog
-        eventId={eventId}
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-        onEventDeleted={() => {
-          setIsDeleteDialogOpen(false);
-          onEventsChange?.();
-        }}
-        isGuest={isGuest}
-      />
+      {eventId !== undefined && (
+        <DeleteEventDialog
+          eventId={eventId}
+          open={isDeleteDialogOpen}
+          onOpenChange={setIsDeleteDialogOpen}
+          onEventDeleted={() => {
+            setIsDeleteDialogOpen(false);
+            onEventsChange?.();
+          }}
+          isGuest={isGuest}
+        />
+      )}
     </>
   );
 }

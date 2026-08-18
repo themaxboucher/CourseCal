@@ -1,29 +1,38 @@
 "use client";
 
+import type { Tables } from "@/types/supabase";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
+} from "@/components/ui/select";
 import { seasonColors, seasonIcons } from "@/constants";
 
 interface TermSelectorProps {
-  terms: Term[];
-  selectedTermId: string;
-  onTermChange: (termId: string) => void;
+  terms: Tables<"terms">[];
+  selectedTermId: number;
+  setSelectedTermId: (termId: number) => void;
 }
 
 export function TermSelector({
   terms,
   selectedTermId,
-  onTermChange,
+  setSelectedTermId,
 }: TermSelectorProps) {
-  const selectedTerm = terms.find((term) => term.$id === selectedTermId);
+  const selectedTerm = terms.find((term) => term.id === selectedTermId);
+
+  // The Select component requires a string value, so we convert the number to a string
+  const selectedTermIdString = selectedTermId.toString();
+
+  function handleTermChange(termId: string) {
+    const RADIX = 10;
+    setSelectedTermId(parseInt(termId, RADIX));
+  }
 
   return (
-    <Select value={selectedTermId} onValueChange={onTermChange}>
+    <Select value={selectedTermIdString} onValueChange={handleTermChange}>
       <SelectTrigger className="capitalize">
         <SelectValue placeholder="Select a term">
           {selectedTerm && (
@@ -43,14 +52,14 @@ export function TermSelector({
         </SelectValue>
       </SelectTrigger>
       <SelectContent>
-        {terms.map((term: Term) => {
+        {terms.map((term: Tables<"terms">) => {
           const IconComponent = seasonIcons[term.season];
           const colorClass = seasonColors[term.season];
 
           return (
             <SelectItem
-              key={term.$id}
-              value={term.$id || ""}
+              key={term.id}
+              value={term.id.toString()}
               className="capitalize"
             >
               <div className="flex items-center gap-2">
@@ -64,4 +73,3 @@ export function TermSelector({
     </Select>
   );
 }
-

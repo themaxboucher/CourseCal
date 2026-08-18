@@ -7,7 +7,7 @@ export default function InternalLayout({
 }) {
   return (
     <main>
-      <Navbar />
+      <Navbar isLoggedIn={true} />
       {children}
     </main>
   );

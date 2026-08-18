@@ -1,6 +1,5 @@
 "use client";
 
-import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "../ui/form";
@@ -10,28 +9,25 @@ import { useState, useRef } from "react";
 import { TextField } from "../form-fields/TextField";
 import { LoaderCircle, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { uploadAvatar } from "@/lib/actions/avatars.actions";
 import { updateUser } from "@/lib/actions/users.actions";
 import {
-  uploadAvatar,
-  deleteAvatar,
-  extractFileIdFromUrl,
-} from "@/lib/actions/avatars.actions";
+  AVATAR_INPUT_ACCEPT,
+  handleAvatarFileChange,
+  profileSchema,
+  type ProfileFormData,
+} from "@/lib/utils/profile";
+import type { Tables } from "@/types/supabase";
+import { getEvents } from "@/lib/actions/events.actions";
+import { markUserCompletedOnboarding } from "@/lib/actions/users.actions";
 
-const profileSchema = z.object({
-  avatar: z.string().optional(),
-  name: z.string().min(1, "Name is required"),
-  major: z.string().min(1, "Major is required"),
-});
-
-type ProfileFormData = z.infer<typeof profileSchema>;
-
-export default function ProfileForm({ user }: { user: User }) {
+export default function ProfileForm({ user }: { user: Tables<"users"> }) {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(
-    user.avatar || null
+    user.avatar || null,
   );
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const router = useRouter();
 
   const form = useForm<ProfileFormData>({
@@ -43,65 +39,40 @@ export default function ProfileForm({ user }: { user: User }) {
     },
   });
 
-  const MAX_AVATAR_SIZE = 2 * 1024 * 1024; // 2 MB
-  const ALLOWED_AVATAR_TYPES = ["image/png", "image/jpeg"];
-
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      if (!ALLOWED_AVATAR_TYPES.includes(file.type)) {
-        alert("Only PNG and JPG images are allowed");
-        return;
-      }
-      if (file.size > MAX_AVATAR_SIZE) {
-        alert("Avatar must be under 2 MB");
-        return;
-      }
+    handleAvatarFileChange(e, (file, dataUrl) => {
       setAvatarFile(file);
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        setAvatarPreview(ev.target?.result as string);
-        form.setValue("avatar", ev.target?.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+      setAvatarPreview(dataUrl);
+      form.setValue("avatar", dataUrl);
+    });
   };
 
   async function onSubmit(data: ProfileFormData) {
     setLoading(true);
     try {
-      let avatarUrl;
-      let oldAvatarFileId: string | null = null;
+      const avatarUrl = avatarFile
+        ? await uploadAvatar(avatarFile, user.id)
+        : user.avatar;
 
-      if (user.avatar) {
-        // Extract fileId from the old avatar URL
-        oldAvatarFileId = await extractFileIdFromUrl(user.avatar);
-      }
-
-      if (avatarFile) {
-        // Upload new avatar
-        avatarUrl = await uploadAvatar(avatarFile);
-        // Delete old avatar if it exists
-        if (oldAvatarFileId) {
-          try {
-            await deleteAvatar(oldAvatarFileId);
-          } catch (error) {
-            console.error("Failed to delete old avatar:", error);
-          }
-        }
-      }
-
-      await updateUser({
-        id: user.userId,
+      await updateUser(user.id, {
         name: data.name,
         major: data.major,
-        email: user.email,
-        avatar: avatarUrl || user.avatar,
+        avatar: avatarUrl,
       });
-      router.push("/onboarding/upload");
-    } catch (error: any) {
+
+      // If the user already has a schedule, redirect to the schedule page
+      const events = await getEvents(user.id);
+      if (events.length > 0) {
+        await markUserCompletedOnboarding(user.id);
+        router.push("/schedule");
+      } else {
+        // If the user doesn't have a schedule, redirect to the upload page
+        router.push("/onboarding/upload");
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "";
       let errorMessage = "Error updating personal details";
-      if (error?.message?.includes("already exists")) {
+      if (message.includes("already exists")) {
         errorMessage = "An account with this email already exists";
       }
       alert(errorMessage);
@@ -118,7 +89,8 @@ export default function ProfileForm({ user }: { user: User }) {
       >
         <div className="space-y-2">
           <div className="flex flex-col items-center gap-2 mb-2">
-            <div
+            <button
+              type="button"
               onClick={() => fileInputRef.current?.click()}
               className="flex flex-col items-center gap-2 cursor-pointer"
             >
@@ -132,12 +104,12 @@ export default function ProfileForm({ user }: { user: User }) {
                 </AvatarFallback>
               </Avatar>
               <div className="text-sm underline">Pick an image</div>
-            </div>
+            </button>
 
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/png, image/jpeg"
+              accept={AVATAR_INPUT_ACCEPT}
               onChange={handleAvatarChange}
               className="hidden"
             />

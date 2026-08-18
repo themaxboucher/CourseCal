@@ -19,8 +19,10 @@ import {
   DrawerDescription,
 } from "../ui/drawer";
 
+import type { AnyEvent } from "@/lib/utils/events";
+
 interface WallpaperDialogProps {
-  events: ScheduleEvent[];
+  events: AnyEvent[];
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
@@ -87,8 +89,8 @@ export function WallpaperDialog({
             <VisuallyHidden>
               <DrawerTitle>Download wallpaper</DrawerTitle>
               <DrawerDescription>
-                Download a wallpaper of your schedule that isn't blocked by your
-                lock screens time or widgets.
+                Download a wallpaper of your schedule that isn&apos;t blocked by
+                your lock screens time or widgets.
               </DrawerDescription>
             </VisuallyHidden>
           </DrawerHeader>

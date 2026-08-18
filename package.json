@@ -5,7 +5,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --write .",
+    "format": "biome format .",
+    "format:fix": "biome format --write .",
+    "types:gen": "supabase gen types typescript --project-id khungawtrlpyzggshvoy --schema public > types/supabase.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -24,10 +29,12 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-switch": "^1.2.6",
     "@radix-ui/react-visually-hidden": "^1.2.3",
+    "@supabase/ssr": "^0.8.0",
+    "@supabase/supabase-js": "^2.90.1",
     "@upstash/ratelimit": "^2.0.7",
     "@upstash/redis": "^1.36.1",
     "@vercel/analytics": "^1.6.1",
-    "appwrite": "^20.0.0",
+    "camelcase-keys": "^10.0.2",
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -39,20 +46,22 @@
     "motion": "^12.25.0",
     "next": "^16.1.1",
     "next-themes": "^0.4.6",
-    "node-appwrite": "^19.0.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-hook-form": "^7.62.0",
+    "snakecase-keys": "^9.0.2",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",
     "vaul": "^1.1.2",
     "zod": "^4.1.8"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.5.9",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "shadcn": "^4.7.0",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.8",
     "typescript": "^5"

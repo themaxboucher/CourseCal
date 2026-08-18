@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import type React from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import {
   motion,
   useMotionValue,
@@ -97,11 +98,11 @@ const ShinyText: React.FC<ShinyTextProps> = ({
     }
   });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: the reset is keyed to `direction` alone; `progress` is a stable motion value and re-running on it would restart the shine every frame.
   useEffect(() => {
     directionRef.current = direction === "left" ? 1 : -1;
     elapsedRef.current = 0;
     progress.set(0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [direction]);
 
   // Transform: p=0 -> 150% (shine off right), p=100 -> -50% (shine off left)

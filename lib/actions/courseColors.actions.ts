@@ -1,59 +1,35 @@
 "use server";
 
-import { ID, Query } from "node-appwrite";
-import { createAdminClient } from "../appwrite/server";
-import { parseStringify } from "../utils";
+import type { TablesInsert } from "@/types/supabase";
+import { createClient } from "../supabase/server";
 
-const {
-  APPWRITE_DATABASE_ID: DATABASE_ID,
-  APPWRITE_COURSE_COLORS_TABLE_ID: COURSE_COLORS_TABLE_ID,
-} = process.env;
-
-export async function getCourseColor(courseId: string, userId: string) {
-  try {
-    const { database } = await createAdminClient();
-    const courseColorDoc = await database.listDocuments(
-      DATABASE_ID!,
-      COURSE_COLORS_TABLE_ID!,
-      [Query.equal("course", [courseId]), Query.equal("user", [userId])]
-    );
-    return parseStringify(courseColorDoc);
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-}
-
-export async function createCourseColor(
-  courseColor: Omit<UserCourseColor, keyof AppwriteDoc>
+export async function createCourseColors(
+  courseColors: TablesInsert<"course_colors">[],
 ) {
-  try {
-    const { database } = await createAdminClient();
-    const courseColorDoc = await database.createDocument(
-      DATABASE_ID!,
-      COURSE_COLORS_TABLE_ID!,
-      ID.unique(),
-      courseColor
-    );
-    return parseStringify(courseColorDoc);
-  } catch (error) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("course_colors")
+    .insert(courseColors)
+    .select();
+  if (error) {
     console.error(error);
-    throw error;
+    throw new Error(error.message);
   }
+  return data;
 }
 
-export async function updateCourseColor(courseColor: CourseColorDB) {
-  try {
-    const { database } = await createAdminClient();
-    const courseColorDoc = await database.updateDocument(
-      DATABASE_ID!,
-      COURSE_COLORS_TABLE_ID!,
-      courseColor.$id,
-      courseColor
-    );
-    return parseStringify(courseColorDoc);
-  } catch (error) {
+export async function upsertCourseColor(
+  courseColor: TablesInsert<"course_colors">,
+) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("course_colors")
+    .upsert(courseColor, { onConflict: "user,course" })
+    .select()
+    .single();
+  if (error) {
     console.error(error);
-    throw error;
+    throw new Error(error.message);
   }
+  return data;
 }

@@ -41,8 +41,10 @@ const fontOptions: { value: FontType; label: string; className: string }[] = [
   { value: "pixels", label: "Pixels", className: "font-pixels" },
 ];
 
+import type { AnyEvent } from "@/lib/utils/events";
+
 interface WallpaperFormProps {
-  events: ScheduleEvent[];
+  events: AnyEvent[];
 }
 
 export function WallpaperForm({ events }: WallpaperFormProps) {
@@ -76,7 +78,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
 
       if (!blob) throw new Error("Wallpaper render produced no image");
 
-      const fileName = `wallpaper-${new Date().getTime()}.png`;
+      const fileName = `wallpaper-${Date.now()}.png`;
       const file = new File([blob], fileName, { type: "image/png" });
 
       if (canShareImageFile(file)) {
@@ -151,8 +153,8 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
         <div className="space-y-1 hidden md:block">
           <h2 className="heading-3">Download wallpaper</h2>
           <p className="text-muted-foreground">
-            Download a wallpaper of your schedule that isn't blocked by your
-            lock screens time or widgets.
+            Download a wallpaper of your schedule that isn&apos;t blocked by
+            your lock screens time or widgets.
           </p>
         </div>
 
@@ -169,7 +171,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
                     <HoverCardContent align="start">
                       <p className="text-sm">
                         The schedule will take up more or less space, depending
-                        on your phone's dimensions.
+                        on your phone&apos;s dimensions.
                       </p>
                     </HoverCardContent>
                   </HoverCard>
@@ -198,7 +200,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
                   className={cn(
                     "flex-1 normal-case font-medium flex flex-col items-center justify-center gap-1 h-full py-2",
                     eventInfo === "location" &&
-                      "ring-2 ring-sky-500 ring-offset-2 ring-offset-background"
+                      "ring-2 ring-sky-500 ring-offset-2 ring-offset-background",
                   )}
                 >
                   <MapPin className="size-4" />
@@ -212,7 +214,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
                   className={cn(
                     "flex-1 normal-case font-medium flex flex-col items-center justify-center gap-1 h-full py-2",
                     eventInfo === "time" &&
-                      "ring-2 ring-sky-500 ring-offset-2 ring-offset-background"
+                      "ring-2 ring-sky-500 ring-offset-2 ring-offset-background",
                   )}
                 >
                   <Clock className="size-4" />
@@ -232,7 +234,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
                   className={cn(
                     "flex-1 normal-case font-medium flex flex-col items-center justify-center gap-1 h-full py-2",
                     theme === "light" &&
-                      "ring-2 ring-sky-500 ring-offset-2 ring-offset-background"
+                      "ring-2 ring-sky-500 ring-offset-2 ring-offset-background",
                   )}
                 >
                   <Sun className="size-4" />
@@ -246,7 +248,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
                   className={cn(
                     "flex-1 normal-case font-medium flex flex-col items-center justify-center gap-1 h-full py-2",
                     theme === "dark" &&
-                      "ring-2 ring-sky-500 ring-offset-2 ring-offset-background"
+                      "ring-2 ring-sky-500 ring-offset-2 ring-offset-background",
                   )}
                 >
                   <Moon className="size-4" />
@@ -268,13 +270,13 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
                     className={cn(
                       "normal-case font-medium",
                       background === option.value &&
-                        "ring-2 ring-sky-500 ring-offset-2 ring-offset-background"
+                        "ring-2 ring-sky-500 ring-offset-2 ring-offset-background",
                     )}
                   >
                     <span
                       className={cn(
                         "size-3.5 min-w-3.5 rounded-[3.5px]",
-                        option.preview
+                        option.preview,
                       )}
                     />
                     {option.label}
@@ -296,7 +298,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
                       "normal-case font-medium",
                       option.className,
                       font === option.value &&
-                        "ring-2 ring-sky-500 ring-offset-2 ring-offset-background"
+                        "ring-2 ring-sky-500 ring-offset-2 ring-offset-background",
                     )}
                   >
                     {option.label}

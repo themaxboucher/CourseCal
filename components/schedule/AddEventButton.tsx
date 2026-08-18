@@ -1,14 +1,16 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import EventDialog from "./EventDialog";
+import type { Tables } from "@/types/supabase";
+import type { AnyEvent } from "@/lib/utils/events";
 
 interface AddEventButtonProps {
-  term: string;
-  events?: (UserEvent | ScheduleEvent)[];
-  user?: User | null;
+  term: number;
+  events?: AnyEvent[];
+  user?: Tables<"users"> | null;
   isGuest?: boolean;
   onEventSaved?: () => void;
 }

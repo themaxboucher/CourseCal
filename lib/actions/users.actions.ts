@@ -1,247 +1,123 @@
 "use server";
 
-import { ID, Query } from "node-appwrite";
-import { createAdminClient, createSessionClient } from "../appwrite/server";
-import { parseStringify } from "../utils";
-import { cookies } from "next/headers";
-import { deleteAvatar, extractFileIdFromUrl } from "./avatars.actions";
+import type { Tables, TablesUpdate } from "@/types/supabase";
+import { createAdminClient, createClient } from "../supabase/server";
 
-const {
-  APPWRITE_DATABASE_ID: DATABASE_ID,
-  APPWRITE_USERS_TABLE_ID: USERS_TABLE_ID,
-} = process.env;
+export async function getLoggedInUser(): Promise<Tables<"users"> | false> {
+  const supabase = await createClient();
 
-export async function sendMagicLink(email: string) {
-  // Check if the email is a valid UCalgary email
-  if (!email.toLowerCase().endsWith("@ucalgary.ca")) {
-    throw new Error("Invalid email");
-  }
-
-  try {
-    const { account } = await createAdminClient();
-
-    const result = await account.createMagicURLToken(
-      ID.unique(),
-      email,
-      `${process.env.NEXT_PUBLIC_SITE_URL!}/verify`
-    );
-
-    return result;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-}
-
-export async function loginWithMagicLink(userId: string, secret: string) {
-  try {
-    const { account } = await createAdminClient();
-    const session = await account.updateMagicURLSession(userId, secret);
-
-    // Set the session cookie
-    (await cookies()).set("appwrite-session", session.secret, {
-      path: "/",
-      httpOnly: true,
-      sameSite: "strict",
-      secure: true,
-    });
-
-    const user = await getAuthUser();
-    return user;
-  } catch (error) {
-    console.error(error);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
     return false;
   }
-}
-
-export async function logout() {
-  try {
-    const { account } = await createSessionClient();
-    await account.deleteSession({ sessionId: "current" });
-    (await cookies()).delete("appwrite-session");
-    return true;
-  } catch (error) {
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (error) {
     console.error(error);
-    return false;
+    throw new Error(error.message);
   }
+  // A session can outlive its profile row if account deletion fails partway,
+  // so treat a missing profile as logged out rather than throwing on every
+  // page load.
+  return data ?? false;
 }
 
-export async function getAuthUser() {
-  try {
-    const { account } = await createSessionClient();
-    const user = await account.get();
-    return user;
-  } catch (error) {
-    return false;
-  }
-}
-
-export async function getLoggedInUser() {
-  try {
-    const { account } = await createSessionClient();
-    const userAccount = await account.get();
-    const userDocument = await getUser(userAccount.$id);
-
-    return userDocument;
-  } catch (error) {
-    return false;
-  }
-}
-
-export async function getUser(id: string) {
-  try {
-    const { database } = await createAdminClient();
-    const userDoc = await database.listDocuments(
-      DATABASE_ID!,
-      USERS_TABLE_ID!,
-      [Query.equal("userId", [id])]
-    );
-    return parseStringify(userDoc.documents[0]);
-  } catch (error) {
-    console.error(error);
-    return false;
-  }
-}
-
-export async function createUser(user: {
-  userId: string;
-  email: string;
-  hasCompletedOnboarding: boolean;
-  hasBeenWelcomed: boolean;
-}) {
-  try {
-    const { database, user: users } = await createAdminClient();
-    const userDoc = await database.createDocument(
-      DATABASE_ID!,
-      USERS_TABLE_ID!,
-      ID.unique(),
-      user
-    );
-    return parseStringify(userDoc);
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-}
-
-export const updateUser = async ({
-  id,
-  name,
-  major,
-  email,
-  avatar,
-}: {
-  id: string;
-  name: string;
-  major: string;
-  email: string;
-  avatar?: string;
-}) => {
-  // Check if the email is a valid UCalgary email
-  if (!email.toLowerCase().endsWith("@ucalgary.ca")) {
-    throw new Error("Invalid email");
-  }
-
-  try {
-    const { database, user } = await createAdminClient();
-    // Find the user document
-    const userDoc = await database.listDocuments(
-      DATABASE_ID!,
-      USERS_TABLE_ID!,
-      [Query.equal("userId", [id])]
-    );
-    const docId = userDoc.documents[0]?.$id;
-    if (!docId) throw new Error("User document not found");
-
-    // Get current values from the user document
-    const currentEmail = userDoc.documents[0]?.email;
-    const currentName = userDoc.documents[0]?.name;
-
-    // Update the Appwrite Auth user (name and email) only if changed
-    try {
-      if (currentName !== name) {
-        await user.updateName(id, name);
-      }
-      if (currentEmail !== email) {
-        await user.updateEmail(id, email);
-      }
-    } catch (authError: any) {
-      console.error("Error updating Appwrite Auth user:", authError);
-      throw authError;
-    }
-
-    // Update the user document
-    const updated = await database.updateDocument(
-      DATABASE_ID!,
-      USERS_TABLE_ID!,
-      docId,
-      { name, major, email, avatar }
-    );
-    return parseStringify(updated);
-  } catch (error) {
-    console.error("Error updating user:", error);
-    throw error;
-  }
-};
-
-export async function deleteAccount(
-  authUserId: string,
-  docUserId: string,
-  avatarUrl?: string
+export async function updateUser(
+  userId: string,
+  user: Partial<TablesUpdate<"users">>,
 ) {
-  try {
-    const { database, user } = await createAdminClient();
-
-    // Delete the user's avatar if it exists
-    try {
-      if (avatarUrl) {
-        const avatarId = await extractFileIdFromUrl(avatarUrl);
-        if (avatarId) {
-          await deleteAvatar(avatarId);
-        }
-      }
-    } catch (avatarError) {
-      console.error("Failed to delete user avatar:", avatarError);
-      // Continue with account deletion even if avatar deletion fails
-    }
-
-    // Delete the user document
-    await database.deleteDocument(DATABASE_ID!, USERS_TABLE_ID!, docUserId);
-    // Delete the user from the auth users table
-    await user.delete(authUserId);
-
-    // Clear the session cookie since the account no longer exists
-    (await cookies()).delete("appwrite-session");
-  } catch (error) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("users")
+    .update(user)
+    .eq("id", userId);
+  if (error) {
     console.error(error);
-    throw error;
+    throw new Error(error.message);
   }
+  return data;
 }
 
-// Update boolean flags on the user document by document ID
-export const setUserFlags = async (
-  docUserId: string,
-  flags: Partial<Pick<User, "hasCompletedOnboarding" | "hasBeenWelcomed">>
-) => {
-  try {
-    const { database } = await createAdminClient();
-    const updated = await database.updateDocument(
-      DATABASE_ID!,
-      USERS_TABLE_ID!,
-      docUserId,
-      flags
-    );
-    return parseStringify(updated);
-  } catch (error) {
-    console.error("Error updating user flags:", error);
-    throw error;
+export async function markUserWelcomed(userId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("users")
+    .update({ has_been_welcomed: true })
+    .eq("id", userId);
+  if (error) {
+    console.error(error);
+    throw new Error(error.message);
   }
-};
+  return data;
+}
 
-export const markOnboardingCompleted = async (docUserId: string) => {
-  return setUserFlags(docUserId, { hasCompletedOnboarding: true });
-};
+export async function markUserCompletedOnboarding(userId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("users")
+    .update({ has_completed_onboarding: true })
+    .eq("id", userId);
+  if (error) {
+    console.error(error);
+    throw new Error(error.message);
+  }
+  return data;
+}
 
-export const markUserWelcomed = async (docUserId: string) => {
-  return setUserFlags(docUserId, { hasBeenWelcomed: true });
-};
+export async function deleteAccount() {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    throw new Error("Not authenticated");
+  }
+
+  const admin = createAdminClient();
+
+  // Storage has no foreign key to `users`, so avatars are not cleaned up by
+  // the cascade and have to be removed explicitly.
+  const { data: avatarFiles, error: listError } = await admin.storage
+    .from("avatars")
+    .list(user.id);
+  if (listError) {
+    console.error(listError);
+  } else if (avatarFiles.length > 0) {
+    const { error: removeError } = await admin.storage
+      .from("avatars")
+      .remove(avatarFiles.map((file) => `${user.id}/${file.name}`));
+    // An orphaned avatar file is not worth failing the deletion over.
+    if (removeError) {
+      console.error(removeError);
+    }
+  }
+
+  // Deleting the profile row cascades to `events` and `course_colors`.
+  const { error: profileError } = await admin
+    .from("users")
+    .delete()
+    .eq("id", user.id);
+  if (profileError) {
+    console.error(profileError);
+    throw new Error(profileError.message);
+  }
+
+  // `public.users` has no foreign key to `auth.users`, so the auth record
+  // survives the delete above and must be removed separately. Without this the
+  // email could still request a magic link and sign back in.
+  const { error: authError } = await admin.auth.admin.deleteUser(user.id);
+  if (authError) {
+    console.error(authError);
+    throw new Error(authError.message);
+  }
+
+  // Deleting the auth user drops its sessions server-side, so a local sign-out
+  // is enough to clear the cookies and avoids a doomed revoke request.
+  await supabase.auth.signOut({ scope: "local" });
+}

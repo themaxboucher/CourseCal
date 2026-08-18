@@ -1,11 +1,17 @@
 "use client";
 
-import { cn, formatTime } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { formatTime } from "@/lib/utils/schedule";
 import { eventColors, lightEventColors } from "@/constants";
 import { TriangleAlert } from "lucide-react";
+import {
+  type AnyEvent,
+  getCourseTitle,
+  getEventColor,
+} from "@/lib/utils/events";
 
 interface EventProps {
-  event: UserEvent | ScheduleEvent;
+  event: AnyEvent;
   style?: React.CSSProperties;
   className?: string;
   isWallpaper?: boolean;
@@ -22,6 +28,16 @@ export default function EventBlock({
   eventInfo = "location",
   ...props
 }: EventProps) {
+  const color = getEventColor(event);
+  const courseTitle = getCourseTitle(event);
+
+  const colorPalette =
+    isWallpaper && wallpaperTheme === "light" ? lightEventColors : eventColors;
+  const colorClass = color
+    ? (colorPalette[color as keyof typeof colorPalette] ??
+      colorPalette.fallback)
+    : colorPalette.fallback;
+
   return (
     <div
       className={cn(
@@ -31,24 +47,14 @@ export default function EventBlock({
         isWallpaper
           ? "rounded-sm px-[0.15rem] py-[0.1rem] my-[0.1rem]"
           : "rounded-lg p-[0.3rem] my-[0.2rem]",
-        // Event colors
-        isWallpaper && wallpaperTheme === "light"
-          ? event.courseColor?.color
-            ? lightEventColors[
-                event.courseColor.color as keyof typeof lightEventColors
-              ] || lightEventColors.fallback
-            : lightEventColors.fallback
-          : event.courseColor?.color
-          ? eventColors[event.courseColor.color as keyof typeof eventColors] ||
-            eventColors.fallback
-          : eventColors.fallback,
-        "recurrence" in event && event.recurrence !== "weekly" && "opacity-75",
-        className
+        colorClass,
+        event.recurrence !== "weekly" && "opacity-75",
+        className,
       )}
       style={style}
       {...props}
     >
-      {(!event.course || !event.type) && !isWallpaper && (
+      {(!event.course_code || !event.type) && !isWallpaper && (
         <div className="absolute -top-1.5 -right-1.5 size-5 md:size-6 flex justify-center items-center rounded-full border-[1.5px] text-amber-600 bg-amber-200 border-amber-100">
           <TriangleAlert className="size-3 md:size-3.5" />
         </div>
@@ -58,36 +64,36 @@ export default function EventBlock({
           className={cn(
             "w-full",
             !isWallpaper && "md:space-y-1",
-            isWallpaper ? "space-y-0" : "space-y-0.5"
+            isWallpaper ? "space-y-0" : "space-y-0.5",
           )}
         >
           <div className="w-full flex items-center justify-between gap-2">
-            {event.course?.courseCode ? (
+            {event.course_code ? (
               <div
                 className={cn(
                   "font-bold truncate",
                   !isWallpaper && "md:text-xs",
-                  isWallpaper ? "text-[6px]" : "text-xxs"
+                  isWallpaper ? "text-[6px]" : "text-xxs",
                 )}
               >
-                {event.course.courseCode}
+                {event.course_code}
               </div>
             ) : (
               <div
                 className={cn(
                   "font-bold truncate",
                   !isWallpaper && "md:text-xs",
-                  isWallpaper ? "text-[6px]" : "text-xxs"
+                  isWallpaper ? "text-[6px]" : "text-xxs",
                 )}
               >
-                {event.course?.title}
+                {courseTitle}
               </div>
             )}
             {event.type && (
               <div
                 className={cn(
                   "hidden text-xxs opacity-75 capitalize",
-                  !isWallpaper && "md:block md:text-xs"
+                  !isWallpaper && "md:block md:text-xs",
                 )}
               >
                 {event.type}
@@ -98,7 +104,7 @@ export default function EventBlock({
             className={cn(
               "opacity-75 flex justify-start items-center gap-0.5 flex-wrap tracking-tight",
               !isWallpaper && "md:text-xs",
-              isWallpaper ? "text-[5.5px]" : "text-xxs"
+              isWallpaper ? "text-[5.5px]" : "text-xxs",
             )}
           >
             {isWallpaper && eventInfo === "location" ? (
@@ -107,9 +113,9 @@ export default function EventBlock({
               </span>
             ) : (
               <span>
-                {formatTime(event.startTime, !isWallpaper)}
+                {formatTime(event.start_time, !isWallpaper)}
                 {isWallpaper ? "-" : " - "}
-                {formatTime(event.endTime, !isWallpaper)}
+                {formatTime(event.end_time, !isWallpaper)}
               </span>
             )}
           </div>

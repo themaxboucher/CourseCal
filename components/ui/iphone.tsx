@@ -38,7 +38,7 @@ export function Iphone({
       className={cn(
         "relative inline-block w-full align-middle leading-none",
         theme === "dark" ? "dark" : "",
-        className
+        className,
       )}
       style={{
         aspectRatio: `${PHONE_WIDTH}/${PHONE_HEIGHT}`,
@@ -49,7 +49,7 @@ export function Iphone({
       <div
         className={cn(
           "absolute inset-0 pt-17 size-full flex flex-col justify-start items-center gap-3 z-10",
-          theme === "dark" ? "text-white" : "text-black/75"
+          theme === "dark" ? "text-white" : "text-black/75",
         )}
       >
         <div className="text-[15px] font-sf-pro tracking-tight font-semibold opacity-90">
@@ -78,6 +78,8 @@ export function Iphone({
         viewBox={`0 0 ${PHONE_WIDTH} ${PHONE_HEIGHT}`}
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+        focusable="false"
         className="absolute inset-0 size-full"
         style={{ transform: "translateZ(0)" }}
       >

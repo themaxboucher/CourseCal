@@ -12,8 +12,10 @@ const fontStyles: Record<FontType, string> = {
   pixels: "font-pixels",
 };
 
+import type { AnyEvent } from "@/lib/utils/events";
+
 interface WallpaperPreviewProps {
-  events: ScheduleEvent[];
+  events: AnyEvent[];
   imageRef?: React.RefObject<HTMLDivElement | null>;
   background: BackgroundType;
   font: FontType;
@@ -41,7 +43,7 @@ export default function WallpaperPreview({
           className={cn(
             "overflow-hidden w-full aspect-18/39 py-3.5 px-2 flex flex-col justify-end items-stretch",
             bgClass,
-            fontStyles[font]
+            fontStyles[font],
           )}
         >
           <WallpaperImage

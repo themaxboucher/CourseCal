@@ -129,12 +129,12 @@ function mergeEvents(events: ParsedEvent[]): ParsedEvent[] {
 }
 
 export type ScheduleAnalysisResult =
-  | { success: true; isSchedule: true; events: ScheduleEvent[] }
+  | { success: true; isSchedule: true; events: ParsedEvent[] }
   | { success: true; isSchedule: false }
   | { success: false; error: string };
 
 export async function analyzeScheduleImage(
-  imageBase64: string
+  imageBase64: string,
 ): Promise<ScheduleAnalysisResult> {
   try {
     // Rate limiting: Get the user's IP address and check their limit
@@ -182,61 +182,28 @@ export async function analyzeScheduleImage(
 
     const messageContent = response.choices[0]?.message?.content;
     if (!messageContent || typeof messageContent !== "string") {
-      return { success: false, error: "No response from AI" };
+      return {
+        success: false,
+        error: "No response from AI. Please try again.",
+      };
     }
 
     const parsed = JSON.parse(messageContent);
 
+    // If the image is not a schedule
     if (!parsed.isSchedule) {
       return { success: true, isSchedule: false };
     }
 
-    // Create course colors - assign a unique color to each course
-    const colors: Color[] = [
-      "red",
-      "orange",
-      "yellow",
-      "green",
-      "cyan",
-      "blue",
-      "purple",
-      "pink",
-    ];
-    const uniqueCourses = [
-      ...new Set(parsed.events.map((e: ParsedEvent) => e.courseCode)),
-    ] as string[];
-    const courseColorMap = new Map<string, Color>(
-      uniqueCourses.map((course, index) => [
-        course,
-        colors[index % colors.length],
-      ])
-    );
-
     // Merge events that have identical properties except for days
     const mergedEvents = mergeEvents(parsed.events);
 
-    // Validate and return events
-    const events: ScheduleEvent[] = mergedEvents.map((event: ParsedEvent) => ({
-      course: {
-        courseCode: event.courseCode,
-      },
-      location: event.location,
-      type: event.type ?? undefined,
-      startTime: event.startTime,
-      endTime: event.endTime,
-      days: event.days,
-      courseColor: { color: courseColorMap.get(event.courseCode)! },
-      recurrence: "weekly",
-      exclusions: [],
-    }));
-
-    return { success: true, isSchedule: true, events };
+    return { success: true, isSchedule: true, events: mergedEvents };
   } catch (error) {
     console.error("OpenRouter error:", error);
     return {
       success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to analyze schedule",
+      error: "Failed to analyze schedule. Please try again.",
     };
   }
 }
