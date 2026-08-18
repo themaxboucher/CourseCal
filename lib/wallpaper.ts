@@ -13,7 +13,7 @@ export async function getWallpaperFontEmbedCSS(node: HTMLElement) {
   try {
     const families = collectUsedFontFamilies(node);
     const rules = collectFontFaceRules().filter((rule) =>
-      families.has(normalizeFamily(rule.family))
+      families.has(normalizeFamily(rule.family)),
     );
     if (rules.length === 0) return undefined;
 
@@ -101,7 +101,7 @@ async function inlineFontUrlsUncached({ cssText, baseUrl }: FontFaceRule) {
   const urls = new Set(
     Array.from(cssText.matchAll(/url\(\s*(['"]?)([^'")]+)\1\s*\)/g))
       .map((match) => match[2])
-      .filter((url) => !url.startsWith("data:"))
+      .filter((url) => !url.startsWith("data:")),
   );
 
   let inlined = cssText;
