@@ -1,5 +1,5 @@
 const DB_NAME = "coursecal";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 const STORES = {
   events: "events",
@@ -15,7 +15,17 @@ function openDB(): Promise<IDBDatabase> {
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
 
-      // Create events store
+      // v1 stored events in the old camelCase shape (startTime / courseCode /
+      // courseColor). There's no migration path, so drop them and let the user
+      // re-upload their schedule.
+      if (
+        event.oldVersion > 0 &&
+        event.oldVersion < 2 &&
+        db.objectStoreNames.contains(STORES.events)
+      ) {
+        db.deleteObjectStore(STORES.events);
+      }
+
       if (!db.objectStoreNames.contains(STORES.events)) {
         db.createObjectStore(STORES.events, {
           keyPath: "id",
@@ -23,6 +33,9 @@ function openDB(): Promise<IDBDatabase> {
         });
       }
     };
+
+    request.onblocked = () =>
+      reject(new Error("Close other CourseCal tabs and reload."));
   });
 }
 
