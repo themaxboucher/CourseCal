@@ -144,6 +144,7 @@ export function CourseField({
                     {isLoading && // Loading skeleton with pulsing animation
                       Array.from({ length: 5 }).map((_, index) => (
                         <CommandItem
+                          // biome-ignore lint/suspicious/noArrayIndexKey: placeholder skeletons are interchangeable and never reorder.
                           key={`loading-${index}`}
                           disabled
                           className="flex items-center justify-between gap-2"

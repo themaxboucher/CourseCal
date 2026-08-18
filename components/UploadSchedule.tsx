@@ -159,6 +159,7 @@ export default function UploadSchedule({ term }: UploadScheduleProps) {
         />
 
         {/* Desktop upload */}
+        {/* biome-ignore lint/a11y/useSemanticElements: the zone contains its own <Button>, so it cannot be one. */}
         <div
           role="button"
           tabIndex={0}

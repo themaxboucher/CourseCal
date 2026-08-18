@@ -90,6 +90,7 @@ export default function ProfileForm({ user }: { user: Tables<"users"> }) {
         <div className="space-y-2">
           <div className="flex flex-col items-center gap-2 mb-2">
             <button
+              type="button"
               onClick={() => fileInputRef.current?.click()}
               className="flex flex-col items-center gap-2 cursor-pointer"
             >
