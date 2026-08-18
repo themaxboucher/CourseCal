@@ -27,7 +27,8 @@ export function TermSelector({
   const selectedTermIdString = selectedTermId.toString();
 
   function handleTermChange(termId: string) {
-    setSelectedTermId(parseInt(termId));
+    const RADIX = 10;
+    setSelectedTermId(parseInt(termId, RADIX));
   }
 
   return (
@@ -72,4 +73,3 @@ export function TermSelector({
     </Select>
   );
 }
-
