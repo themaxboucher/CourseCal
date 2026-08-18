@@ -400,10 +400,12 @@ export default function EventForm({
 }
 
 async function saveGuestEvent(data: EventFormData, eventId?: number) {
+  if (!data.color) throw new Error("Color is required");
+
   const localEvent: LocalEvent = {
     course_code: data.courseCode.trim(),
     course: null,
-    course_color: data.color!,
+    course_color: data.color,
     type: data.type,
     location: data.location,
     start_time: data.startTime,

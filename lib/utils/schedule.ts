@@ -81,6 +81,7 @@ export const findOverlappingEvents = (
   if (!formData.days || !formData.startTime || !formData.endTime) {
     return overlaps;
   }
+  const { days, startTime, endTime } = formData;
 
   events.forEach((event) => {
     // Skip the current event being edited
@@ -89,16 +90,14 @@ export const findOverlappingEvents = (
     }
 
     // Check if events share any days
-    const sharedDays = formData.days!.filter((day) =>
-      event.days?.includes(day)
-    );
+    const sharedDays = days.filter((day) => event.days?.includes(day));
 
     if (sharedDays.length > 0) {
       // Check for time overlap
       if (
         checkTimeOverlap(
-          formData.startTime!,
-          formData.endTime!,
+          startTime,
+          endTime,
           event.start_time,
           event.end_time
         )

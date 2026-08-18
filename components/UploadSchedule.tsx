@@ -71,6 +71,7 @@ export default function UploadSchedule({ term }: UploadScheduleProps) {
       }
 
       // If the user is logged in and has a name and major, mark them as completed onboarding
+      // biome-ignore lint/complexity/useOptionalChain: `user` is `T | false`, not nullable — `?.` wouldn't narrow away the `false` branch the way `&&` does.
       if (user && user.name && user.major) {
         await markUserCompletedOnboarding(user.id);
       }
@@ -229,7 +230,7 @@ export default function UploadSchedule({ term }: UploadScheduleProps) {
       )}
 
       {/* Not a schedule */}
-      {result && result.success && !result.isSchedule && (
+      {result?.success && !result.isSchedule && (
         <div className="p-4 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 text-sm">
           This doesn&apos;t appear to be a university schedule. Please upload a
           screenshot of your course schedule.
