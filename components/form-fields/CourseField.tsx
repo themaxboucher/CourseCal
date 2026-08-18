@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,7 +34,6 @@ interface CourseSelectProps {
   className?: string;
   warning?: string;
   onCourseSelect?: (course: Course) => void;
-  userId: string;
 }
 
 export function CourseField({
@@ -46,7 +45,6 @@ export function CourseField({
   className,
   warning,
   onCourseSelect,
-  userId,
 }: CourseSelectProps) {
   const [open, setOpen] = useState(false);
   const [courses, setCourses] = useState<Course[]>([]);
@@ -54,19 +52,19 @@ export function CourseField({
   const [isLoading, setIsLoading] = useState(false);
   const hasError = form.formState.errors[name];
 
-  const fetchCourses = async (query: string = "") => {
+  const fetchCourses = useCallback(async (query: string = "") => {
     setIsLoading(true);
     try {
-      const coursesData = await getCourses(10, query);
+      const COURSE_LIMIT = 10;
+      const coursesData = await getCourses(COURSE_LIMIT, query);
       setCourses(coursesData || []);
     } catch (error) {
       console.error("Failed to fetch courses:", error);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  // Fetch courses on mount and when userId changes
   useEffect(() => {
     const initializeCourses = async () => {
       // Fetch initial courses with user colors
@@ -83,16 +81,18 @@ export function CourseField({
     };
 
     initializeCourses();
-  }, [userId]);
+  }, [fetchCourses, form, name]);
 
   // Debounced search
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      fetchCourses(searchQuery);
+      if (searchQuery) {
+        fetchCourses(searchQuery);
+      }
     }, 100);
 
     return () => clearTimeout(timeoutId);
-  }, [searchQuery]);
+  }, [searchQuery, fetchCourses]);
 
   return (
     <FormFieldWrapper
@@ -103,7 +103,14 @@ export function CourseField({
       className={className}
       warning={warning}
     >
-      {({ field }: { field: { value: Course | null; onChange: (value: Course | null) => void } }) => {
+      {({
+        field,
+      }: {
+        field: {
+          value: Course | null;
+          onChange: (value: Course | null) => void;
+        };
+      }) => {
         const selectedCourse = field.value;
 
         return (
@@ -116,7 +123,7 @@ export function CourseField({
                 className={cn(
                   "active:scale-100 font-medium normal-case justify-between",
                   !selectedCourse && "font-normal text-muted-foreground",
-                  hasError && "border-destructive focus:ring-destructive"
+                  hasError && "border-destructive focus:ring-destructive",
                 )}
                 aria-invalid={hasError ? "true" : "false"}
               >
@@ -160,9 +167,7 @@ export function CourseField({
                           className="flex items-center justify-between gap-2"
                         >
                           <div className="flex flex-col">
-                            <span className="font-medium">
-                              {course.code}
-                            </span>
+                            <span className="font-medium">{course.code}</span>
                             <span className="text-xs text-muted-foreground truncate">
                               {course.title}
                             </span>
@@ -172,7 +177,7 @@ export function CourseField({
                               "mr-2 size-4",
                               field.value?.id === course.id
                                 ? "opacity-100"
-                                : "opacity-0"
+                                : "opacity-0",
                             )}
                           />
                         </CommandItem>

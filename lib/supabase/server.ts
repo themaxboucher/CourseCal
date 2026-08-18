@@ -20,9 +20,9 @@ export async function createClient() {
         },
         setAll(cookiesToSet) {
           try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            );
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options);
+            });
           } catch {
             // The `setAll` method was called from a Server Component.
             // This can be ignored if you have middleware refreshing
@@ -30,7 +30,7 @@ export async function createClient() {
           }
         },
       },
-    }
+    },
   );
 }
 
@@ -48,6 +48,6 @@ export function createAdminClient() {
       // The secret key is not a user session: there is nothing to refresh and
       // nothing that should be written to storage shared across requests.
       auth: { autoRefreshToken: false, persistSession: false },
-    }
+    },
   );
 }

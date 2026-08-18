@@ -23,23 +23,14 @@ import {
   findOverlappingEvents,
   getOverlapErrorMessage,
 } from "@/lib/utils/schedule";
-import {
-  type AnyEvent,
-  getEventColor,
-  isLocalEvent,
-} from "@/lib/utils/events";
+import { type AnyEvent, getEventColor, isLocalEvent } from "@/lib/utils/events";
 import {
   addEvent as addLocalEvent,
   updateEvent as updateLocalEvent,
 } from "@/lib/indexeddb";
-import {
-  createEvent,
-  updateEvent,
-} from "@/lib/actions/events.actions";
+import { createEvent, updateEvent } from "@/lib/actions/events.actions";
 import { upsertCourseColor } from "@/lib/actions/courseColors.actions";
 import type { Tables, TablesInsert } from "@/types/supabase";
-
-// --- Constants ---
 
 const COLORS = [
   "red",
@@ -52,13 +43,7 @@ const COLORS = [
   "pink",
 ] as const;
 
-const DAYS = [
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-] as const;
+const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday"] as const;
 
 const CLASS_TYPES = ["lecture", "tutorial", "lab", "seminar"] as const;
 const RECURRENCES = ["weekly", "biweekly"] as const;
@@ -83,20 +68,16 @@ const CLASS_TYPE_OPTIONS = [
   { value: "seminar", label: "Seminar", icon: classTypeIcons.seminar },
 ];
 
-// --- Types ---
-
 type SelectedCourse = {
   id: number;
   code: string;
   title?: string;
 };
 
-// --- Schema ---
-
 function buildSchema(
   events: AnyEvent[],
   isGuest: boolean,
-  currentEventId?: number
+  currentEventId?: number,
 ) {
   return z
     .object({
@@ -157,7 +138,7 @@ function buildSchema(
       const overlaps = findOverlappingEvents(
         { days: data.days, startTime: data.startTime, endTime: data.endTime },
         events,
-        currentEventId
+        currentEventId,
       );
       if (overlaps.length > 0) {
         const eventNames = getOverlapErrorMessage(overlaps);
@@ -176,8 +157,6 @@ function buildSchema(
 }
 
 type EventFormData = z.infer<ReturnType<typeof buildSchema>>;
-
-// --- Component ---
 
 interface EventFormProps {
   eventToEdit?: AnyEvent | null;
@@ -304,7 +283,7 @@ export default function EventForm({
         // When editing an existing event we keep its existing term; only
         // creation requires the caller to specify the term up front.
         const eventTerm =
-          eventId !== undefined ? eventToEdit?.term ?? null : term ?? null;
+          eventId !== undefined ? (eventToEdit?.term ?? null) : (term ?? null);
         if (eventId === undefined && eventTerm === null) {
           throw new Error("Term not found");
         }
@@ -345,7 +324,6 @@ export default function EventForm({
               className="flex-grow"
               warning={missingFields.course}
               onCourseSelect={handleCourseSelect}
-              userId={user!.id}
             />
           </div>
         )}
@@ -422,8 +400,6 @@ export default function EventForm({
   );
 }
 
-// --- Save helpers ---
-
 async function saveGuestEvent(data: EventFormData, eventId?: number) {
   const localEvent: LocalEvent = {
     course_code: data.courseCode.trim(),
@@ -449,7 +425,7 @@ async function saveUserEvent(
   data: EventFormData,
   userId: string,
   term: number | null,
-  eventId?: number
+  eventId?: number,
 ) {
   if (!data.course) throw new Error("Course not selected");
 
