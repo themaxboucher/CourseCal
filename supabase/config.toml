@@ -245,8 +245,12 @@ otp_expiry = 3600
 
 # Both login-link emails point at our own /auth/confirm route with a token hash
 # rather than at Supabase's PKCE verify endpoint, so a link opened on a phone
-# works even though it was requested on a laptop. These two templates must be
-# kept in sync with the hosted project's Auth > Email Templates settings.
+# works even though it was requested on a laptop. The hash sits in the URL
+# fragment, after a `#`: fragments are never sent to a server, so the mail
+# provider's link scanner cannot spend the one-time token by fetching the URL
+# ahead of the user. The page reads it in the browser instead. These two
+# templates must be kept in sync with the hosted project's Auth > Email
+# Templates settings.
 [auth.email.template.magic_link]
 subject = "Log in to CourseCal"
 content_path = "./supabase/templates/magic_link.html"
