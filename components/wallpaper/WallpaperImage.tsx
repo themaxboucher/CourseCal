@@ -70,38 +70,45 @@ export default function WallpaperImage({
   const { startHour, endHour } = useMemo(() => getTimeRange(events), [events]);
   const timeSlots = useMemo(
     () => generateTimeSlots(startHour, endHour, false),
-    [startHour, endHour]
+    [startHour, endHour],
   );
   const timeSlotsShort = useMemo(
     () => generateTimeSlots(startHour, endHour, true),
-    [startHour, endHour]
+    [startHour, endHour],
   );
 
   // Calculate max cell height based on number of time slots
-  const maxCellHeight = Math.max(MIN_CELL_HEIGHT, TARGET_MAX_TOTAL_HEIGHT / timeSlots.length);
-  
+  const maxCellHeight = Math.max(
+    MIN_CELL_HEIGHT,
+    TARGET_MAX_TOTAL_HEIGHT / timeSlots.length,
+  );
+
   // Calculate the actual pixel height from percentage (0% = min, 100% = max based on time slots)
-  const cellHeightPx = MIN_CELL_HEIGHT + (cellHeight / 100) * (maxCellHeight - MIN_CELL_HEIGHT);
+  const cellHeightPx =
+    MIN_CELL_HEIGHT + (cellHeight / 100) * (maxCellHeight - MIN_CELL_HEIGHT);
 
   // Group events by day of week using the days array
-  const eventsByDay = events.reduce((acc, event) => {
-    if (event.days && event.days.length > 0) {
-      // For each day the event occurs on
-      event.days.forEach((dayName) => {
-        const weekdayIndex = getWeekdayIndex(dayName);
+  const eventsByDay = events.reduce(
+    (acc, event) => {
+      if (event.days && event.days.length > 0) {
+        // For each day the event occurs on
+        event.days.forEach((dayName) => {
+          const weekdayIndex = getWeekdayIndex(dayName);
 
-        if (weekdayIndex >= 0 && weekdayIndex < 5) {
-          // Only Monday-Friday
-          if (!acc[weekdayIndex]) {
-            acc[weekdayIndex] = [];
+          if (weekdayIndex >= 0 && weekdayIndex < 5) {
+            // Only Monday-Friday
+            if (!acc[weekdayIndex]) {
+              acc[weekdayIndex] = [];
+            }
+            acc[weekdayIndex].push(event);
           }
-          acc[weekdayIndex].push(event);
-        }
-      });
-    }
+        });
+      }
 
-    return acc;
-  }, {} as Record<number, AnyEvent[]>);
+      return acc;
+    },
+    {} as Record<number, AnyEvent[]>,
+  );
 
   return (
     <div
@@ -121,7 +128,7 @@ export default function WallpaperImage({
             className={cn(
               "text-[6px] text-muted-foreground font-medium p-2 bg-muted/30 text-center uppercase border-l border-t relative z-20",
               index === 0 && "rounded-tl-lg",
-              index === weekdays.length - 1 && "border-r rounded-tr-lg"
+              index === weekdays.length - 1 && "border-r rounded-tr-lg",
             )}
           >
             {day.slice(0, 3)}
@@ -146,21 +153,29 @@ export default function WallpaperImage({
             className={cn(
               "relative border-l border-b",
               dayIndex === 0 && "rounded-bl-lg",
-              dayIndex === weekdays.length - 1 && "border-r rounded-br-lg"
+              dayIndex === weekdays.length - 1 && "border-r rounded-br-lg",
             )}
           >
             {/* Time slot lines */}
             {timeSlots.map((time) => (
-              <div key={time} className="border-t" style={{ height: `${cellHeightPx}px` }}></div>
+              <div
+                key={time}
+                className="border-t"
+                style={{ height: `${cellHeightPx}px` }}
+              ></div>
             ))}
 
             {/* Events for this day */}
-            {eventsByDay[dayIndex]?.map((event, eventIndex) => {
-              const { top, height } = getEventPosition(event, cellHeightPx, startHour);
+            {eventsByDay[dayIndex]?.map((event) => {
+              const { top, height } = getEventPosition(
+                event,
+                cellHeightPx,
+                startHour,
+              );
 
               return (
                 <EventBlock
-                  key={`${eventIndex}`}
+                  key={event.id}
                   event={event}
                   isWallpaper={true}
                   wallpaperTheme={theme}
