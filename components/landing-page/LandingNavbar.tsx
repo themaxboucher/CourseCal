@@ -5,7 +5,7 @@ import { Navbar } from "../Navbar";
 import { getEvents as getLocalEvents } from "@/lib/indexeddb";
 import { getEvents as getServerEvents } from "@/lib/actions/events.actions";
 import { getLoggedInUser } from "@/lib/actions/users.actions";
-import { Tables } from "@/types/supabase";
+import type { Tables } from "@/types/supabase";
 
 export function LandingNavbar() {
   const [hasSchedule, setHasSchedule] = useState(false);

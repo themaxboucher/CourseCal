@@ -1,6 +1,6 @@
 import { Input } from "../ui/input";
 import { FormFieldWrapper } from "./FormFieldWrapper";
-import { UseFormReturn } from "react-hook-form";
+import type { UseFormReturn } from "react-hook-form";
 import { cn } from "@/lib/utils";
 
 interface TimeFieldProps {

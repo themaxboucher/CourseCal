@@ -6,8 +6,8 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
-import { ReactNode } from "react";
-import { UseFormReturn, ControllerRenderProps } from "react-hook-form";
+import type { ReactNode } from "react";
+import type { UseFormReturn, ControllerRenderProps } from "react-hook-form";
 import { FormWarning } from "../FormWarning";
 
 interface FormFieldWrapperProps {

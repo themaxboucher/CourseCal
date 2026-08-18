@@ -1,7 +1,7 @@
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
 import { FormFieldWrapper } from "./FormFieldWrapper";
-import { UseFormReturn, ControllerRenderProps } from "react-hook-form";
+import type { UseFormReturn, ControllerRenderProps } from "react-hook-form";
 import { cn } from "@/lib/utils";
 
 interface CheckboxesFieldProps {

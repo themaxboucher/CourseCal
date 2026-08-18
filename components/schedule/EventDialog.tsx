@@ -5,7 +5,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/u
 import EventForm from "./EventForm";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useEffect, useState } from "react";
-import { Tables } from "@/types/supabase";
+import type { Tables } from "@/types/supabase";
 import type { AnyEvent } from "@/lib/utils/events";
 
 interface EventDialogProps {

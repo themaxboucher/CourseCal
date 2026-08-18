@@ -260,6 +260,7 @@ export default function EventForm({
 
   // Surface warnings for fields that were originally empty (e.g. from an
   // imported/AI-parsed event) and remain empty as the user edits.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: live form values are read without subscribing to each one; see the note on the dependency array below.
   const missingFields = useMemo<Record<string, string>>(() => {
     if (!eventToEdit) return {};
     const v = form.getValues();
@@ -289,7 +290,6 @@ export default function EventForm({
     return m;
     // We intentionally read live form values here without subscribing to each
     // one; warnings recompute when the fields above are watched elsewhere.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [eventToEdit, form.watch()]);
 
   async function onSubmit(data: EventFormData) {

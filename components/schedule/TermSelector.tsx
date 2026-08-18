@@ -1,6 +1,6 @@
 "use client";
 
-import { Tables } from "@/types/supabase";
+import type { Tables } from "@/types/supabase";
 import {
   Select,
   SelectContent,

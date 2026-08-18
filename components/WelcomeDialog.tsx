@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { markUserWelcomed } from "@/lib/actions/users.actions";
-import { Tables } from "@/types/supabase";
+import type { Tables } from "@/types/supabase";
 
 interface WelcomeDialogProps {
   user: Tables<"users">;

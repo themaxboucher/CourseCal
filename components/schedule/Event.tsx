@@ -15,7 +15,7 @@ import {
 import EventDetails from "./EventDetails";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import EventBlock from "./EventBlock";
-import { Tables } from "@/types/supabase";
+import type { Tables } from "@/types/supabase";
 import type { AnyEvent } from "@/lib/utils/events";
 
 interface EventProps {

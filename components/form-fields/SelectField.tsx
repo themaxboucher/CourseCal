@@ -8,8 +8,8 @@ import {
   SelectLabel,
 } from "@/components/ui/select";
 import { FormFieldWrapper } from "./FormFieldWrapper";
-import { UseFormReturn, ControllerRenderProps } from "react-hook-form";
-import { LucideIcon } from "lucide-react";
+import type { UseFormReturn, ControllerRenderProps } from "react-hook-form";
+import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SelectFieldOption {

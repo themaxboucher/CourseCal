@@ -16,6 +16,7 @@ export default function FeedbackBox() {
             <a
               href="https://www.instagram.com/maximeboucher_/"
               target="_blank"
+              rel="noopener"
               className="text-sky-500 hover:underline"
             >
               Instagram
@@ -25,6 +26,7 @@ export default function FeedbackBox() {
               href="https://www.linkedin.com/in/maxboucher/"
               target="_blank"
               className="text-sky-500 hover:underline"
+              rel="noopener"
             >
               LinkedIn
             </a>{" "}
@@ -37,6 +39,7 @@ export default function FeedbackBox() {
               href="https://coursecal.featurebase.app/"
               target="_blank"
               className="text-sky-500 hover:underline"
+              rel="noopener"
             >
               here
             </a>

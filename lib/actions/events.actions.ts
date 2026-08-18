@@ -1,7 +1,7 @@
 "use server";
 
-import { QueryData } from "@supabase/supabase-js";
-import { TablesInsert } from "@/types/supabase";
+import type { QueryData } from "@supabase/supabase-js";
+import type { TablesInsert } from "@/types/supabase";
 import { createClient } from "../supabase/server";
 import { pickNextColor } from "@/lib/utils/colors";
 

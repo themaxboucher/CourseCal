@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/popover";
 import { getCourses } from "@/lib/actions/courses.actions";
 import { FormFieldWrapper } from "./FormFieldWrapper";
-import { UseFormReturn } from "react-hook-form";
+import type { UseFormReturn } from "react-hook-form";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Tables } from "@/types/supabase";
 

@@ -2,7 +2,7 @@ import { Upload } from "lucide-react";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 import UploadSchedule from "./UploadSchedule";
-import { Tables } from "@/types/supabase";
+import type { Tables } from "@/types/supabase";
 
 interface UploadDialogProps {
   term: Tables<"terms">;

@@ -1,6 +1,6 @@
 "use server";
 
-import { TablesInsert } from "@/types/supabase";
+import type { TablesInsert } from "@/types/supabase";
 import { createClient } from "../supabase/server";
 
 export async function createCourseColors(courseColors: TablesInsert<"course_colors">[]) {

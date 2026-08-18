@@ -13,8 +13,8 @@ import { Loader2, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Tables } from "@/types/supabase";
-import { EventWithCourse } from "@/lib/actions/events.actions";
+import type { Tables } from "@/types/supabase";
+import type { EventWithCourse } from "@/lib/actions/events.actions";
 
 interface ScheduleProps {
   events: EventWithCourse[];

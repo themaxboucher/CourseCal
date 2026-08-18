@@ -1,6 +1,6 @@
 "use server";
 
-import { Tables, TablesUpdate } from "@/types/supabase";
+import type { Tables, TablesUpdate } from "@/types/supabase";
 import { createAdminClient, createClient } from "../supabase/server";
 
 export async function getLoggedInUser(): Promise<Tables<"users"> | false> {

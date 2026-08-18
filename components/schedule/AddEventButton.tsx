@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import EventDialog from "./EventDialog";
-import { Tables } from "@/types/supabase";
+import type { Tables } from "@/types/supabase";
 import type { AnyEvent } from "@/lib/utils/events";
 
 interface AddEventButtonProps {

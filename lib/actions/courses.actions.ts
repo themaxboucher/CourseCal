@@ -1,6 +1,6 @@
 "use server";
 
-import { Tables } from "@/types/supabase";
+import type { Tables } from "@/types/supabase";
 import { createClient } from "../supabase/server";
 
 export async function findCourseByCode(

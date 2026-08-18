@@ -10,7 +10,7 @@ import {
   getTimeRange,
   getWeekdayIndex,
 } from "@/lib/utils/schedule";
-import { Tables } from "@/types/supabase";
+import type { Tables } from "@/types/supabase";
 import type { AnyEvent } from "@/lib/utils/events";
 
 interface WallpaperImageProps {

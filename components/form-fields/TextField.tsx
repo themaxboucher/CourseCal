@@ -1,4 +1,4 @@
-import { UseFormReturn } from "react-hook-form";
+import type { UseFormReturn } from "react-hook-form";
 import { FormFieldWrapper } from "./FormFieldWrapper";
 import { Input } from "../ui/input";
 

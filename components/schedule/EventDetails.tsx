@@ -14,7 +14,7 @@ import { useState } from "react";
 import DeleteEventDialog from "./DeleteEventDialog";
 import EventDialog from "./EventDialog";
 import { classTypeIcons, eventColors } from "@/constants";
-import { Tables } from "@/types/supabase";
+import type { Tables } from "@/types/supabase";
 import {
   type AnyEvent,
   getCourseTitle,

@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import {
   analyzeScheduleImage,
-  ScheduleAnalysisResult,
+  type ScheduleAnalysisResult,
 } from "@/lib/actions/ai.actions";
 import { saveEvents as saveLocalEvents } from "@/lib/indexeddb";
 import { Loader2, CalendarArrowUp } from "lucide-react";
@@ -16,7 +16,7 @@ import { getTerms } from "@/lib/actions/terms.actions";
 import { parsedToDBEvents, parsedToLocalEvents } from "@/lib/utils/upload";
 import { createEvents } from "@/lib/actions/events.actions";
 import { markUserCompletedOnboarding } from "@/lib/actions/users.actions";
-import { Tables } from "@/types/supabase";
+import type { Tables } from "@/types/supabase";
 import { getRelevantTerm } from "@/lib/utils/schedule";
 
 interface UploadScheduleProps {

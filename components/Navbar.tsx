@@ -7,7 +7,7 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import { AuthDialog } from "./auth/AuthDialog";
 import UserAvatar from "./UserAvatar";
-import { Tables } from "@/types/supabase";
+import type { Tables } from "@/types/supabase";
 
 interface NavbarProps {
   hasSchedule?: boolean;

@@ -2,7 +2,7 @@ import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { eventColors } from "@/constants";
 import { FormFieldWrapper } from "./FormFieldWrapper";
-import { UseFormReturn } from "react-hook-form";
+import type { UseFormReturn } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
