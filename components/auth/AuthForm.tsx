@@ -92,12 +92,13 @@ export default function AuthForm({ type }: { type: AuthIntent }) {
           <div className="flex flex-col items-stretch gap-2 w-full">
             <FormAlert message={ERROR_MESSAGES[error]} type="error" />
             {error === "no_account" && (
-              <div
+              <button
+                type="button"
                 className="w-full text-sm flex items-center justify-center cursor-pointer hover:underline"
                 onClick={signUpInstead}
               >
                 <span>Create an account instead</span>
-              </div>
+              </button>
             )}
           </div>
         )}

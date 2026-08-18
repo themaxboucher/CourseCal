@@ -220,8 +220,7 @@ export default function EventForm({
   const endTime = form.watch("endTime");
   const days = form.watch("days");
 
-  // Re-validate time fields together so the time-order/overlap errors update
-  // when any of the time-related fields change.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `days` isn't read here, but the overlap validation that `form.trigger` runs depends on it, so it must re-run when days change.
   useEffect(() => {
     if (startTime && endTime) {
       form.trigger(["startTime", "endTime"]);

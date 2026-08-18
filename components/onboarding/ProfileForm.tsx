@@ -67,7 +67,7 @@ export default function ProfileForm({ user }: { user: Tables<"users"> }) {
         router.push("/schedule");
       } else {
         // If the user doesn't have a schedule, redirect to the upload page
-        router.push("/onboarding/upload"); 
+        router.push("/onboarding/upload");
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : "";
@@ -89,7 +89,7 @@ export default function ProfileForm({ user }: { user: Tables<"users"> }) {
       >
         <div className="space-y-2">
           <div className="flex flex-col items-center gap-2 mb-2">
-            <div
+            <button
               onClick={() => fileInputRef.current?.click()}
               className="flex flex-col items-center gap-2 cursor-pointer"
             >
@@ -103,7 +103,7 @@ export default function ProfileForm({ user }: { user: Tables<"users"> }) {
                 </AvatarFallback>
               </Avatar>
               <div className="text-sm underline">Pick an image</div>
-            </div>
+            </button>
 
             <input
               ref={fileInputRef}
