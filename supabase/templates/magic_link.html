@@ -3,37 +3,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="color-scheme" content="light dark" />
-    <meta name="supported-color-schemes" content="light dark" />
     <title>Log in to CourseCal</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
-    <style>
-      /* Inline styles beat these, so the dark overrides need !important. Honoured by
-     Apple Mail and iOS Mail; silently ignored elsewhere, which is the point. */
-      @media (prefers-color-scheme: dark) {
-        .cc-page {
-          background-color: #09090b !important;
-        }
-        .cc-card {
-          background-color: #18181b !important;
-          border-color: #27272a !important;
-        }
-        .cc-strong {
-          color: #fafafa !important;
-        }
-        .cc-muted {
-          color: #9f9fa9 !important;
-        }
-      }
-    </style>
   </head>
-  <body
-    class="cc-page"
-    style="margin: 0; padding: 0; background-color: #f4f4f5"
-  >
+  <body style="margin: 0; padding: 0; background-color: #f4f4f5">
     <!-- Inbox preview line; hidden in the message body itself. -->
     <div style="display: none; max-height: 0; overflow: hidden; opacity: 0">
       Your login link works on any device and expires in an hour.
@@ -45,7 +21,6 @@
       cellpadding="0"
       cellspacing="0"
       border="0"
-      class="cc-page"
       style="background-color: #f4f4f5"
     >
       <tr>
@@ -60,7 +35,6 @@
           >
             <tr>
               <td
-                class="cc-card"
                 style="
                   background-color: #ffffff;
                   border: 1px solid #e4e4e7;
@@ -69,7 +43,6 @@
                 "
               >
                 <p
-                  class="cc-strong"
                   style="
                     margin: 0 0 12px;
                     font-family:
@@ -92,7 +65,6 @@
                 </p>
 
                 <p
-                  class="cc-muted"
                   style="
                     margin: 0 0 28px;
                     font-family:
@@ -156,7 +128,6 @@
                 </table>
 
                 <p
-                  class="cc-muted"
                   style="
                     margin: 0 0 8px;
                     font-family:
@@ -208,7 +179,6 @@
             <tr>
               <td
                 align="center"
-                class="cc-muted"
                 style="
                   padding-top: 24px;
                   font-family:
