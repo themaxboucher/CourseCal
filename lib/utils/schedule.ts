@@ -170,7 +170,7 @@ export const timeToMinutes = (timeString: string): number => {
 // Get the time range needed to display all events
 // Default: 8 AM to 4 PM, expands to accommodate events outside this range
 export const getTimeRange = (
-  events: AnyEvent[],
+  events: { start_time: string; end_time: string }[],
 ): { startHour: number; endHour: number } => {
   const DEFAULT_START = 9; // 9 AM
   const DEFAULT_END = 15; // 3 PM

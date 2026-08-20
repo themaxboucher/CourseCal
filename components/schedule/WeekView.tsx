@@ -13,12 +13,24 @@ import {
 } from "@/lib/utils/schedule";
 import type { Tables } from "@/types/supabase";
 import type { AnyEvent } from "@/lib/utils/events";
+import { WEEK_DAYS, type Band } from "@/lib/utils/availability";
+import AvailabilityLayer from "./AvailabilityLayer";
 
 interface WeekViewProps {
   events: AnyEvent[];
   user?: Tables<"users"> | null;
   isGuest?: boolean;
   onEventsChange?: () => void;
+  /** Shared availability overlay. Omitted when no friends are selected. */
+  bands?: Band[];
+  /** Participant id to display name, for band hover text. */
+  bandNames?: Record<string, string>;
+  /**
+   * Events the visible hour range must accommodate. Defaults to `events`, but
+   * the overlay needs the range widened to cover friends' classes too —
+   * otherwise a friend's 8am lab lands above the top of the grid.
+   */
+  rangeEvents?: { start_time: string; end_time: string }[];
 }
 
 export default function WeekView({
@@ -26,9 +38,15 @@ export default function WeekView({
   user,
   isGuest = false,
   onEventsChange,
+  bands,
+  bandNames = {},
+  rangeEvents,
 }: WeekViewProps) {
   // Calculate dynamic time range based on events
-  const { startHour, endHour } = useMemo(() => getTimeRange(events), [events]);
+  const { startHour, endHour } = useMemo(
+    () => getTimeRange(rangeEvents ?? events),
+    [rangeEvents, events],
+  );
   const timeSlots = useMemo(
     () => generateTimeSlots(startHour, endHour, false),
     [startHour, endHour],
@@ -117,6 +135,16 @@ export default function WeekView({
             {timeSlots.map((time) => (
               <div key={time} className="h-16 border-t-2"></div>
             ))}
+
+            {/* Shared availability, beneath the event blocks */}
+            {bands && (
+              <AvailabilityLayer
+                bands={bands.filter((band) => band.day === WEEK_DAYS[dayIndex])}
+                startHour={startHour}
+                pxPerHour={64}
+                names={bandNames}
+              />
+            )}
 
             {/* Events for this day */}
             {eventsByDay[dayIndex]?.map((event) => {
