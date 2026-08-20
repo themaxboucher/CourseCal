@@ -1,6 +1,6 @@
 "use client";
 
-import { SlidersHorizontal } from "lucide-react";
+import { Settings6Filled } from "@mingcute/react/core-filled";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -29,7 +29,7 @@ export default function OverlapSettings({
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm">
-          <SlidersHorizontal className="size-4" />
+          <Settings6Filled className="size-4" />
           <span className="hidden sm:inline">Free time</span>
         </Button>
       </PopoverTrigger>

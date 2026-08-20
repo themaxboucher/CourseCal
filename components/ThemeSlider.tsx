@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Moon, Sun } from "lucide-react";
+import { MoonFilled, SunFilled } from "@mingcute/react/core-filled";
 import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
@@ -27,7 +27,7 @@ export function ThemeSlider() {
             : "text-muted-foreground",
         )}
       >
-        <Sun className="size-4" />
+        <SunFilled className="size-4" />
         <span className="sr-only">Light theme</span>
       </Button>
       <Button
@@ -40,7 +40,7 @@ export function ThemeSlider() {
             : "text-muted-foreground",
         )}
       >
-        <Moon className="size-4" />
+        <MoonFilled className="size-4" />
         <span className="sr-only">Dark theme</span>
       </Button>
     </div>

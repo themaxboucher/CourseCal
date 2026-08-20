@@ -1,13 +1,13 @@
 import { cn } from "@/lib/utils";
 import { formatTime, getReadableRecurrence } from "@/lib/utils/schedule";
 import {
-  Clock,
-  MapPin,
-  Pen,
-  RefreshCw,
-  Trash2,
-  TriangleAlert,
-} from "lucide-react";
+  AlertFilled,
+  Delete2Filled,
+  Edit2Filled,
+  LocationFilled,
+  Refresh2Filled,
+  TimeFilled,
+} from "@mingcute/react/core-filled";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -96,7 +96,7 @@ export default function EventDetails({
           </div>
           <div className="flex items-center gap-1">
             <div className="p-1.5 bg-muted/50 rounded-full">
-              <Clock className="size-3 min-w-3" />
+              <TimeFilled className="size-3 min-w-3" />
             </div>
             <div className="text-sm">
               {formatTime(event.start_time)} - {formatTime(event.end_time)}
@@ -105,14 +105,14 @@ export default function EventDetails({
           {event.location && (
             <div className="flex items-center gap-1">
               <div className="p-1.5 bg-muted/50 rounded-full">
-                <MapPin className="size-3 min-w-3" />
+                <LocationFilled className="size-3 min-w-3" />
               </div>
               <div className="text-sm truncate">{event.location}</div>
             </div>
           )}
           <div className="flex items-center gap-1">
             <div className="p-1.5 bg-muted/50 rounded-full">
-              <RefreshCw className="size-3 min-w-3" />
+              <Refresh2Filled className="size-3 min-w-3" />
             </div>
             {event.days && event.recurrence && (
               <div className="text-sm truncate">
@@ -123,7 +123,7 @@ export default function EventDetails({
         </div>
         {(!event.course_code || !event.type) && (
           <Alert className="border-[1.5px] bg-amber-100 border-amber-400 dark:bg-amber-800/20 text-amber-600">
-            <TriangleAlert className="size-3" />
+            <AlertFilled className="size-3" />
             <AlertTitle>Incomplete details</AlertTitle>
             <AlertDescription className="text-amber-600">
               Edit this class to add missing details.
@@ -137,7 +137,7 @@ export default function EventDetails({
             className="text-xs text-muted-foreground"
             onClick={handleEditDialog}
           >
-            <Pen className="size-3.5" /> Edit
+            <Edit2Filled className="size-3.5" /> Edit
           </Button>
           <Button
             variant="ghost"
@@ -145,7 +145,7 @@ export default function EventDetails({
             className="text-xs text-muted-foreground"
             onClick={handleDeleteDialog}
           >
-            <Trash2 className="size-3.5" /> Delete
+            <Delete2Filled className="size-3.5" /> Delete
           </Button>
         </div>
       </div>

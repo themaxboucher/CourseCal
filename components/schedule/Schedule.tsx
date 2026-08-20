@@ -13,7 +13,11 @@ import OverlapSettings from "./OverlapSettings";
 import SharedSlotsList from "./SharedSlotsList";
 import { WallpaperDialog } from "@/components/wallpaper/WallpaperDialog";
 import { AuthDialog } from "@/components/auth/AuthDialog";
-import { Loader2, RotateCcw, Users } from "lucide-react";
+import {
+  GroupFilled,
+  Loading3Filled,
+  RefreshAnticlockwise1Filled,
+} from "@mingcute/react/core-filled";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -226,7 +230,7 @@ export default function Schedule({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-[600px]">
-        <Loader2 className="size-8 animate-spin text-primary" />
+        <Loading3Filled className="size-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -264,7 +268,7 @@ export default function Schedule({
       {!isLoggedIn && (
         <div className="flex items-center justify-between gap-4 rounded-lg border border-dashed px-4 py-3 mb-4">
           <p className="text-sm text-muted-foreground">
-            <Users className="mr-2 inline size-4 align-text-bottom" />
+            <GroupFilled className="mr-2 inline size-4 align-text-bottom" />
             Sign up to see when you and your friends are free.
           </p>
           <Button size="sm" onClick={() => setAuthDialogOpen(true)}>
@@ -311,7 +315,7 @@ export default function Schedule({
                   asChild
                 >
                   <Link href="/">
-                    <RotateCcw className="size-4" />
+                    <RefreshAnticlockwise1Filled className="size-4" />
                     Retry upload
                   </Link>
                 </Button>
@@ -322,7 +326,7 @@ export default function Schedule({
                   asChild
                 >
                   <Link href="/">
-                    <RotateCcw className="size-4" />
+                    <RefreshAnticlockwise1Filled className="size-4" />
                   </Link>
                 </Button>
               </>

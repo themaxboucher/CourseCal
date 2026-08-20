@@ -9,13 +9,12 @@ import {
 } from "@/components/ui/select";
 import { FormFieldWrapper } from "./FormFieldWrapper";
 import type { UseFormReturn, ControllerRenderProps } from "react-hook-form";
-import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SelectFieldOption {
   value: string;
   label: string;
-  icon?: LucideIcon;
+  icon?: MingcuteIcon;
   color?: string;
   group?: string;
 }

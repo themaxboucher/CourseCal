@@ -1,4 +1,8 @@
-import { AlertCircle, CheckCircle2, Info } from "lucide-react";
+import {
+  CheckCircleFilled,
+  InformationFilled,
+  WarningFilled,
+} from "@mingcute/react/core-filled";
 import { Alert, AlertDescription } from "./ui/alert";
 import { cn } from "@/lib/utils";
 
@@ -27,11 +31,11 @@ export default function FormAlert({ message, type = "error" }: FormAlertProps) {
     >
       <span>
         {isError ? (
-          <AlertCircle className="size-4" />
+          <WarningFilled className="size-4" />
         ) : isInfo ? (
-          <Info className="size-4 text-blue-500" />
+          <InformationFilled className="size-4 text-blue-500" />
         ) : (
-          <CheckCircle2 className="size-4 text-green-500" />
+          <CheckCircleFilled className="size-4 text-green-500" />
         )}
       </span>
       <AlertDescription

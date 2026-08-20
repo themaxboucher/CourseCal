@@ -6,7 +6,11 @@ import { Form } from "../ui/form";
 import { Button } from "../ui/button";
 import { useState, useRef } from "react";
 import { TextField } from "../form-fields/TextField";
-import { CircleCheck, CircleX, LoaderCircle } from "lucide-react";
+import {
+  CheckCircleFilled,
+  CloseCircleFilled,
+  Loading3Filled,
+} from "@mingcute/react/core-filled";
 import { updateProfile } from "@/lib/actions/users.actions";
 import { uploadAvatar } from "@/lib/actions/avatars.actions";
 import { Label } from "../ui/label";
@@ -71,19 +75,19 @@ export default function UpdateProfileForm({ user }: { user: Tables<"users"> }) {
           });
         } else {
           toast("Couldn't save your profile", {
-            icon: <CircleX className="text-destructive size-5" />,
+            icon: <CloseCircleFilled className="text-destructive size-5" />,
           });
         }
         return;
       }
 
       toast("Profile updated", {
-        icon: <CircleCheck className="text-green-500 size-5" />,
+        icon: <CheckCircleFilled className="text-green-500 size-5" />,
       });
     } catch (error) {
       console.error(error);
       toast("Couldn't save your profile", {
-        icon: <CircleX className="text-destructive size-5" />,
+        icon: <CloseCircleFilled className="text-destructive size-5" />,
       });
     } finally {
       setLoading(false);
@@ -145,7 +149,7 @@ export default function UpdateProfileForm({ user }: { user: Tables<"users"> }) {
         />
 
         <Button type="submit" disabled={loading} className="mt-2">
-          {loading && <LoaderCircle className="size-4 animate-spin" />}
+          {loading && <Loading3Filled className="size-4 animate-spin" />}
           {!loading && "Update"}
         </Button>
       </form>

@@ -1,6 +1,10 @@
 // === Utility Types ===
 declare type Override<T, R> = Omit<T, keyof R> & R;
 
+declare type MingcuteIcon = import("react").ComponentType<
+  import("@mingcute/react").IconProps
+>;
+
 declare type Color =
   | "red"
   | "orange"

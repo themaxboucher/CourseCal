@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, UserRoundSearch, Users } from "lucide-react";
+import {
+  ArrowLeftFilled,
+  GroupFilled,
+  UserSearchFilled,
+} from "@mingcute/react/core-filled";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import DirectorySearch from "@/components/friends/DirectorySearch";
@@ -58,7 +62,7 @@ export default async function FriendsPage({ searchParams }: FriendsPageProps) {
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" asChild>
               <Link href="/schedule">
-                <ArrowLeft className="size-6" />
+                <ArrowLeftFilled className="size-6" />
               </Link>
             </Button>
             <h1 className="heading-3">Friends</h1>
@@ -106,7 +110,7 @@ async function FriendsTab() {
   if (friends.length === 0) {
     return (
       <EmptyState
-        icon={<Users className="size-8 text-muted-foreground" />}
+        icon={<GroupFilled className="size-8 text-muted-foreground" />}
         title="No friends yet"
         body="Find classmates in Discover, then overlay their schedule on yours to see when you're both free."
         action={
@@ -136,7 +140,7 @@ async function RequestsTab() {
   if (incoming.length === 0 && outgoing.length === 0) {
     return (
       <EmptyState
-        icon={<UserRoundSearch className="size-8 text-muted-foreground" />}
+        icon={<UserSearchFilled className="size-8 text-muted-foreground" />}
         title="Nothing waiting"
         body="Friend requests you send and receive will show up here."
       />
@@ -194,7 +198,7 @@ async function DiscoverTab({
 
       {result.profiles.length === 0 ? (
         <EmptyState
-          icon={<UserRoundSearch className="size-8 text-muted-foreground" />}
+          icon={<UserSearchFilled className="size-8 text-muted-foreground" />}
           title={query ? "No matches" : "Nobody here yet"}
           body={
             query

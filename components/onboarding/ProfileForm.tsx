@@ -7,7 +7,11 @@ import { Button } from "../ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useState, useRef } from "react";
 import { TextField } from "../form-fields/TextField";
-import { LoaderCircle, UserRound } from "lucide-react";
+import {
+  CloseCircleFilled,
+  Loading3Filled,
+  User1Filled,
+} from "@mingcute/react/core-filled";
 import { useRouter } from "next/navigation";
 import { uploadAvatar } from "@/lib/actions/avatars.actions";
 import { updateProfile } from "@/lib/actions/users.actions";
@@ -21,7 +25,6 @@ import type { Tables } from "@/types/supabase";
 import { getEvents } from "@/lib/actions/events.actions";
 import { markUserCompletedOnboarding } from "@/lib/actions/users.actions";
 import { toast } from "sonner";
-import { CircleX } from "lucide-react";
 
 export default function ProfileForm({ user }: { user: Tables<"users"> }) {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(
@@ -75,7 +78,7 @@ export default function ProfileForm({ user }: { user: Tables<"users"> }) {
           });
         } else {
           toast("Couldn't save your profile", {
-            icon: <CircleX className="text-destructive size-5" />,
+            icon: <CloseCircleFilled className="text-destructive size-5" />,
           });
         }
         return;
@@ -93,7 +96,7 @@ export default function ProfileForm({ user }: { user: Tables<"users"> }) {
     } catch (error) {
       console.error(error);
       toast("Couldn't save your profile", {
-        icon: <CircleX className="text-destructive size-5" />,
+        icon: <CloseCircleFilled className="text-destructive size-5" />,
       });
     } finally {
       setLoading(false);
@@ -119,7 +122,7 @@ export default function ProfileForm({ user }: { user: Tables<"users"> }) {
                   src={avatarPreview || undefined}
                 />
                 <AvatarFallback className="bg-muted text-muted-foreground">
-                  <UserRound className="size-10" />
+                  <User1Filled className="size-10" />
                 </AvatarFallback>
               </Avatar>
               <div className="text-sm underline">Pick an image</div>
@@ -162,7 +165,7 @@ export default function ProfileForm({ user }: { user: Tables<"users"> }) {
         />
 
         <Button type="submit" disabled={loading} className="mt-2 w-full">
-          {loading && <LoaderCircle className="size-4 animate-spin" />}
+          {loading && <Loading3Filled className="size-4 animate-spin" />}
           {!loading && "Continue"}
         </Button>
       </form>

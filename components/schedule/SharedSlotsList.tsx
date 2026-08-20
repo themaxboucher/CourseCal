@@ -1,4 +1,4 @@
-import { CalendarCheck } from "lucide-react";
+import { ScheduleFilled } from "@mingcute/react/core-filled";
 import { formatTime } from "@/lib/utils/schedule";
 import type { SharedSlot } from "@/lib/utils/availability";
 
@@ -61,7 +61,7 @@ export default function SharedSlotsList({
   return (
     <div className="space-y-2">
       <h2 className="flex items-center gap-2 text-sm font-medium">
-        <CalendarCheck className="size-4 text-emerald-600 dark:text-emerald-400" />
+        <ScheduleFilled className="size-4 text-emerald-600 dark:text-emerald-400" />
         When you&apos;re all free
       </h2>
       <ul className="divide-y rounded-lg border">

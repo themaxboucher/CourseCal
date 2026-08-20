@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarOff, Check } from "lucide-react";
+import { CalendarXFilled, CheckFilled } from "@mingcute/react/core-filled";
 import Link from "next/link";
 import UserAvatar from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
@@ -75,12 +75,12 @@ export default function FriendRail({
               </span>
               {selected && (
                 <span className="absolute -bottom-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                  <Check className="size-2.5" />
+                  <CheckFilled className="size-2.5" />
                 </span>
               )}
               {!hasSchedule && (
                 <span className="absolute -bottom-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-muted text-muted-foreground border">
-                  <CalendarOff className="size-2.5" />
+                  <CalendarXFilled className="size-2.5" />
                 </span>
               )}
             </span>

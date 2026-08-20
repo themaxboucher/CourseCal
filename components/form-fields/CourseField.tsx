@@ -1,6 +1,9 @@
 "use client";
 
-import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
+import {
+  CheckFilled,
+  SelectorVerticalFilled,
+} from "@mingcute/react/core-filled";
 import { useState, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -128,7 +131,7 @@ export function CourseField({
                 aria-invalid={hasError ? "true" : "false"}
               >
                 {selectedCourse ? selectedCourse.code : placeholder}
-                <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                <SelectorVerticalFilled className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="p-0 w-[var(--radix-popover-trigger-width)]">
@@ -173,7 +176,7 @@ export function CourseField({
                               {course.title}
                             </span>
                           </div>
-                          <CheckIcon
+                          <CheckFilled
                             className={cn(
                               "mr-2 size-4",
                               field.value?.id === course.id

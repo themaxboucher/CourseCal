@@ -1,4 +1,4 @@
-import { Smartphone } from "lucide-react";
+import { CellphoneFilled } from "@mingcute/react/core-filled";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -67,13 +67,13 @@ export function WallpaperDialog({
     isMobile ? (
       <DrawerTrigger asChild>
         <Button variant="outline" size="icon" className="md:hidden">
-          <Smartphone className="size-5" />
+          <CellphoneFilled className="size-5" />
         </Button>
       </DrawerTrigger>
     ) : (
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
-          <Smartphone className="size-4" />
+          <CellphoneFilled className="size-4" />
           Wallpaper
         </Button>
       </DialogTrigger>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarFold, Users } from "lucide-react";
+import { CalendarFilled, GroupFilled } from "@mingcute/react/core-filled";
 import { Logo } from "./Logo";
 import { Button } from "./ui/button";
 import Link from "next/link";
@@ -45,7 +45,7 @@ export function Navbar({
                   </Button>
                   <Button size="icon" className="md:hidden" asChild>
                     <Link href="/schedule">
-                      <CalendarFold className="size-4.5" />
+                      <CalendarFilled className="size-4.5" />
                     </Link>
                   </Button>
                 </li>
@@ -85,7 +85,7 @@ export function Navbar({
                     asChild
                   >
                     <Link href="/friends">
-                      <Users className="size-4.5" />
+                      <GroupFilled className="size-4.5" />
                       {pendingRequestCount > 0 && (
                         <span className="absolute -right-0.5 -top-0.5 inline-flex min-w-4.5 items-center justify-center rounded-full bg-destructive px-1 text-[0.625rem] font-semibold leading-4.5 text-white">
                           {pendingRequestCount > 9 ? "9+" : pendingRequestCount}

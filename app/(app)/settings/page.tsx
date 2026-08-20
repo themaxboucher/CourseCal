@@ -6,7 +6,7 @@ import { ThemeSelector } from "@/components/ThemeSelector";
 import { Button } from "@/components/ui/button";
 import { getLoggedInUser } from "@/lib/actions/users.actions";
 import { getPendingRequestCount } from "@/lib/actions/friends.actions";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeftFilled } from "@mingcute/react/core-filled";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -32,7 +32,7 @@ export default async function SettingsPage() {
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="icon" asChild>
                 <Link href="/schedule">
-                  <ArrowLeft className="size-6" />
+                  <ArrowLeftFilled className="size-6" />
                 </Link>
               </Button>
               <h1 className="heading-3">Settings</h1>

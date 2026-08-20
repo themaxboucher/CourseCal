@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeftFilled } from "@mingcute/react/core-filled";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Loading from "@/components/Loading";
@@ -109,7 +109,7 @@ function VerifyContent() {
             {error && (
               <Button variant="outline" size="sm" asChild>
                 <Link href="/">
-                  <ArrowLeft className="size-4" /> Back to login
+                  <ArrowLeftFilled className="size-4" /> Back to login
                 </Link>
               </Button>
             )}

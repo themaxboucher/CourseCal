@@ -6,7 +6,7 @@ import {
   type ScheduleAnalysisResult,
 } from "@/lib/actions/ai.actions";
 import { saveEvents as saveLocalEvents } from "@/lib/indexeddb";
-import { Loader2, CalendarArrowUp } from "lucide-react";
+import { CalendarAddFilled, Loading3Filled } from "@mingcute/react/core-filled";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -183,7 +183,7 @@ export default function UploadSchedule({ term }: UploadScheduleProps) {
           {!isLoading ? (
             <>
               <div className="flex items-center justify-center rounded-2xl bg-muted/50 group-hover:bg-ring/5 group-hover:text-ring p-3">
-                <CalendarArrowUp className="size-6" />
+                <CalendarAddFilled className="size-6" />
               </div>
 
               {isDragging ? (
@@ -197,7 +197,7 @@ export default function UploadSchedule({ term }: UploadScheduleProps) {
             </>
           ) : (
             <>
-              <Loader2 className="size-8 animate-spin text-primary" />
+              <Loading3Filled className="size-8 animate-spin text-primary" />
               <ShinyText text="Analyzing schedule" speed={1.5} />
             </>
           )}
@@ -207,7 +207,7 @@ export default function UploadSchedule({ term }: UploadScheduleProps) {
         {!isLoading ? (
           <div className="flex flex-col items-center justify-center gap-3 lg:hidden">
             <Button onClick={() => fileInputRef.current?.click()}>
-              <CalendarArrowUp className="size-4" />
+              <CalendarAddFilled className="size-4" />
               Choose file
             </Button>
             <p className="text-muted-foreground text-sm">
@@ -216,7 +216,7 @@ export default function UploadSchedule({ term }: UploadScheduleProps) {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center gap-3 text-muted-foreground lg:hidden">
-            <Loader2 className="size-6 text-primary animate-spin" />
+            <Loading3Filled className="size-6 text-primary animate-spin" />
             <ShinyText text="Analyzing schedule" speed={1.5} />
           </div>
         )}

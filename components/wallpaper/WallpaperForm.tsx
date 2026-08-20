@@ -3,14 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { toBlob } from "html-to-image";
 import {
-  Clock,
-  Download,
-  Info,
-  Loader2,
-  MapPin,
-  Moon,
-  Sun,
-} from "lucide-react";
+  DownloadFilled,
+  InformationFilled,
+  Loading3Filled,
+  LocationFilled,
+  MoonFilled,
+  SunFilled,
+  TimeFilled,
+} from "@mingcute/react/core-filled";
 import { Button } from "../ui/button";
 import { Slider } from "../ui/slider";
 import WallpaperPreview from "./WallpaperPreview";
@@ -166,7 +166,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
                   <Label>Height</Label>
                   <HoverCard>
                     <HoverCardTrigger>
-                      <Info className="size-4 text-muted-foreground" />
+                      <InformationFilled className="size-4 text-muted-foreground" />
                     </HoverCardTrigger>
                     <HoverCardContent align="start">
                       <p className="text-sm">
@@ -203,7 +203,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
                       "ring-2 ring-sky-500 ring-offset-2 ring-offset-background",
                   )}
                 >
-                  <MapPin className="size-4" />
+                  <LocationFilled className="size-4" />
                   Room
                 </Button>
                 <Button
@@ -217,7 +217,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
                       "ring-2 ring-sky-500 ring-offset-2 ring-offset-background",
                   )}
                 >
-                  <Clock className="size-4" />
+                  <TimeFilled className="size-4" />
                   Time
                 </Button>
               </div>
@@ -237,7 +237,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
                       "ring-2 ring-sky-500 ring-offset-2 ring-offset-background",
                   )}
                 >
-                  <Sun className="size-4" />
+                  <SunFilled className="size-4" />
                   Light
                 </Button>
                 <Button
@@ -251,7 +251,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
                       "ring-2 ring-sky-500 ring-offset-2 ring-offset-background",
                   )}
                 >
-                  <Moon className="size-4" />
+                  <MoonFilled className="size-4" />
                   Dark
                 </Button>
               </div>
@@ -315,12 +315,12 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
           >
             {isSaving ? (
               <>
-                <Loader2 className="size-4 animate-spin" />
+                <Loading3Filled className="size-4 animate-spin" />
                 Preparing
               </>
             ) : (
               <>
-                <Download className="size-4" />
+                <DownloadFilled className="size-4" />
                 Download
               </>
             )}

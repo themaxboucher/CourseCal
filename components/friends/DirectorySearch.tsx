@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, X } from "lucide-react";
+import { CloseFilled, SearchFilled } from "@mingcute/react/core-filled";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -27,7 +27,7 @@ export default function DirectorySearch({
   return (
     <form onSubmit={submit} className="flex items-center gap-2">
       <div className="relative flex-grow">
-        <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <SearchFilled className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           value={query}
           onChange={(event) => setQuery(event.target.value)}
@@ -45,7 +45,7 @@ export default function DirectorySearch({
             className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground hover:text-foreground"
             aria-label="Clear search"
           >
-            <X className="size-4" />
+            <CloseFilled className="size-4" />
           </button>
         )}
       </div>

@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, CalendarOff, Lock } from "lucide-react";
+import {
+  ArrowLeftFilled,
+  CalendarXFilled,
+  LockFilled,
+} from "@mingcute/react/core-filled";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import UserAvatar from "@/components/UserAvatar";
@@ -53,7 +57,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" asChild>
               <Link href="/friends">
-                <ArrowLeft className="size-6" />
+                <ArrowLeftFilled className="size-6" />
               </Link>
             </Button>
             <h1 className="heading-3">Profile</h1>
@@ -94,7 +98,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
             />
           ) : (
             <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed py-12 px-6 text-center">
-              <Lock className="size-8 text-muted-foreground" />
+              <LockFilled className="size-8 text-muted-foreground" />
               <div className="space-y-1">
                 <p className="font-medium">Schedule is private</p>
                 <p className="text-sm text-muted-foreground max-w-sm">
@@ -130,7 +134,7 @@ async function FriendSchedule({
   if (termEvents.length === 0) {
     return (
       <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed py-12 px-6 text-center">
-        <CalendarOff className="size-8 text-muted-foreground" />
+        <CalendarXFilled className="size-8 text-muted-foreground" />
         <div className="space-y-1">
           <p className="font-medium">No schedule for this term</p>
           <p className="text-sm text-muted-foreground max-w-sm">

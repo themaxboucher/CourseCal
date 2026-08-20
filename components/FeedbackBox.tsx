@@ -1,11 +1,11 @@
-import { MessageCircle } from "lucide-react";
+import { Chat2Filled } from "@mingcute/react/core-filled";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 export default function FeedbackBox() {
   return (
     <Popover>
       <PopoverTrigger className="fixed z-20 bottom-4 right-4 md:bottom-6 md:right-6 p-2.5 md:p-3 rounded-full bg-foreground text-background shadow-md hover:shadow-lg hover:cursor-pointer">
-        <MessageCircle className="size-5 md:size-6" />
+        <Chat2Filled className="size-5 md:size-6" />
       </PopoverTrigger>
       <PopoverContent align="end" sideOffset={10}>
         <div className="space-y-1">

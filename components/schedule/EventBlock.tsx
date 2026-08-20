@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { formatTime } from "@/lib/utils/schedule";
 import { eventColors, lightEventColors } from "@/constants";
-import { TriangleAlert } from "lucide-react";
+import { AlertFilled } from "@mingcute/react/core-filled";
 import {
   type AnyEvent,
   getCourseTitle,
@@ -56,7 +56,7 @@ export default function EventBlock({
     >
       {(!event.course_code || !event.type) && !isWallpaper && (
         <div className="absolute -top-1.5 -right-1.5 size-5 md:size-6 flex justify-center items-center rounded-full border-[1.5px] text-amber-600 bg-amber-200 border-amber-100">
-          <TriangleAlert className="size-3 md:size-3.5" />
+          <AlertFilled className="size-3 md:size-3.5" />
         </div>
       )}
       <div className="flex items-start justify-between gap-1">

@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
-import { LoaderCircle } from "lucide-react";
+import { Loading3Filled } from "@mingcute/react/core-filled";
 import { Form } from "../ui/form";
 import FormAlert from "../FormAlert";
 import { Button } from "../ui/button";
@@ -84,7 +84,7 @@ export default function AuthForm({ type }: { type: AuthIntent }) {
           <TextField form={form} name="email" placeholder="you@ucalgary.ca" />
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading && <LoaderCircle className="h-4 w-4 animate-spin" />}
+            {loading && <Loading3Filled className="h-4 w-4 animate-spin" />}
             {!loading && "Continue"}
           </Button>
         </div>

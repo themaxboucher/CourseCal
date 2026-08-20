@@ -10,7 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { CircleX, LoaderCircle } from "lucide-react";
+import { CloseCircleFilled, Loading3Filled } from "@mingcute/react/core-filled";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -47,7 +47,7 @@ export default function DeleteEventDialog({
       onEventDeleted?.();
     } catch (error) {
       toast("Error deleting class", {
-        icon: <CircleX className="text-destructive size-5" />,
+        icon: <CloseCircleFilled className="text-destructive size-5" />,
       });
       console.error(error);
     } finally {
@@ -73,7 +73,7 @@ export default function DeleteEventDialog({
             disabled={deleting}
           >
             {deleting ? (
-              <LoaderCircle className="h-4 w-4 animate-spin" />
+              <Loading3Filled className="h-4 w-4 animate-spin" />
             ) : (
               "Delete"
             )}

@@ -4,13 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
-  Check,
-  CircleCheck,
-  CircleX,
-  Clock,
-  LoaderCircle,
-  UserPlus,
-} from "lucide-react";
+  CheckCircleFilled,
+  CheckFilled,
+  CloseCircleFilled,
+  Loading3Filled,
+  TimeFilled,
+  UserAddFilled,
+} from "@mingcute/react/core-filled";
 import { Button } from "@/components/ui/button";
 import {
   acceptFriendRequest,
@@ -57,7 +57,7 @@ export default function FriendButton({
       const result = await action();
       if (!result.ok) {
         toast(FRIEND_ACTION_MESSAGES[result.reason], {
-          icon: <CircleX className="text-destructive size-5" />,
+          icon: <CloseCircleFilled className="text-destructive size-5" />,
         });
         // Our idea of the relationship was stale — let the server correct it.
         router.refresh();
@@ -65,13 +65,13 @@ export default function FriendButton({
       }
       setOverride({ from: serverStatus, to: nextStatus });
       toast(successMessage, {
-        icon: <CircleCheck className="text-green-500 size-5" />,
+        icon: <CheckCircleFilled className="text-green-500 size-5" />,
       });
       router.refresh();
     } catch (error) {
       console.error(error);
       toast(FRIEND_ACTION_MESSAGES.unknown, {
-        icon: <CircleX className="text-destructive size-5" />,
+        icon: <CloseCircleFilled className="text-destructive size-5" />,
       });
     } finally {
       setBusy(false);
@@ -80,7 +80,7 @@ export default function FriendButton({
 
   if (status === "self") return null;
 
-  const spinner = <LoaderCircle className="size-4 animate-spin" />;
+  const spinner = <Loading3Filled className="size-4 animate-spin" />;
 
   if (status === "incoming_pending") {
     return (
@@ -129,7 +129,7 @@ export default function FriendButton({
           run(() => removeFriend(userId), "none", "Request cancelled")
         }
       >
-        {busy ? spinner : <Clock className="size-4" />}
+        {busy ? spinner : <TimeFilled className="size-4" />}
         Requested
       </Button>
     );
@@ -146,7 +146,7 @@ export default function FriendButton({
           run(() => removeFriend(userId), "none", "Removed from friends")
         }
       >
-        {busy ? spinner : <Check className="size-4" />}
+        {busy ? spinner : <CheckFilled className="size-4" />}
         Friends
       </Button>
     );
@@ -161,7 +161,7 @@ export default function FriendButton({
         run(() => sendFriendRequest(userId), "outgoing_pending", "Request sent")
       }
     >
-      {busy ? spinner : <UserPlus className="size-4" />}
+      {busy ? spinner : <UserAddFilled className="size-4" />}
       Add friend
     </Button>
   );

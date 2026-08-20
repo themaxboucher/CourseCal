@@ -1,4 +1,4 @@
-import { Upload } from "lucide-react";
+import { UploadFilled } from "@mingcute/react/core-filled";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 import UploadSchedule from "./UploadSchedule";
@@ -13,7 +13,7 @@ export function UploadDialog({ term }: UploadDialogProps) {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="hidden md:flex">
-          <Upload className="size-4" />
+          <UploadFilled className="size-4" />
           <span className="hidden md:block">Upload</span>
         </Button>
       </DialogTrigger>
