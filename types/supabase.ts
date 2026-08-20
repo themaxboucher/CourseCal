@@ -157,10 +157,10 @@ export type Database = {
           status: Database["public"]["Enums"]["friendship_status"]
         }
         Insert: {
-          addressee?: string
+          addressee: string
           created_at?: string
           id?: number
-          requester?: string
+          requester: string
           responded_at?: string | null
           status?: Database["public"]["Enums"]["friendship_status"]
         }
