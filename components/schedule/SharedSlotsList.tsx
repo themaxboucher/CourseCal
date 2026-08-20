@@ -1,4 +1,4 @@
-import { ScheduleFilled } from "@mingcute/react/core-filled";
+import { ScheduleFilled } from "@/components/icons";
 import { formatTime } from "@/lib/utils/schedule";
 import type { SharedSlot } from "@/lib/utils/availability";
 

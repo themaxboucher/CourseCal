@@ -1,4 +1,4 @@
-import { AlertFilled } from "@mingcute/react/core-filled";
+import { AlertFilled } from "@/components/icons";
 import { cn } from "@/lib/utils";
 
 interface FormWarningProps {

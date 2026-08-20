@@ -11,7 +11,7 @@ import {
   CloseCircleFilled,
   Loading3Filled,
   User1Filled,
-} from "@mingcute/react/core-filled";
+} from "@/components/icons";
 import { useRouter } from "next/navigation";
 import { uploadAvatar } from "@/lib/actions/avatars.actions";
 import { updateProfile } from "@/lib/actions/users.actions";

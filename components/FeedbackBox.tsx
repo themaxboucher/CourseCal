@@ -1,4 +1,4 @@
-import { Chat2Filled } from "@mingcute/react/core-filled";
+import { Chat2Filled } from "@/components/icons";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 export default function FeedbackBox() {

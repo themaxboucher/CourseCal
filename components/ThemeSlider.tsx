@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MoonFilled, SunFilled } from "@mingcute/react/core-filled";
+import { MoonFilled, SunFilled } from "@/components/icons";
 import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";

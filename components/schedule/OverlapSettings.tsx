@@ -1,6 +1,6 @@
 "use client";
 
-import { Settings6Filled } from "@mingcute/react/core-filled";
+import { Settings6Filled } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {

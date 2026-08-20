@@ -4,7 +4,7 @@ import type * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import {
   CloseFilled,
-} from "@mingcute/react/core-filled";
+} from "@/components/icons";
 
 import { cn } from "@/lib/utils"
 

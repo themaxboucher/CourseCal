@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { formatTime } from "@/lib/utils/schedule";
 import { eventColors, lightEventColors } from "@/constants";
-import { AlertFilled } from "@mingcute/react/core-filled";
+import { AlertFilled } from "@/components/icons";
 import {
   type AnyEvent,
   getCourseTitle,

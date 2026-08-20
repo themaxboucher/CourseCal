@@ -4,7 +4,7 @@ import type * as React from "react"
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
 import {
   CheckFilled,
-} from "@mingcute/react/core-filled";
+} from "@/components/icons";
 
 import { cn } from "@/lib/utils"
 

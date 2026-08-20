@@ -1,6 +1,6 @@
 "use client";
 
-import { AddFilled } from "@mingcute/react/core-filled";
+import { AddFilled } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import EventDialog from "./EventDialog";

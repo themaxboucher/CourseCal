@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarXFilled, CheckFilled } from "@mingcute/react/core-filled";
+import { CalendarXFilled, CheckFilled } from "@/components/icons";
 import Link from "next/link";
 import UserAvatar from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";

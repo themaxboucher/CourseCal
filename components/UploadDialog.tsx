@@ -1,4 +1,4 @@
-import { UploadFilled } from "@mingcute/react/core-filled";
+import { UploadFilled } from "@/components/icons";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 import UploadSchedule from "./UploadSchedule";

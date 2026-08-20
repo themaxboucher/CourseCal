@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { OutlookIcon } from "@/components/icons/OutlookIcon";
-import { InboxFilled } from "@mingcute/react/core-filled";
+import { InboxFilled } from "@/components/icons";
 
 interface CheckEmailPageProps {
   searchParams: Promise<{ intent?: string }>;

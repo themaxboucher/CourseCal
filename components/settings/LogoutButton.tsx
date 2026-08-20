@@ -3,7 +3,7 @@
 import { logout } from "@/lib/actions/auth.actions";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
-import { ExitFilled } from "@mingcute/react/core-filled";
+import { ExitFilled } from "@/components/icons";
 
 export function LogoutButton() {
   const router = useRouter();

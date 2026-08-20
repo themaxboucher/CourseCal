@@ -7,7 +7,7 @@ import {
   LocationFilled,
   Refresh2Filled,
   TimeFilled,
-} from "@mingcute/react/core-filled";
+} from "@/components/icons";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";

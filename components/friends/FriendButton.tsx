@@ -10,7 +10,7 @@ import {
   Loading3Filled,
   TimeFilled,
   UserAddFilled,
-} from "@mingcute/react/core-filled";
+} from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
   acceptFriendRequest,

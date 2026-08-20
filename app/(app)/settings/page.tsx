@@ -6,7 +6,7 @@ import { ThemeSelector } from "@/components/ThemeSelector";
 import { Button } from "@/components/ui/button";
 import { getLoggedInUser } from "@/lib/actions/users.actions";
 import { getPendingRequestCount } from "@/lib/actions/friends.actions";
-import { ArrowLeftFilled } from "@mingcute/react/core-filled";
+import { ArrowLeftFilled } from "@/components/icons";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 

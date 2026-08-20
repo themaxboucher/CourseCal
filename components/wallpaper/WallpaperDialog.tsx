@@ -1,4 +1,4 @@
-import { CellphoneFilled } from "@mingcute/react/core-filled";
+import { CellphoneFilled } from "@/components/icons";
 import { Button } from "../ui/button";
 import {
   Dialog,

@@ -17,7 +17,7 @@ import {
   GroupFilled,
   Loading3Filled,
   RefreshAnticlockwise1Filled,
-} from "@mingcute/react/core-filled";
+} from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";

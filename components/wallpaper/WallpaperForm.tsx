@@ -10,7 +10,7 @@ import {
   MoonFilled,
   SunFilled,
   TimeFilled,
-} from "@mingcute/react/core-filled";
+} from "@/components/icons";
 import { Button } from "../ui/button";
 import { Slider } from "../ui/slider";
 import WallpaperPreview from "./WallpaperPreview";

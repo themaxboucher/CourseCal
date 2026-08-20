@@ -6,7 +6,7 @@ import {
   CheckFilled,
   DownFilled,
   UpFilled,
-} from "@mingcute/react/core-filled";
+} from "@/components/icons";
 
 import { cn } from "@/lib/utils"
 

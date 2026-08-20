@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  CheckFilled,
-  SelectorVerticalFilled,
-} from "@mingcute/react/core-filled";
+import { CheckFilled, SelectorVerticalFilled } from "@/components/icons";
 import { useState, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";

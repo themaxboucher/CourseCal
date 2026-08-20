@@ -4,7 +4,7 @@ import type * as React from "react"
 import { Command as CommandPrimitive } from "cmdk"
 import {
   SearchFilled,
-} from "@mingcute/react/core-filled";
+} from "@/components/icons";
 
 import { cn } from "@/lib/utils"
 import {

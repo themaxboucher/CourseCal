@@ -9,7 +9,7 @@ import {
   Presentation1Filled,
   SnowflakeFilled,
   SunFilled,
-} from "@mingcute/react/core-filled";
+} from "@/components/icons";
 
 export const icons = {
   Loading3Filled,

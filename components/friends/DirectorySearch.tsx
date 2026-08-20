@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CloseFilled, SearchFilled } from "@mingcute/react/core-filled";
+import { CloseFilled, SearchFilled } from "@/components/icons";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 

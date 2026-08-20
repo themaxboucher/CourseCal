@@ -23,7 +23,7 @@ import {
   CloseCircleFilled,
   DeleteFilled,
   Loading3Filled,
-} from "@mingcute/react/core-filled";
+} from "@/components/icons";
 import { deleteAccount } from "@/lib/actions/users.actions";
 import { useState } from "react";
 import { useRouter } from "next/navigation";

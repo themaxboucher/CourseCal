@@ -10,7 +10,7 @@ import {
   CheckCircleFilled,
   CloseCircleFilled,
   Loading3Filled,
-} from "@mingcute/react/core-filled";
+} from "@/components/icons";
 import { updateProfile } from "@/lib/actions/users.actions";
 import { uploadAvatar } from "@/lib/actions/avatars.actions";
 import { Label } from "../ui/label";

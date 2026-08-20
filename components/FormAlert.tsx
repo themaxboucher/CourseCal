@@ -2,7 +2,7 @@ import {
   CheckCircleFilled,
   InformationFilled,
   WarningFilled,
-} from "@mingcute/react/core-filled";
+} from "@/components/icons";
 import { Alert, AlertDescription } from "./ui/alert";
 import { cn } from "@/lib/utils";
 

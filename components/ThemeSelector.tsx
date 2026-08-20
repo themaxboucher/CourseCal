@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  MonitorFilled,
-  MoonFilled,
-  SunFilled,
-} from "@mingcute/react/core-filled";
+import { MonitorFilled, MoonFilled, SunFilled } from "@/components/icons";
 import { useTheme } from "next-themes";
 
 import {

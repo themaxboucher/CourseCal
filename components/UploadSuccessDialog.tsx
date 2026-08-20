@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ScheduleFilled } from "@mingcute/react/core-filled";
+import { ScheduleFilled } from "@/components/icons";
 
 interface UploadSuccessDialogProps {
   show: boolean;

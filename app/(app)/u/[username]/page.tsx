@@ -4,7 +4,7 @@ import {
   ArrowLeftFilled,
   CalendarXFilled,
   LockFilled,
-} from "@mingcute/react/core-filled";
+} from "@/components/icons";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import UserAvatar from "@/components/UserAvatar";

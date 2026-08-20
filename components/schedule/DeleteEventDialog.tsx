@@ -10,7 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { CloseCircleFilled, Loading3Filled } from "@mingcute/react/core-filled";
+import { CloseCircleFilled, Loading3Filled } from "@/components/icons";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";

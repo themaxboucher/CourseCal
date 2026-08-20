@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarFilled, GroupFilled } from "@mingcute/react/core-filled";
+import { CalendarFilled, GroupFilled } from "@/components/icons";
 import { Logo } from "./Logo";
 import { Button } from "./ui/button";
 import Link from "next/link";

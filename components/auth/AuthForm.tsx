@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
-import { Loading3Filled } from "@mingcute/react/core-filled";
+import { Loading3Filled } from "@/components/icons";
 import { Form } from "../ui/form";
 import FormAlert from "../FormAlert";
 import { Button } from "../ui/button";

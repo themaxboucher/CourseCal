@@ -6,7 +6,7 @@ import {
   type ScheduleAnalysisResult,
 } from "@/lib/actions/ai.actions";
 import { saveEvents as saveLocalEvents } from "@/lib/indexeddb";
-import { CalendarAddFilled, Loading3Filled } from "@mingcute/react/core-filled";
+import { CalendarAddFilled, Loading3Filled } from "@/components/icons";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";

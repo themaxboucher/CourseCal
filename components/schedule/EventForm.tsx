@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-import { Loading3Filled } from "@mingcute/react/core-filled";
+import { Loading3Filled } from "@/components/icons";
 
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";

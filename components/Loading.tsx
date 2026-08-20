@@ -1,4 +1,4 @@
-import { Loading3Filled } from "@mingcute/react/core-filled";
+import { Loading3Filled } from "@/components/icons";
 
 export default function Loading({ message }: { message?: string }) {
   return (
