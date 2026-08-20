@@ -147,6 +147,48 @@ export type Database = {
           },
         ]
       }
+      friendships: {
+        Row: {
+          addressee: string
+          created_at: string
+          id: number
+          requester: string
+          responded_at: string | null
+          status: Database["public"]["Enums"]["friendship_status"]
+        }
+        Insert: {
+          addressee?: string
+          created_at?: string
+          id?: number
+          requester?: string
+          responded_at?: string | null
+          status?: Database["public"]["Enums"]["friendship_status"]
+        }
+        Update: {
+          addressee?: string
+          created_at?: string
+          id?: number
+          requester?: string
+          responded_at?: string | null
+          status?: Database["public"]["Enums"]["friendship_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "friendships_addressee_fkey"
+            columns: ["addressee"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "friendships_requester_fkey"
+            columns: ["requester"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       terms: {
         Row: {
           created_at: string
@@ -184,6 +226,8 @@ export type Database = {
           id: string
           major: string | null
           name: string | null
+          referred_by: string | null
+          username: string
         }
         Insert: {
           avatar?: string | null
@@ -194,6 +238,8 @@ export type Database = {
           id: string
           major?: string | null
           name?: string | null
+          referred_by?: string | null
+          username: string
         }
         Update: {
           avatar?: string | null
@@ -204,15 +250,26 @@ export type Database = {
           id?: string
           major?: string | null
           name?: string | null
+          referred_by?: string | null
+          username?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "users_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      are_friends: { Args: { a: string; b: string }; Returns: boolean }
+      generate_username: { Args: { p_email: string }; Returns: string }
     }
     Enums: {
       class_type: "lecture" | "tutorial" | "lab" | "seminar"
@@ -225,6 +282,7 @@ export type Database = {
         | "blue"
         | "purple"
         | "pink"
+      friendship_status: "pending" | "accepted"
       recurrence: "weekly" | "biweekly"
       season: "fall" | "winter" | "spring" | "summer"
       week_day: "monday" | "tuesday" | "wednesday" | "thursday" | "friday"
@@ -366,6 +424,7 @@ export const Constants = {
         "purple",
         "pink",
       ],
+      friendship_status: ["pending", "accepted"],
       recurrence: ["weekly", "biweekly"],
       season: ["fall", "winter", "spring", "summer"],
       week_day: ["monday", "tuesday", "wednesday", "thursday", "friday"],
