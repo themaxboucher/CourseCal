@@ -6,8 +6,8 @@ import { Form } from "../ui/form";
 import { Button } from "../ui/button";
 import { useState, useRef } from "react";
 import { TextField } from "../form-fields/TextField";
-import { CircleCheck, LoaderCircle } from "lucide-react";
-import { updateUser } from "@/lib/actions/users.actions";
+import { CircleCheck, CircleX, LoaderCircle } from "lucide-react";
+import { updateProfile } from "@/lib/actions/users.actions";
 import { uploadAvatar } from "@/lib/actions/avatars.actions";
 import { Label } from "../ui/label";
 import { toast } from "sonner";
@@ -32,10 +32,13 @@ export default function UpdateProfileForm({ user }: { user: Tables<"users"> }) {
     resolver: zodResolver(profileSchema),
     defaultValues: {
       avatar: user.avatar || undefined,
+      username: user.username,
       name: user.name || "",
       major: user.major || "",
     },
   });
+
+  const usernamePreview = form.watch("username")?.trim().toLowerCase() || "…";
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleAvatarFileChange(e, (file, dataUrl) => {
@@ -54,21 +57,34 @@ export default function UpdateProfileForm({ user }: { user: Tables<"users"> }) {
         ? await uploadAvatar(avatarFile, user.id)
         : user.avatar;
 
-      await updateUser(user.id, {
+      const result = await updateProfile(user.id, {
+        username: data.username,
         name: data.name,
         major: data.major,
         avatar: avatarUrl,
       });
+
+      if (!result.ok) {
+        if (result.reason === "username_taken") {
+          form.setError("username", {
+            message: "That username is already taken",
+          });
+        } else {
+          toast("Couldn't save your profile", {
+            icon: <CircleX className="text-destructive size-5" />,
+          });
+        }
+        return;
+      }
+
       toast("Profile updated", {
         icon: <CircleCheck className="text-green-500 size-5" />,
       });
     } catch (error) {
-      const message = error instanceof Error ? error.message : "";
-      let errorMessage = "Error updating personal details";
-      if (message.includes("already exists")) {
-        errorMessage = "An account with this email already exists";
-      }
-      alert(errorMessage);
+      console.error(error);
+      toast("Couldn't save your profile", {
+        icon: <CircleX className="text-destructive size-5" />,
+      });
     } finally {
       setLoading(false);
     }
@@ -106,6 +122,20 @@ export default function UpdateProfileForm({ user }: { user: Tables<"users"> }) {
           name="name"
           label="Your name"
           placeholder="Name"
+        />
+        <TextField
+          form={form}
+          name="username"
+          label="Username"
+          placeholder="username"
+          description={
+            <>
+              Friends find you at{" "}
+              <span className="text-foreground">
+                coursecal.com/u/{usernamePreview}
+              </span>
+            </>
+          }
         />
         <TextField
           form={form}

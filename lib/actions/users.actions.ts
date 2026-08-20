@@ -2,6 +2,11 @@
 
 import type { Tables, TablesUpdate } from "@/types/supabase";
 import { createAdminClient, createClient } from "../supabase/server";
+import { normalizeUsername } from "../utils/username";
+
+export type UpdateProfileResult =
+  | { ok: true }
+  | { ok: false; reason: "username_taken" | "invalid_username" | "unknown" };
 
 export async function getLoggedInUser(): Promise<Tables<"users"> | false> {
   const supabase = await createClient();
@@ -41,6 +46,47 @@ export async function updateUser(
     throw new Error(error.message);
   }
   return data;
+}
+
+/**
+ * Profile save for the onboarding and settings forms.
+ *
+ * Username uniqueness is decided by the `users_username_lower_key` index rather
+ * than by checking first and then writing — between those two steps another
+ * signup can take the name, and the check would have reported it free.
+ */
+export async function updateProfile(
+  userId: string,
+  profile: {
+    username: string;
+    name: string;
+    major: string;
+    avatar?: string | null;
+  },
+): Promise<UpdateProfileResult> {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("users")
+    .update({
+      username: normalizeUsername(profile.username),
+      name: profile.name,
+      major: profile.major,
+      avatar: profile.avatar ?? null,
+    })
+    .eq("id", userId);
+
+  if (error) {
+    if (error.code === "23505") {
+      return { ok: false, reason: "username_taken" };
+    }
+    // 23514 is `users_username_check` — the shape rules the form also enforces.
+    if (error.code === "23514") {
+      return { ok: false, reason: "invalid_username" };
+    }
+    console.error(error);
+    return { ok: false, reason: "unknown" };
+  }
+  return { ok: true };
 }
 
 export async function markUserWelcomed(userId: string) {

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { usernameSchema } from "./username";
 
 const MEGABYTE = 1024 * 1024;
 export const MAX_AVATAR_SIZE = 5 * MEGABYTE;
@@ -11,6 +12,7 @@ export const AVATAR_INPUT_ACCEPT = ALLOWED_AVATAR_TYPES.join(", ");
 
 export const profileSchema = z.object({
   avatar: z.string().optional(),
+  username: usernameSchema,
   name: z.string().min(1, "Name is required"),
   major: z.string().min(1, "Major is required"),
 });

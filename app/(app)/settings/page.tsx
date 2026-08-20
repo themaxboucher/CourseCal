@@ -5,6 +5,7 @@ import UpdateProfileForm from "@/components/settings/UpdateProfileForm";
 import { ThemeSelector } from "@/components/ThemeSelector";
 import { Button } from "@/components/ui/button";
 import { getLoggedInUser } from "@/lib/actions/users.actions";
+import { getPendingRequestCount } from "@/lib/actions/friends.actions";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -16,10 +17,15 @@ export default async function SettingsPage() {
   if (!user) {
     redirect("/");
   }
+  const pendingRequestCount = await getPendingRequestCount();
 
   return (
     <>
-      <Navbar isLoggedIn={true} />
+      <Navbar
+        isLoggedIn={true}
+        user={user}
+        pendingRequestCount={pendingRequestCount}
+      />
       <section className="flex flex-col gap-2 max-w-[45rem] mx-auto px-8 py-12">
         <div className="space-y-8">
           <div className="space-y-2">

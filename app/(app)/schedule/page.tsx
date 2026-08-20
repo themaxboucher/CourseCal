@@ -6,6 +6,7 @@ import WelcomeDialog from "@/components/WelcomeDialog";
 import UploadSuccessDialog from "@/components/UploadSuccessDialog";
 import FeedbackBox from "@/components/FeedbackBox";
 import { getLoggedInUser } from "@/lib/actions/users.actions";
+import { getPendingRequestCount } from "@/lib/actions/friends.actions";
 export const dynamic = "force-dynamic";
 
 interface SchedulePageProps {
@@ -21,6 +22,7 @@ export default async function SchedulePage({
   const terms = await getTerms();
   const events = user ? await getEvents(user.id) : [];
   const isLoggedIn = user !== false;
+  const pendingRequestCount = user ? await getPendingRequestCount() : 0;
 
   return (
     <>
@@ -29,7 +31,11 @@ export default async function SchedulePage({
       )}
       <UploadSuccessDialog show={justUploaded} />
 
-      <Navbar isLoggedIn={isLoggedIn} user={user || null} />
+      <Navbar
+        isLoggedIn={isLoggedIn}
+        user={user || null}
+        pendingRequestCount={pendingRequestCount}
+      />
       <section className="flex flex-col gap-2 max-w-[90rem] mx-auto md:px-8 px-2 md:py-8 py-2">
         <div className="flex flex-col items-center gap-8">
           <div className="flex flex-col items-center gap-4 w-full">
