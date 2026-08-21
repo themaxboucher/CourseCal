@@ -1,15 +1,10 @@
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatTime, withBlockGap } from "@/lib/utils/schedule";
 import type { BusyBlock, SharedSlot } from "@/lib/utils/availability";
 
 export interface AvailabilityPerson {
   name: string;
-  avatar?: string | null;
-  /**
-   * The signed-in viewer. Every free block is free for them by definition, so
-   * their avatar is left off — the row answers "which friends", not "who".
-   */
+  /** The signed-in viewer, whose own classes the overlay skips. */
   isViewer?: boolean;
 }
 
@@ -19,12 +14,8 @@ interface AvailabilityLayerProps {
   slots: SharedSlot[];
   startHour: number;
   pxPerHour: number;
-  /** Participant id to display name and avatar. */
+  /** Participant id to display name. */
   people: Record<string, AvailabilityPerson>;
-}
-
-interface PersonWithId extends AvailabilityPerson {
-  id: string;
 }
 
 /**
@@ -82,54 +73,13 @@ function describeBlock(
   return block.tentative ? `${what} (every other week)` : what;
 }
 
-/** Overlapped avatars, capped so a narrow column never has to scroll. */
-function AvatarRow({
-  people,
-  roomy,
-}: {
-  people: PersonWithId[];
-  roomy: boolean;
-}) {
-  const shown = people.slice(0, 4);
-  const remaining = people.length - shown.length;
-
-  return (
-    <div className="flex items-center -space-x-1">
-      {shown.map((person) => (
-        <Avatar
-          key={person.id}
-          title={person.name}
-          className={cn(
-            "size-4 ring-2 ring-background",
-            roomy ? "md:size-5" : "md:size-4",
-          )}
-        >
-          <AvatarImage
-            className="object-cover"
-            src={person.avatar ?? undefined}
-          />
-          <AvatarFallback className="bg-ring/20 text-[6px] font-bold text-ring md:text-[9px]">
-            {person.name.charAt(0)}
-          </AvatarFallback>
-        </Avatar>
-      ))}
-      {remaining > 0 && (
-        <span className="pl-1.5 text-xxxs tabular-nums opacity-70 md:text-xxs">
-          +{remaining}
-        </span>
-      )}
-    </div>
-  );
-}
-
 /**
  * One shared gap, built to read as a sibling of the class blocks around it:
  * same rounding, padding and type scale as EventBlock, with the duration
- * taking the slot the course code holds there, the time range underneath it,
- * and the faces of everyone free underneath that.
+ * taking the slot the course code holds there and the time range underneath.
  *
- * A 15-minute gap is only 16px tall, so rows are dropped from the bottom as
- * the block shrinks. Whatever is dropped stays in the hover description.
+ * A 15-minute gap is only 16px tall, so the time range is dropped as the
+ * block shrinks. What is dropped stays in the hover description.
  */
 function FreeSlot({
   slot,
@@ -142,22 +92,10 @@ function FreeSlot({
   height: number;
   people: Record<string, AvailabilityPerson>;
 }) {
-  const friends = slot.participantIds
-    .map((id) => ({ id, ...people[id] }))
-    .filter((person): person is PersonWithId =>
-      Boolean(person.name && !person.isViewer),
-    );
-
   // Budgeted against the desktop type, the taller of the two: each row of text
-  // costs 16px, the avatars 16-20px, the row gap 2-4px, and the padding 10px
-  // tight or 32px roomy. Mobile type is smaller, so anything clearing these
-  // clears there too.
-  //
-  // An hour is the gap this has to get right: both the commonest and the
-  // tightest fit for all three rows, which is why the spacing and the faces
-  // shrink below the roomy tier rather than the faces being dropped.
+  // costs 16px, the row gap 2-4px, and the padding 10px tight or 32px roomy.
+  // Mobile type is smaller, so anything clearing these clears there too.
   const roomy = height >= 92;
-  const showAvatars = height >= 62 && friends.length > 0;
   const showTimeRow = height >= 46;
 
   return (
@@ -175,15 +113,8 @@ function FreeSlot({
       title={describeSlot(slot, people)}
     >
       <div className={cn("w-full space-y-0.5", roomy && "md:space-y-1")}>
-        {/* Wraps rather than squeezes: a day column is only ~63px wide on a
-            phone, where the faces and the duration cannot share a line. The
-            duration never shrinks — the faces are what drop to a line of their
-            own. */}
-        <div className="flex w-full flex-wrap items-center justify-between gap-x-2 gap-y-0.5">
-          <div className="shrink-0 text-xxs font-bold md:text-xs">
-            {durationLabel(slot.endMin - slot.startMin)}
-          </div>
-          {showAvatars && <AvatarRow people={friends} roomy={roomy} />}
+        <div className="text-xxs font-bold md:text-xs">
+          {durationLabel(slot.endMin - slot.startMin)}
         </div>
 
         {showTimeRow && (

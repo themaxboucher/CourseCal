@@ -35,7 +35,7 @@ interface WeekViewProps {
    */
   busyBlocks?: BusyBlock[];
   freeSlots?: SharedSlot[];
-  /** Participant id to display name and avatar, for the overlay. */
+  /** Participant id to display name, for the overlay. */
   people?: Record<string, AvailabilityPerson>;
   /**
    * Events the visible hour range must accommodate. Defaults to `events`, but

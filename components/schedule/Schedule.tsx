@@ -216,13 +216,10 @@ export default function Schedule({
   const participantPeople = useMemo(() => {
     const people: Record<string, AvailabilityPerson> = {};
     if (user) {
-      people[user.id] = { name: "You", avatar: user.avatar, isViewer: true };
+      people[user.id] = { name: "You", isViewer: true };
     }
     for (const friend of friends) {
-      people[friend.id] = {
-        name: friend.name ?? friend.username,
-        avatar: friend.avatar,
-      };
+      people[friend.id] = { name: friend.name ?? friend.username };
     }
     return people;
   }, [user, friends]);
