@@ -29,19 +29,23 @@ export interface Interval {
 }
 
 /**
- * `busy`  — at least one person definitely has a class.
- * `maybe` — only biweekly classes fall here. `events` stores no anchor date, so
- *           nothing in the data says which week a biweekly class lands on;
- *           this is "free unless it's the other week".
- * `free`  — everybody counted is available.
+ * One class, on one day, belonging to one person.
+ *
+ * Deliberately *not* merged across people: two friends in class at the same
+ * hour have to stay two blocks, so the grid can draw each translucently and
+ * let the overlap read as darker than either one alone. Merging them would
+ * throw away exactly the information that darkness carries.
  */
-export type BandKind = "busy" | "maybe" | "free";
-
-export interface Band extends Interval {
+export interface BusyBlock extends Interval {
   day: WeekDay;
-  kind: BandKind;
-  /** Who this band is about: the busy people, or everyone free. */
-  participantIds: string[];
+  participantId: string;
+  /**
+   * A biweekly class. `events` stores no anchor date, so nothing in the data
+   * says which week it lands on: the time is taken, but only every other week.
+   */
+  tentative: boolean;
+  /** For the hover description. Null when the row never named a course. */
+  courseCode: string | null;
 }
 
 export interface SharedSlot extends Interval {
@@ -59,6 +63,8 @@ export interface ScheduleEvent {
   start_time: string;
   end_time: string;
   recurrence?: Recurrence | null;
+  /** Carried through to `BusyBlock` for hover text; nothing depends on it. */
+  course_code?: string | null;
 }
 
 export interface Participant {
@@ -86,7 +92,8 @@ export interface AvailabilityOptions {
 }
 
 export interface Availability {
-  bands: Band[];
+  /** Every counted person's classes, one block each, clipped to the grid. */
+  busyBlocks: BusyBlock[];
   /** Confirmed-free stretches, longest first. */
   slots: SharedSlot[];
   /** Participants that were counted. */
@@ -159,11 +166,12 @@ function intersectIntervals(a: Interval[], b: Interval[]): Interval[] {
   return result;
 }
 
-function overlaps(a: Interval, b: Interval): boolean {
-  return a.startMin < b.endMin && b.startMin < a.endMin;
-}
-
 // -- Event reading ----------------------------------------------------------
+
+interface DayEvent extends Interval {
+  tentative: boolean;
+  courseCode: string | null;
+}
 
 interface DayIntervals {
   definite: Interval[];
@@ -171,13 +179,13 @@ interface DayIntervals {
 }
 
 /**
- * Splits one person's events for a single weekday into certain and biweekly
- * intervals. Events with an unparseable or inverted time range are skipped —
- * a bad row should cost its own block, not the whole day.
+ * One person's classes on a single weekday, still one entry per class.
+ *
+ * Events with an unparseable or inverted time range are skipped — a bad row
+ * should cost its own block, not the whole day.
  */
-function intervalsForDay(events: ScheduleEvent[], day: WeekDay): DayIntervals {
-  const definite: Interval[] = [];
-  const tentative: Interval[] = [];
+function eventsForDay(events: ScheduleEvent[], day: WeekDay): DayEvent[] {
+  const found: DayEvent[] = [];
 
   for (const event of events) {
     if (!event.days?.includes(day)) continue;
@@ -187,14 +195,26 @@ function intervalsForDay(events: ScheduleEvent[], day: WeekDay): DayIntervals {
     if (!Number.isFinite(startMin) || !Number.isFinite(endMin)) continue;
     if (endMin <= startMin) continue;
 
-    const interval = { startMin, endMin };
-    if (event.recurrence === "biweekly") tentative.push(interval);
-    else definite.push(interval);
+    found.push({
+      startMin,
+      endMin,
+      tentative: event.recurrence === "biweekly",
+      courseCode: event.course_code ?? null,
+    });
   }
 
+  return found;
+}
+
+/**
+ * The same day collapsed into certain and biweekly interval sets. Merging is
+ * what the free-time arithmetic wants — one person contributes one stretch of
+ * busy, however many classes make it up.
+ */
+function mergeDay(dayEvents: DayEvent[]): DayIntervals {
   return {
-    definite: mergeIntervals(definite),
-    tentative: mergeIntervals(tentative),
+    definite: mergeIntervals(dayEvents.filter((entry) => !entry.tentative)),
+    tentative: mergeIntervals(dayEvents.filter((entry) => entry.tentative)),
   };
 }
 
@@ -205,27 +225,17 @@ function onCampusSpan(day: DayIntervals): Interval | null {
   return { startMin: all[0].startMin, endMin: all[all.length - 1].endMin };
 }
 
-function idsBusyDuring(
-  band: Interval,
-  byParticipant: Map<string, Interval[]>,
-): string[] {
-  const ids: string[] = [];
-  for (const [id, intervals] of byParticipant) {
-    if (intervals.some((interval) => overlaps(interval, band))) ids.push(id);
-  }
-  return ids;
-}
-
 // -- Main entry point -------------------------------------------------------
 
 /**
- * Computes the shaded bands and the ranked list of shared free slots for a
- * group, one weekday at a time.
+ * Computes the group's busy blocks and its ranked shared free slots, one
+ * weekday at a time.
  *
- * Busy and maybe bands are clipped to the visible grid window so they can be
- * positioned directly. Free time is computed inside a possibly narrower window
- * — see `betweenClassesOnly` — which is why the two are derived separately
- * rather than one from the other.
+ * Blocks are clipped to the visible grid window so they can be positioned
+ * directly. Free time is computed inside a possibly narrower window — see
+ * `betweenClassesOnly` — which is why the two are derived separately rather
+ * than one from the other, and why the arithmetic runs on merged per-person
+ * intervals even though the blocks it returns are left unmerged.
  */
 export function buildAvailability(
   participants: Participant[],
@@ -252,23 +262,33 @@ export function buildAvailability(
   // With nobody to compute against, there is no availability to report. An
   // empty result is the honest answer; a fully free week would not be.
   if (included.length === 0 || gridWindow.length === 0) {
-    return { bands: [], slots: [], includedIds, excludedIds };
+    return { busyBlocks: [], slots: [], includedIds, excludedIds };
   }
 
-  const bands: Band[] = [];
+  const busyBlocks: BusyBlock[] = [];
   const slots: SharedSlot[] = [];
 
   for (const day of WEEK_DAYS) {
     const perPerson = new Map<string, DayIntervals>();
     for (const person of included) {
-      perPerson.set(person.id, intervalsForDay(person.events, day));
-    }
+      const dayEvents = eventsForDay(person.events, day);
+      perPerson.set(person.id, mergeDay(dayEvents));
 
-    const definiteByPerson = new Map<string, Interval[]>();
-    const tentativeByPerson = new Map<string, Interval[]>();
-    for (const [id, day] of perPerson) {
-      definiteByPerson.set(id, day.definite);
-      tentativeByPerson.set(id, day.tentative);
+      for (const dayEvent of dayEvents) {
+        // Clipped to the visible grid so the block can be positioned directly.
+        const startMin = Math.max(dayEvent.startMin, dayStartMin);
+        const endMin = Math.min(dayEvent.endMin, dayEndMin);
+        if (endMin <= startMin) continue;
+
+        busyBlocks.push({
+          startMin,
+          endMin,
+          day,
+          participantId: person.id,
+          tentative: dayEvent.tentative,
+          courseCode: dayEvent.courseCode,
+        });
+      }
     }
 
     const allDefinite = mergeIntervals(
@@ -283,23 +303,6 @@ export function buildAvailability(
     const busy = intersectIntervals(allDefinite, gridWindow);
     const maybe = intersectIntervals(allTentative, gridWindow);
 
-    for (const interval of busy) {
-      bands.push({
-        ...interval,
-        day,
-        kind: "busy",
-        participantIds: idsBusyDuring(interval, definiteByPerson),
-      });
-    }
-    for (const interval of maybe) {
-      bands.push({
-        ...interval,
-        day,
-        kind: "maybe",
-        participantIds: idsBusyDuring(interval, tentativeByPerson),
-      });
-    }
-
     const freeWindow = betweenClassesOnly
       ? intersectIntervals(sharedOnCampusWindow(perPerson), gridWindow)
       : gridWindow;
@@ -309,12 +312,6 @@ export function buildAvailability(
     );
 
     for (const interval of free) {
-      bands.push({
-        ...interval,
-        day,
-        kind: "free",
-        participantIds: includedIds,
-      });
       slots.push({ ...interval, day, participantIds: includedIds });
     }
   }
@@ -326,7 +323,7 @@ export function buildAvailability(
       a.startMin - b.startMin,
   );
 
-  return { bands, slots, includedIds, excludedIds };
+  return { busyBlocks, slots, includedIds, excludedIds };
 }
 
 /**

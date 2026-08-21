@@ -13,8 +13,8 @@ import {
 /**
  * Diagonal stripes for events that only happen every other week. Reads as
  * "not every week" without dimming the block, and matches the hatch
- * AvailabilityLayer draws over the same uncertain time. The stripe width
- * shrinks on wallpapers, where blocks are only a few pixels tall.
+ * AvailabilityLayer draws over a friend's classes. The stripe width shrinks
+ * on wallpapers, where blocks are only a few pixels tall.
  */
 function hatch(stripePx: number): string {
   return `repeating-linear-gradient(45deg, transparent 0 ${stripePx}px, color-mix(in srgb, currentColor 25%, transparent) ${stripePx}px ${stripePx * 2}px)`;

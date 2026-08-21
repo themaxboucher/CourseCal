@@ -34,8 +34,8 @@ export async function getEvents(userId: string): Promise<EventWithCourse[]> {
 /**
  * Columns needed to place a friend's classes on the grid and describe one on
  * hover. Deliberately not the `courses`/`course_colors` join the viewer's own
- * events use: friends collapse into a single neutral busy layer rather than
- * rendering in their own course colours, so their palette is never needed here.
+ * events use: friends' classes are drawn as neutral grey blocks rather than in
+ * their own course colours, so their palette is never needed here.
  */
 const FRIEND_EVENT_COLUMNS =
   "id, user, course_code, type, location, start_time, end_time, days, recurrence, term";

@@ -13,18 +13,28 @@ import {
 } from "@/lib/utils/schedule";
 import type { Tables } from "@/types/supabase";
 import type { AnyEvent } from "@/lib/utils/events";
-import { WEEK_DAYS, type Band } from "@/lib/utils/availability";
-import AvailabilityLayer from "./AvailabilityLayer";
+import {
+  WEEK_DAYS,
+  type BusyBlock,
+  type SharedSlot,
+} from "@/lib/utils/availability";
+import AvailabilityLayer, {
+  type AvailabilityPerson,
+} from "./AvailabilityLayer";
 
 interface WeekViewProps {
   events: AnyEvent[];
   user?: Tables<"users"> | null;
   isGuest?: boolean;
   onEventsChange?: () => void;
-  /** Shared availability overlay. Omitted when no friends are selected. */
-  bands?: Band[];
-  /** Participant id to display name, for band hover text. */
-  bandNames?: Record<string, string>;
+  /**
+   * Shared availability overlay: the selected friends' classes, and the gaps
+   * they leave everybody. Both omitted when no friends are selected.
+   */
+  busyBlocks?: BusyBlock[];
+  freeSlots?: SharedSlot[];
+  /** Participant id to display name and avatar, for the overlay. */
+  people?: Record<string, AvailabilityPerson>;
   /**
    * Events the visible hour range must accommodate. Defaults to `events`, but
    * the overlay needs the range widened to cover friends' classes too —
@@ -38,8 +48,9 @@ export default function WeekView({
   user,
   isGuest = false,
   onEventsChange,
-  bands,
-  bandNames = {},
+  busyBlocks,
+  freeSlots,
+  people = {},
   rangeEvents,
 }: WeekViewProps) {
   // Calculate dynamic time range based on events
@@ -137,12 +148,17 @@ export default function WeekView({
             ))}
 
             {/* Shared availability, beneath the event blocks */}
-            {bands && (
+            {busyBlocks && freeSlots && (
               <AvailabilityLayer
-                bands={bands.filter((band) => band.day === WEEK_DAYS[dayIndex])}
+                busyBlocks={busyBlocks.filter(
+                  (block) => block.day === WEEK_DAYS[dayIndex],
+                )}
+                slots={freeSlots.filter(
+                  (slot) => slot.day === WEEK_DAYS[dayIndex],
+                )}
                 startHour={startHour}
                 pxPerHour={64}
-                names={bandNames}
+                people={people}
               />
             )}
 

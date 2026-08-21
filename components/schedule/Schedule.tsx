@@ -10,7 +10,7 @@ import { UploadDialog } from "@/components/UploadDialog";
 import WeekView from "./WeekView";
 import FriendRail, { type RailFriend } from "./FriendRail";
 import OverlapSettings from "./OverlapSettings";
-import SharedSlotsList from "./SharedSlotsList";
+import type { AvailabilityPerson } from "./AvailabilityLayer";
 import { WallpaperDialog } from "@/components/wallpaper/WallpaperDialog";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import {
@@ -213,13 +213,18 @@ export default function Schedule({
     betweenClassesOnly,
   ]);
 
-  const participantNames = useMemo(() => {
-    const names: Record<string, string> = {};
-    if (user) names[user.id] = "You";
-    for (const friend of friends) {
-      names[friend.id] = friend.name ?? friend.username;
+  const participantPeople = useMemo(() => {
+    const people: Record<string, AvailabilityPerson> = {};
+    if (user) {
+      people[user.id] = { name: "You", avatar: user.avatar, isViewer: true };
     }
-    return names;
+    for (const friend of friends) {
+      people[friend.id] = {
+        name: friend.name ?? friend.username,
+        avatar: friend.avatar,
+      };
+    }
+    return people;
   }, [user, friends]);
 
   const hasEvents = isLoggedIn
@@ -239,7 +244,7 @@ export default function Schedule({
   const excludedNames = availability
     ? availability.excludedIds
         .filter((id) => id !== user?.id)
-        .map((id) => participantNames[id])
+        .map((id) => participantPeople[id]?.name)
         .filter(Boolean)
     : [];
 
@@ -283,6 +288,12 @@ export default function Schedule({
           {excludedNames.length === 1 ? "has" : "have"} no schedule for{" "}
           <span className="capitalize">{selectedTerm.season}</span>{" "}
           {selectedTerm.year}, so they are not counted below.
+        </p>
+      )}
+
+      {availability && availability.slots.length === 0 && (
+        <p className="pb-2 text-xs text-muted-foreground">
+          No shared free time. Try a shorter minimum gap, or fewer people.
         </p>
       )}
 
@@ -347,19 +358,11 @@ export default function Schedule({
         user={user ?? undefined}
         isGuest={!isLoggedIn}
         onEventsChange={refreshLocalEvents}
-        bands={availability?.bands}
-        bandNames={participantNames}
+        busyBlocks={availability?.busyBlocks}
+        freeSlots={availability?.slots}
+        people={participantPeople}
         rangeEvents={availability?.rangeEvents}
       />
-
-      {availability && (
-        <div className="pt-6">
-          <SharedSlotsList
-            slots={availability.slots}
-            names={participantNames}
-          />
-        </div>
-      )}
 
       <AuthDialog
         open={authDialogOpen}
