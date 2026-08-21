@@ -10,6 +10,16 @@ import {
   getEventColor,
 } from "@/lib/utils/events";
 
+/**
+ * Diagonal stripes for events that only happen every other week. Reads as
+ * "not every week" without dimming the block, and matches the hatch
+ * AvailabilityLayer draws over the same uncertain time. The stripe width
+ * shrinks on wallpapers, where blocks are only a few pixels tall.
+ */
+function hatch(stripePx: number): string {
+  return `repeating-linear-gradient(45deg, transparent 0 ${stripePx}px, color-mix(in srgb, currentColor 25%, transparent) ${stripePx}px ${stripePx * 2}px)`;
+}
+
 interface EventProps {
   event: AnyEvent;
   style?: React.CSSProperties;
@@ -48,10 +58,13 @@ export default function EventBlock({
           ? "rounded-sm px-[0.15rem] py-[0.1rem] my-[0.1rem]"
           : "rounded-lg p-[0.3rem] my-[0.2rem]",
         colorClass,
-        event.recurrence !== "weekly" && "opacity-75",
         className,
       )}
-      style={style}
+      style={
+        event.recurrence === "biweekly"
+          ? { backgroundImage: hatch(isWallpaper ? 7 : 18), ...style }
+          : style
+      }
       {...props}
     >
       {(!event.course_code || !event.type) && !isWallpaper && (
