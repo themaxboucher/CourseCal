@@ -87,7 +87,7 @@ export function Navbar({
                     <Link href="/friends">
                       <GroupFilled className="size-4.5" />
                       {pendingRequestCount > 0 && (
-                        <span className="absolute -right-0.5 -top-0.5 inline-flex min-w-4.5 items-center justify-center rounded-full bg-destructive px-1 text-[0.625rem] font-semibold leading-4.5 text-white">
+                        <span className="absolute -right-0.5 -top-0.5 inline-flex min-w-4.5 items-center justify-center rounded-full bg-red-500 px-1 text-[0.625rem] font-semibold leading-4.5 text-white">
                           {pendingRequestCount > 9 ? "9+" : pendingRequestCount}
                         </span>
                       )}

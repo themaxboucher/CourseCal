@@ -84,7 +84,7 @@ export default async function FriendsPage({ searchParams }: FriendsPageProps) {
                 >
                   {entry.label}
                   {entry.key === "requests" && pendingCount > 0 && (
-                    <span className="ml-1.5 inline-flex min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-xs font-semibold text-white">
+                    <span className="ml-1.5 inline-flex min-w-5 h-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-xs font-semibold text-white">
                       {pendingCount}
                     </span>
                   )}
