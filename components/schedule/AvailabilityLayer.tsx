@@ -37,7 +37,7 @@ interface PersonWithId extends AvailabilityPerson {
  */
 const HATCH: React.CSSProperties = {
   backgroundImage:
-    "repeating-linear-gradient(45deg, transparent 0 5px, color-mix(in srgb, currentColor 20%, transparent) 5px 10px)",
+    "repeating-linear-gradient(45deg, transparent 0 5px, color-mix(in srgb, currentColor 50%, transparent) 5px 10px)",
 };
 
 function minutesToLabel(minutes: number, includeAmPm = true): string {
@@ -228,13 +228,11 @@ function FriendBlock({
   return (
     <div
       className={cn(
-        // EventBlock's footprint, so a friend's class lines up with the
-        // viewer's own classes rather than sitting a few pixels off.
-        "absolute left-0 right-0 mx-[0.08rem] md:mx-0.5",
-        "z-0 rounded-xl border-2 pointer-events-auto",
+        "absolute left-0 right-0",
+        "z-0 border-2 dark:border-muted pointer-events-auto",
         block.tentative
-          ? "border-foreground/15 bg-foreground/5 text-foreground/40"
-          : "border-foreground/25 bg-foreground/10 text-foreground/70",
+          ? "bg-foreground/5 text-foreground/40"
+          : "bg-border dark:bg-muted text-background",
       )}
       style={{ ...withBlockGap(top, height), ...HATCH }}
       title={describeBlock(block, person)}
