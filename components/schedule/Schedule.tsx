@@ -201,6 +201,7 @@ export default function Schedule({
         // `endHour` is the hour label of the last row, which covers the hour
         // after it — so the grid ends at endHour + 1.
         dayEndMin: (endHour + 1) * 60,
+        viewerId: user.id,
       }),
       rangeEvents,
     };
@@ -216,7 +217,7 @@ export default function Schedule({
   const participantPeople = useMemo(() => {
     const people: Record<string, AvailabilityPerson> = {};
     if (user) {
-      people[user.id] = { name: "You", isViewer: true };
+      people[user.id] = { name: "You" };
     }
     for (const friend of friends) {
       people[friend.id] = { name: friend.name ?? friend.username };

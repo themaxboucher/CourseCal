@@ -4,8 +4,6 @@ import type { BusyBlock, SharedSlot } from "@/lib/utils/availability";
 
 export interface AvailabilityPerson {
   name: string;
-  /** The signed-in viewer, whose own classes the overlay skips. */
-  isViewer?: boolean;
 }
 
 interface AvailabilityLayerProps {
@@ -18,17 +16,21 @@ interface AvailabilityLayerProps {
   people: Record<string, AvailabilityPerson>;
 }
 
-/**
- * Diagonal stripes over a translucent wash: the "somebody is in class" mark,
- * drawn once per friend per class. Because each block is translucent, two
- * friends booked over the same hour compound into a visibly darker patch —
- * the depth of the grey is how many people a time costs you.
- *
- * Matches the hatch EventBlock draws on biweekly events.
- */
+/** Fine diagonal stripes: the "somebody is in class here" mark. */
 const HATCH: React.CSSProperties = {
   backgroundImage:
     "repeating-linear-gradient(45deg, transparent 0 5px, color-mix(in srgb, currentColor 50%, transparent) 5px 10px)",
+};
+
+/**
+ * The same stripes at EventBlock's width, for a slot that is only free on
+ * alternating weeks. Reusing the mark a biweekly class already carries means
+ * the grid says "this one depends on the week" in one vocabulary, whether the
+ * time reads as taken or as free.
+ */
+const THICK_HATCH: React.CSSProperties = {
+  backgroundImage:
+    "repeating-linear-gradient(45deg, transparent 0 18px, color-mix(in srgb, currentColor 20%, transparent) 18px 36px)",
 };
 
 function minutesToLabel(minutes: number, includeAmPm = true): string {
@@ -59,18 +61,19 @@ function describeSlot(
 
   const span = `${minutesToLabel(slot.startMin)} – ${minutesToLabel(slot.endMin)}`;
   const length = durationLabel(slot.endMin - slot.startMin);
-  return `Free ${span} · ${length}${list ? ` — ${list}` : ""}`;
+  const caveat = slot.tentative ? " — only on the weeks nobody has class" : "";
+  return `Free ${span} · ${length}${list ? ` — ${list}` : ""}${caveat}`;
 }
 
 function describeBlock(
   block: BusyBlock,
-  person: AvailabilityPerson | undefined,
+  people: Record<string, AvailabilityPerson>,
 ): string {
-  const who = person?.name ?? "A friend";
-  const what = block.courseCode
-    ? `${who} — ${block.courseCode}`
-    : `${who}: busy`;
-  return block.tentative ? `${what} (every other week)` : what;
+  const list = block.participantIds
+    .map((id) => people[id]?.name)
+    .filter(Boolean)
+    .join(", ");
+  return list ? `Busy: ${list}` : "Busy";
 }
 
 /**
@@ -104,12 +107,15 @@ function FreeSlot({
         // Matches EventBlock's footprint so a free slot lines up with the
         // classes above and below it rather than sitting a few pixels off.
         "absolute left-0 right-0 mx-[0.08rem] md:mx-0.5",
-        "z-0 overflow-hidden rounded-xl p-[0.3rem] text-xs font-medium",
+        "z-0 overflow-hidden rounded-xl p-[0.3rem] text-xs font-medium text-sky-500",
         roomy && "sm:p-2",
         "pointer-events-auto ring-2 ring-inset ring-ring/70",
         "bg-sky-200/90 dark:bg-sky-900/90",
       )}
-      style={withBlockGap(top, height)}
+      style={{
+        ...withBlockGap(top, height),
+        ...(slot.tentative ? THICK_HATCH : {}),
+      }}
       title={describeSlot(slot, people)}
     >
       <div className={cn("w-full space-y-0.5", roomy && "md:space-y-1")}>
@@ -137,42 +143,36 @@ function FreeSlot({
 }
 
 /**
- * A friend's class: no title, no colour, just the amount of grey one person's
- * hour costs. They stack rather than merge, so an hour three friends have
- * booked is three washes deep and reads darker than an hour only one has.
- *
- * A biweekly class lands on half as many weeks as a weekly one, and is drawn
- * at half the weight to say so — the same stacking scale, read as "this one
- * may not even be there this week".
+ * Time the group has lost to somebody else's class: no title, no colour, just
+ * a hatched stretch. Merged across people and classes, so a morning three
+ * friends have booked back to back is one block, and hovering it names them.
  */
 function FriendBlock({
   block,
   top,
   height,
-  person,
+  people,
 }: {
   block: BusyBlock;
   top: number;
   height: number;
-  person: AvailabilityPerson | undefined;
+  people: Record<string, AvailabilityPerson>;
 }) {
   return (
     <div
       className={cn(
         "absolute left-0 right-0",
         "z-0 border-2 dark:border-muted pointer-events-auto",
-        block.tentative
-          ? "bg-foreground/5 text-foreground/40"
-          : "bg-border dark:bg-muted text-background",
+        "bg-border dark:bg-muted text-background",
       )}
       style={{ ...withBlockGap(top, height), ...HATCH }}
-      title={describeBlock(block, person)}
+      title={describeBlock(block, people)}
     />
   );
 }
 
 /**
- * The shared-availability overlay: everyone else's classes as translucent grey
+ * The shared-availability overlay: everyone else's classes as hatched grey
  * blocks, and the gaps they leave everybody as sky ones.
  *
  * Sits beneath the event blocks, so the viewer's own classes stay legible in
@@ -192,22 +192,18 @@ export default function AvailabilityLayer({
 
   return (
     <>
-      {busyBlocks
-        // The viewer's own classes are already on the grid in full colour;
-        // greying them out again would only dim their own week.
-        .filter((block) => !people[block.participantId]?.isViewer)
-        .map((block) => {
-          const { top, height } = positionOf(block);
-          return (
-            <FriendBlock
-              key={`${block.participantId}-${block.startMin}-${block.endMin}`}
-              block={block}
-              top={top}
-              height={height}
-              person={people[block.participantId]}
-            />
-          );
-        })}
+      {busyBlocks.map((block) => {
+        const { top, height } = positionOf(block);
+        return (
+          <FriendBlock
+            key={`busy-${block.startMin}-${block.endMin}`}
+            block={block}
+            top={top}
+            height={height}
+            people={people}
+          />
+        );
+      })}
 
       {slots.map((slot) => {
         const { top, height } = positionOf(slot);
