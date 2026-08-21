@@ -6,10 +6,12 @@ import { cn } from "@/lib/utils";
 import EventBlock from "./EventBlock";
 import { weekdays } from "@/constants";
 import {
+  BLOCK_GAP_CLASS,
   generateTimeSlots,
   getEventPosition,
   getTimeRange,
   getWeekdayIndex,
+  withBlockGap,
 } from "@/lib/utils/schedule";
 import type { Tables } from "@/types/supabase";
 import type { AnyEvent } from "@/lib/utils/events";
@@ -138,6 +140,7 @@ export default function WeekView({
             key={day}
             className={cn(
               "relative border-l-2 border-b-2",
+              BLOCK_GAP_CLASS,
               dayIndex === 0 && "rounded-bl-xl",
               dayIndex === weekdays.length - 1 && "border-r-2 rounded-br-xl",
             )}
@@ -182,8 +185,7 @@ export default function WeekView({
                   onEventsChange={onEventsChange}
                   style={{
                     position: "absolute",
-                    top: `${top}px`,
-                    height: `${height}px`,
+                    ...withBlockGap(top, height),
                     zIndex: 10,
                   }}
                 />
@@ -193,8 +195,7 @@ export default function WeekView({
                   event={event}
                   style={{
                     position: "absolute",
-                    top: `${top}px`,
-                    height: `${height}px`,
+                    ...withBlockGap(top, height),
                     zIndex: 10,
                   }}
                 />

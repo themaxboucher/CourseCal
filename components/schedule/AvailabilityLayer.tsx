@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { formatTime } from "@/lib/utils/schedule";
+import { formatTime, withBlockGap } from "@/lib/utils/schedule";
 import type { BusyBlock, SharedSlot } from "@/lib/utils/availability";
 
 export interface AvailabilityPerson {
@@ -165,13 +165,13 @@ function FreeSlot({
       className={cn(
         // Matches EventBlock's footprint so a free slot lines up with the
         // classes above and below it rather than sitting a few pixels off.
-        "absolute left-0 right-0 mx-[0.08rem] my-[0.2rem] md:mx-0.5 md:my-1",
+        "absolute left-0 right-0 mx-[0.08rem] md:mx-0.5",
         "z-0 overflow-hidden rounded-xl p-[0.3rem] text-xs font-medium",
         roomy && "sm:p-2",
         "pointer-events-auto ring-2 ring-inset ring-ring/70",
         "bg-sky-200/90 dark:bg-sky-900/90",
       )}
-      style={{ top: `${top}px`, height: `${height}px` }}
+      style={withBlockGap(top, height)}
       title={describeSlot(slot, people)}
     >
       <div className={cn("w-full space-y-0.5", roomy && "md:space-y-1")}>
@@ -230,13 +230,13 @@ function FriendBlock({
       className={cn(
         // EventBlock's footprint, so a friend's class lines up with the
         // viewer's own classes rather than sitting a few pixels off.
-        "absolute left-0 right-0 mx-[0.08rem] my-[0.2rem] md:mx-0.5 md:my-1",
+        "absolute left-0 right-0 mx-[0.08rem] md:mx-0.5",
         "z-0 rounded-xl border-2 pointer-events-auto",
         block.tentative
           ? "border-foreground/15 bg-foreground/5 text-foreground/40"
           : "border-foreground/25 bg-foreground/10 text-foreground/70",
       )}
-      style={{ top: `${top}px`, height: `${height}px`, ...HATCH }}
+      style={{ ...withBlockGap(top, height), ...HATCH }}
       title={describeBlock(block, person)}
     />
   );

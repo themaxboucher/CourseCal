@@ -53,10 +53,10 @@ export default function EventBlock({
       className={cn(
         "absolute left-0 right-0 mx-[0.08rem] border-[1.5px]",
         "text-xs font-medium z-20 relative",
-        !isWallpaper && "md:my-1 md:mx-0.5 sm:p-2",
+        !isWallpaper && "md:mx-0.5 sm:p-2",
         isWallpaper
           ? "rounded-sm px-[0.15rem] py-[0.1rem] my-[0.1rem]"
-          : "rounded-lg p-[0.3rem] my-[0.2rem]",
+          : "rounded-lg p-[0.3rem]",
         colorClass,
         className,
       )}

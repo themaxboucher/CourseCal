@@ -218,6 +218,40 @@ export const generateTimeSlots = (
 };
 
 // Helper function to get position and height for event
+/**
+ * The gap left between two blocks that touch — one class ending exactly when
+ * the next begins.
+ *
+ * It cannot be a vertical margin. These blocks are absolutely positioned with
+ * both `top` and `height` set, and for such a box `margin-bottom` is absorbed
+ * into the solved-for `bottom`: a vertical margin only shifts a block down and
+ * never separates it from its neighbour. (Horizontal margins do work, because
+ * `left` and `right` are both given.) So the gap has to come out of the height.
+ *
+ * It rides on a custom property rather than a number because the geometry is
+ * inline, where a media query cannot reach — but a variable that geometry reads
+ * can be set from a class. `BLOCK_GAP_CLASS` sets it on the day column and
+ * every block inside inherits it; wherever the property is never set, the
+ * fallback leaves blocks flush.
+ */
+export const BLOCK_GAP_CLASS = "[--block-gap:1px] md:[--block-gap:2px]";
+
+/**
+ * Positions a block short of the time it occupies by the gap, half at either
+ * end, so two touching blocks come to rest a full gap apart while each stays
+ * centred on its own hour.
+ */
+export const withBlockGap = (
+  top: number,
+  height: number,
+): { top: string; height: string } => ({
+  top: `calc(${top}px + var(--block-gap, 0px) / 2)`,
+  // Never let a short block collapse: a 15-minute slot is only a handful of
+  // pixels tall to begin with, and a height of zero would drop the block back
+  // to auto-sizing.
+  height: `max(1px, calc(${height}px - var(--block-gap, 0px)))`,
+});
+
 export const getEventPosition = (
   event: AnyEvent,
   cellHeight: number,
