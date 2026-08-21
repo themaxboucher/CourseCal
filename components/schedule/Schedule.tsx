@@ -249,23 +249,11 @@ export default function Schedule({
   return (
     <>
       {isLoggedIn && hasEvents && (
-        <div className="flex items-center gap-2 pb-4">
-          <div className="min-w-0 flex-grow">
-            <FriendRail
-              friends={railFriends}
-              onToggle={toggleFriend}
-              termLabel={`${selectedTerm.season} ${selectedTerm.year}`}
-            />
-          </div>
-          {selectedFriends.length > 0 && (
-            <OverlapSettings
-              minDurationMin={minDurationMin}
-              onMinDurationChange={setMinDurationMin}
-              betweenClassesOnly={betweenClassesOnly}
-              onBetweenClassesOnlyChange={setBetweenClassesOnly}
-            />
-          )}
-        </div>
+        <FriendRail
+          friends={railFriends}
+          onToggle={toggleFriend}
+          termLabel={`${selectedTerm.season} ${selectedTerm.year}`}
+        />
       )}
 
       {!isLoggedIn && (
@@ -309,6 +297,14 @@ export default function Schedule({
             !isLoggedIn && "justify-between w-full",
           )}
         >
+          {selectedFriends.length > 0 && (
+            <OverlapSettings
+              minDurationMin={minDurationMin}
+              onMinDurationChange={setMinDurationMin}
+              betweenClassesOnly={betweenClassesOnly}
+              onBetweenClassesOnlyChange={setBetweenClassesOnly}
+            />
+          )}
           {!hasEvents ? (
             <UploadDialog term={selectedTerm} />
           ) : (
