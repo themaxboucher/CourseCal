@@ -23,7 +23,6 @@ import {
 } from "@/lib/utils/profile";
 import type { Tables } from "@/types/supabase";
 import { getEvents } from "@/lib/actions/events.actions";
-import { markUserCompletedOnboarding } from "@/lib/actions/users.actions";
 import { toast } from "sonner";
 
 export default function ProfileForm({ user }: { user: Tables<"users"> }) {
@@ -84,15 +83,13 @@ export default function ProfileForm({ user }: { user: Tables<"users"> }) {
         return;
       }
 
-      // If the user already has a schedule, redirect to the schedule page
+      // The friends step ranks suggestions from the user's own course list, so
+      // it only has anything to show once a schedule exists. Onboarding is
+      // completed there, not here.
       const events = await getEvents(user.id);
-      if (events.length > 0) {
-        await markUserCompletedOnboarding(user.id);
-        router.push("/schedule");
-      } else {
-        // If the user doesn't have a schedule, redirect to the upload page
-        router.push("/onboarding/upload");
-      }
+      router.push(
+        events.length > 0 ? "/onboarding/friends" : "/onboarding/upload",
+      );
     } catch (error) {
       console.error(error);
       toast("Couldn't save your profile", {

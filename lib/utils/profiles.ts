@@ -25,6 +25,13 @@ export type RelationshipStatus =
   | "incoming_pending"
   | "friends";
 
+export interface SuggestedFriend extends Profile {
+  /** Courses shared with the viewer in the term being suggested for. */
+  sharedCourses: number;
+  /** How many of the viewer's friends are friends with this person. */
+  mutualFriends: number;
+}
+
 export interface FriendRequest {
   friendshipId: number;
   createdAt: string;

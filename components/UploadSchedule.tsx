@@ -21,9 +21,19 @@ import { getRelevantTerm } from "@/lib/utils/schedule";
 
 interface UploadScheduleProps {
   term?: Tables<"terms"> | null;
+  /**
+   * True for the upload step inside onboarding. The friends step that follows
+   * is what completes onboarding, so this upload must not do it early —
+   * otherwise `proxy.ts` bounces the user out of `/onboarding/*` before they
+   * ever see it.
+   */
+  isOnboardingStep?: boolean;
 }
 
-export default function UploadSchedule({ term }: UploadScheduleProps) {
+export default function UploadSchedule({
+  term,
+  isOnboardingStep = false,
+}: UploadScheduleProps) {
   const [result, setResult] = useState<ScheduleAnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -68,6 +78,11 @@ export default function UploadSchedule({ term }: UploadScheduleProps) {
           effectiveTerm.id,
         );
         await saveLocalEvents(localEvents);
+      }
+
+      if (isOnboardingStep) {
+        router.push("/onboarding/friends");
+        return;
       }
 
       // If the user is logged in and has a name and major, mark them as completed onboarding

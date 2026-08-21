@@ -28,12 +28,15 @@ interface FriendButtonProps {
   userId: string;
   status: RelationshipStatus;
   className?: string;
+  /** Fires after a successful change, so a parent can react to it. */
+  onActionComplete?: (status: RelationshipStatus) => void;
 }
 
 export default function FriendButton({
   userId,
   status: serverStatus,
   className,
+  onActionComplete,
 }: FriendButtonProps) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -64,6 +67,7 @@ export default function FriendButton({
         return;
       }
       setOverride({ from: serverStatus, to: nextStatus });
+      onActionComplete?.(nextStatus);
       toast(successMessage, {
         icon: <CheckCircleFilled className="text-green-500 size-5" />,
       });

@@ -270,6 +270,18 @@ export type Database = {
     Functions: {
       are_friends: { Args: { a: string; b: string }; Returns: boolean }
       generate_username: { Args: { p_email: string }; Returns: string }
+      suggested_friends: {
+        Args: { p_limit?: number; p_term: number }
+        Returns: {
+          avatar: string
+          id: string
+          major: string
+          mutual_friends: number
+          name: string
+          shared_courses: number
+          username: string
+        }[]
+      }
     }
     Enums: {
       class_type: "lecture" | "tutorial" | "lab" | "seminar"

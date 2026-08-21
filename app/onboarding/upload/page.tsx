@@ -21,7 +21,7 @@ export default async function UploadPage() {
           </p>
         </div>
         <div className="w-full min-w-[28rem] space-y-4">
-          <UploadSchedule />
+          <UploadSchedule isOnboardingStep />
         </div>
       </div>
     </section>

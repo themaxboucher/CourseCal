@@ -1,8 +1,19 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { requireEnv } from "@/lib/env";
+import {
+  REFERRAL_COOKIE,
+  REFERRAL_COOKIE_MAX_AGE,
+  sanitizeReferral,
+} from "@/lib/utils/referral";
 
-const PUBLIC_ROUTES = ["/", "/verify", "/check-email", "/auth/confirm"];
+const PUBLIC_ROUTES = [
+  "/",
+  "/join",
+  "/verify",
+  "/check-email",
+  "/auth/confirm",
+];
 
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -62,6 +73,21 @@ export async function proxy(request: NextRequest) {
       const redirectUrl = request.nextUrl.clone();
       redirectUrl.pathname = "/schedule";
       return NextResponse.redirect(redirectUrl);
+    }
+  }
+
+  // Capturing the referral here rather than in the page means it survives
+  // without JavaScript and is written before anything renders. A Server
+  // Component cannot set a cookie during render; middleware can.
+  if (pathname === "/join") {
+    const referral = sanitizeReferral(request.nextUrl.searchParams.get("ref"));
+    if (referral) {
+      supabaseResponse.cookies.set(REFERRAL_COOKIE, referral, {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        maxAge: REFERRAL_COOKIE_MAX_AGE,
+      });
     }
   }
 
