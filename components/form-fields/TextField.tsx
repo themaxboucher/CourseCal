@@ -11,6 +11,7 @@ interface TextFieldProps {
   description?: React.ReactNode;
   variant?: "destructive" | "default";
   warning?: string;
+  suffix?: string;
 }
 
 export function TextField({
@@ -22,6 +23,7 @@ export function TextField({
   description,
   variant = "default",
   warning,
+  suffix,
 }: TextFieldProps) {
   return (
     <FormFieldWrapper
@@ -30,12 +32,18 @@ export function TextField({
       label={label}
       description={description}
       warning={warning}
+      suffix={suffix}
       className="flex-grow"
     >
       <Input
         placeholder={placeholder}
         {...form.register(name)}
         className={className}
+        // Keep what the user types clear of the suffix. One `ch` per character
+        // over-estimates the width of proportional text, which is the safe side.
+        style={
+          suffix ? { paddingRight: `calc(${suffix.length}ch)` } : undefined
+        }
         aria-invalid={
           form.formState.errors[name] || variant === "destructive"
             ? "true"

@@ -16,15 +16,22 @@ import {
   type SendMagicLinkResult,
 } from "@/lib/actions/auth.actions";
 
+const EMAIL_DOMAIN = "@ucalgary.ca";
+
+// Every account is on the same domain, so the field holds only the part before
+// it and the input shows the domain as a suffix.
 const formSchema = z.object({
-  email: z
+  username: z
     .string()
     .trim()
-    .email({ message: "Invalid email" })
-    .refine((value) => value.toLowerCase().endsWith("@ucalgary.ca"), {
-      message: "Email must be a ucalgary.ca address",
+    .min(1, { message: "Enter your email" })
+    .refine((value) => !value.includes("@"), {
+      message: `Enter only the part before ${EMAIL_DOMAIN}`,
     }),
 });
+
+const toEmail = (username: string) =>
+  `${username.trim().toLowerCase()}${EMAIL_DOMAIN}`;
 
 type FailureReason = Extract<SendMagicLinkResult, { ok: false }>["reason"];
 
@@ -43,7 +50,7 @@ export default function AuthForm({ type }: { type: AuthIntent }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
+      username: "",
     },
   });
 
@@ -65,13 +72,13 @@ export default function AuthForm({ type }: { type: AuthIntent }) {
   }
 
   async function onSubmitHandler(data: z.infer<typeof formSchema>) {
-    await submit(data.email, type);
+    await submit(toEmail(data.username), type);
   }
 
   // The login path refuses to create accounts, so offer the user a one-click
   // way to sign up with the address they already typed.
   async function signUpInstead() {
-    await submit(form.getValues("email"), "signup");
+    await submit(toEmail(form.getValues("username")), "signup");
   }
 
   return (
@@ -81,7 +88,12 @@ export default function AuthForm({ type }: { type: AuthIntent }) {
         onSubmit={form.handleSubmit(onSubmitHandler)}
       >
         <div className="flex flex-col items-stretch gap-4 w-full">
-          <TextField form={form} name="email" placeholder="you@ucalgary.ca" />
+          <TextField
+            form={form}
+            name="username"
+            placeholder="username"
+            suffix={EMAIL_DOMAIN}
+          />
 
           <Button type="submit" className="w-full" disabled={loading}>
             {loading && <Loading3Filled className="h-4 w-4 animate-spin" />}
