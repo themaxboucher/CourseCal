@@ -45,9 +45,9 @@ export default async function Home() {
               </AnimatedContent>
             </div>
           </div>
-          <div className="flex justify-center items-center w-full relative h-[500px] -mb-[100px] md:mb-0 md:h-full overflow-hidden">
+          <div className="flex justify-center items-center w-full relative h-[500px] -mb-[100px] lg:h-full overflow-hidden">
             <div className="w-full h-[60%] lg:h-[70%] absolute left-0 right-0 top-auto bottom-auto bg-muted/75 dark:bg-muted/50 rounded-xl" />
-            <div className="w-full h-[20%] lg:h-[15%] absolute left-0 right-0 top-auto bottom-0 bg-background z-10" />
+            <div className="w-full h-[100px] absolute left-0 right-0 top-auto bottom-0 bg-background z-10" />
             <AnimatedContent className="w-full" distance={50} delay={0.6}>
               <div className="size-full scale-75 md:scale-90 -rotate-3 flex justify-center items-center -translate-x-10">
                 <WallpaperPreview
