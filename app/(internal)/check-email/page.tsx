@@ -13,10 +13,10 @@ export default async function CheckEmailPage({
   const isSignup = intent === "signup";
 
   return (
-    <section className="flex flex-col gap-2 max-w-[75rem] mx-auto px-8 py-16">
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-6">
+    <section className="min-h-[calc(100dvh-68px)] flex flex-col gap-2 max-w-72 mx-auto px-4 md:px-8 py-16">
+      <div className="flex flex-1 flex-col items-center justify-center gap-4 sm:gap-6 mb-20">
         <div className="flex items-center justify-center rounded-full bg-red-500 border-2 border-red-300 dark:border-red-800 text-white p-3.5">
-          <InboxFilled className="size-8" />
+          <InboxFilled className="size-6" />
         </div>
         <div className="flex flex-col items-center gap-2 max-w-md">
           <h1 className="heading-3 text-center max-w-64">
