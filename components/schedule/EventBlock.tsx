@@ -71,9 +71,10 @@ export default function EventBlock({
             {event.course_code ? (
               <div
                 className={cn(
-                  "font-bold truncate",
-                  !isWallpaper && "md:text-xs",
-                  isWallpaper ? "text-[6px]" : "text-xxs",
+                  "font-bold overflow-hidden text-ellipsis",
+                  !isWallpaper &&
+                    "min-w-0 whitespace-normal break-words sm:whitespace-nowrap md:text-xs",
+                  isWallpaper ? "truncate text-[6px]" : "text-xxs",
                 )}
               >
                 {event.course_code}
@@ -81,9 +82,10 @@ export default function EventBlock({
             ) : (
               <div
                 className={cn(
-                  "font-bold truncate",
-                  !isWallpaper && "md:text-xs",
-                  isWallpaper ? "text-[6px]" : "text-xxs",
+                  "font-bold overflow-hidden text-ellipsis",
+                  !isWallpaper &&
+                    "min-w-0 whitespace-normal break-words sm:whitespace-nowrap md:text-xs",
+                  isWallpaper ? "truncate text-[6px]" : "text-xxs",
                 )}
               >
                 {courseTitle}
@@ -93,7 +95,7 @@ export default function EventBlock({
               <div
                 className={cn(
                   "hidden text-xxs opacity-75 capitalize",
-                  !isWallpaper && "md:block md:text-xs",
+                  !isWallpaper && "min-w-0 truncate lg:block lg:text-xs",
                 )}
               >
                 {event.type}
