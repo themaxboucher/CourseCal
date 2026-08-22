@@ -30,7 +30,7 @@ interface FriendRailProps {
 
 // Shared footprint so the "add" tile lines up with the friend tiles.
 const tileClass =
-  "flex w-18 shrink-0 cursor-pointer flex-col items-center gap-1 rounded-lg px-1 py-2 transition-colors hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
+  "flex w-18 shrink-0 cursor-pointer flex-col items-center gap-1 rounded-lg px-1 py-2 transition-colors hover:bg-muted/75 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
 
 /**
  * Horizontal strip of friends to overlay. Friends with no schedule for the
@@ -82,7 +82,7 @@ export default function FriendRail({
   }
 
   return (
-    <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-2">
+    <div className="-mx-1 flex gap-0 md:gap-2 overflow-x-auto px-1 mb-4">
       {friends.map(({ profile, selected, hasSchedule }) => {
         const label = profile.name ?? profile.username;
         return (

@@ -22,7 +22,7 @@ export default function UserAvatar({
   size = "md",
 }: UserAvatarProps) {
   const sizeClass =
-    size === "sm" ? "size-8" : size === "md" ? "size-12" : "size-16";
+    size === "sm" ? "size-8" : size === "md" ? "size-13" : "size-16";
   const firstLetterOfName = name?.charAt(0);
   return (
     <Avatar className={cn(sizeClass, "border border-border")}>
