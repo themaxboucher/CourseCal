@@ -12,9 +12,7 @@ import FriendRail, { type RailFriend } from "./FriendRail";
 import OverlapSettings from "./OverlapSettings";
 import type { AvailabilityPerson } from "./AvailabilityLayer";
 import { WallpaperDialog } from "@/components/wallpaper/WallpaperDialog";
-import { AuthDialog } from "@/components/auth/AuthDialog";
 import {
-  GroupFilled,
   Loading3Filled,
   RefreshAnticlockwise1Filled,
 } from "@/components/icons";
@@ -66,7 +64,6 @@ export default function Schedule({
   const [selectedTermId, setSelectedTermId] = useState<number>(relevantTerm.id);
   const [localEvents, setLocalEvents] = useState<LocalEvent[]>([]);
   const [isLoading, setIsLoading] = useState(!isLoggedIn);
-  const [authDialogOpen, setAuthDialogOpen] = useState(false);
 
   const [selectedUsernames, setSelectedUsernames] = useState<string[]>(() =>
     parseSelection(searchParams.get("with")),
@@ -260,21 +257,10 @@ export default function Schedule({
       {isLoggedIn && (
         <FriendRail
           friends={railFriends}
+          isLoggedIn={isLoggedIn}
           onToggle={toggleFriend}
           termLabel={`${selectedTerm.season} ${selectedTerm.year}`}
         />
-      )}
-
-      {!isLoggedIn && (
-        <div className="flex items-center justify-between gap-4 rounded-lg border-[1.5px] border-dashed px-4 py-3 mb-4">
-          <p className="text-sm text-muted-foreground">
-            <GroupFilled className="mr-2 inline size-4 align-text-bottom" />
-            Sign up to see when you and your friends are free.
-          </p>
-          <Button size="sm" onClick={() => setAuthDialogOpen(true)}>
-            Sign up
-          </Button>
-        </div>
       )}
 
       <div className="flex items-center justify-between pb-4">
@@ -361,12 +347,6 @@ export default function Schedule({
           </div>
         )}
       </div>
-
-      <AuthDialog
-        open={authDialogOpen}
-        onOpenChange={setAuthDialogOpen}
-        type="signup"
-      />
     </>
   );
 }
