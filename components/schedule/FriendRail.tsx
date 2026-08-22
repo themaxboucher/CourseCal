@@ -36,7 +36,7 @@ export default function FriendRail({
 }: FriendRailProps) {
   if (friends.length === 0) {
     return (
-      <div className="flex items-center justify-between gap-4 rounded-lg border border-dashed px-4 py-3 mb-4">
+      <div className="flex items-center justify-between gap-4 rounded-lg border-[1.5px] border-dashed px-4 py-3 mb-4">
         <p className="text-sm text-muted-foreground">
           Add friends to see when you&apos;re all free.
         </p>

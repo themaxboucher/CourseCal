@@ -57,8 +57,8 @@ export default async function FriendsPage({ searchParams }: FriendsPageProps) {
         user={user}
         pendingRequestCount={pendingCount}
       />
-      <section className="flex flex-col gap-2 max-w-[45rem] mx-auto px-4 md:px-8 py-12">
-        <div className="space-y-8">
+      <section className="flex flex-col gap-2 max-w-[45rem] mx-auto px-4 md:px-8 py-4 md:py-8">
+        <div className="space-y-4">
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" asChild>
               <Link href="/schedule">
@@ -250,7 +250,7 @@ function EmptyState({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed py-12 px-6 text-center">
+    <div className="flex flex-col items-center gap-3 rounded-lg border-[1.5px] border-dashed py-12 px-6 text-center">
       {icon}
       <div className="space-y-1">
         <p className="font-medium">{title}</p>

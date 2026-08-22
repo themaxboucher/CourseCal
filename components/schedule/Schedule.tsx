@@ -266,7 +266,7 @@ export default function Schedule({
       )}
 
       {!isLoggedIn && (
-        <div className="flex items-center justify-between gap-4 rounded-lg border border-dashed px-4 py-3 mb-4">
+        <div className="flex items-center justify-between gap-4 rounded-lg border-[1.5px] border-dashed px-4 py-3 mb-4">
           <p className="text-sm text-muted-foreground">
             <GroupFilled className="mr-2 inline size-4 align-text-bottom" />
             Sign up to see when you and your friends are free.
