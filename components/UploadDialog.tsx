@@ -14,18 +14,23 @@ export function UploadDialog({ term }: UploadDialogProps) {
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="hidden md:flex">
           <UploadFilled className="size-4" />
-          <span className="hidden md:block">Upload</span>
+          Upload
+        </Button>
+      </DialogTrigger>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="icon" className="md:hidden">
+          <UploadFilled className="size-5" />
         </Button>
       </DialogTrigger>
       <DialogContent className="flex flex-col items-center gap-8">
         <div className="space-y-2 text-center max-w-md">
           <h1 className="heading-3">Upload your schedule</h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground max-w-sm">
             Take a screenshot of your schedule from your UCalgary portal and
             upload the image here.
           </p>
         </div>
-        <div className="w-full min-w-[28rem] space-y-4">
+        <div className="w-full sm:min-w-[28rem] space-y-4">
           <UploadSchedule term={term} />
         </div>
       </DialogContent>
