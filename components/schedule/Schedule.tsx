@@ -85,7 +85,7 @@ export default function Schedule({
   // Show loading state for guest users while checking IndexedDB
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-[600px]">
+      <div className="flex items-center justify-center min-h-[50dvh] md:min-h-[600px]">
         <Loader2 className="size-8 animate-spin text-primary" />
       </div>
     );
