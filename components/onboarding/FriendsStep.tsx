@@ -79,7 +79,11 @@ export default function FriendsStep({
           <p className="text-sm font-medium">Invited you</p>
           <div className="flex items-center gap-3 rounded-lg border p-3 shadow-xs">
             <Link href={`/u/${referrer.username}`} className="shrink-0">
-              <UserAvatar avatarUrl={referrer.avatar} name={referrer.name} />
+              <UserAvatar
+                userId={referrer.id}
+                avatarUrl={referrer.avatar}
+                name={referrer.name}
+              />
             </Link>
             <div className="min-w-0 flex-grow">
               <p className="truncate font-medium">
@@ -109,6 +113,7 @@ export default function FriendsStep({
               >
                 <Link href={`/u/${suggestion.username}`} className="shrink-0">
                   <UserAvatar
+                    userId={suggestion.id}
                     avatarUrl={suggestion.avatar}
                     name={suggestion.name}
                   />

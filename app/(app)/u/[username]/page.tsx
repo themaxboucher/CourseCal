@@ -65,6 +65,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
           <div className="flex items-start gap-4">
             <UserAvatar
+              userId={profile.id}
               avatarUrl={profile.avatar}
               name={profile.name}
               size="lg"

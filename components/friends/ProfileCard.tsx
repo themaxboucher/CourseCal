@@ -10,11 +10,23 @@ interface ProfileCardProps {
 
 export default function ProfileCard({ profile, status }: ProfileCardProps) {
   return (
-    <Link
-      href={`/u/${profile.username}`}
-      className="flex items-center gap-3 rounded-xl border-[1.5px] p-3 shadow-xs hover:bg-muted/40 transition duration-200 ease-out"
-    >
-      <UserAvatar avatarUrl={profile.avatar} name={profile.name} />
+    // The link covers the card as an overlay rather than wrapping it, so the
+    // friend button stays a sibling: nesting it inside the anchor would both
+    // navigate and act on every click.
+    <div className="relative flex items-center gap-3 rounded-xl border-[1.5px] p-3 shadow-xs hover:bg-muted/40 transition duration-200 ease-out focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+      <Link
+        href={`/u/${profile.username}`}
+        className="absolute inset-0 rounded-xl focus:outline-none"
+      >
+        <span className="sr-only">
+          View {profile.name ?? profile.username}&apos;s profile
+        </span>
+      </Link>
+      <UserAvatar
+        userId={profile.id}
+        avatarUrl={profile.avatar}
+        name={profile.name}
+      />
       <div className="min-w-0 flex-grow">
         <h3 className="font-medium block truncate">
           {profile.name ?? profile.username}
@@ -25,7 +37,12 @@ export default function ProfileCard({ profile, status }: ProfileCardProps) {
           {profile.major && <span>{profile.major}</span>}
         </p>
       </div>
-      <FriendButton userId={profile.id} status={status} className="mr-2" />
-    </Link>
+      {/* Positioned so it paints above the overlay link and receives clicks. */}
+      <FriendButton
+        userId={profile.id}
+        status={status}
+        className="relative mr-2"
+      />
+    </div>
   );
 }

@@ -103,7 +103,11 @@ export default function UpdateProfileForm({ user }: { user: Tables<"users"> }) {
         <div className="space-y-2">
           <Label>Your avatar</Label>
           <div className="flex items-center gap-2">
-            <UserAvatar avatarUrl={avatarPreview} name={user.name} />
+            <UserAvatar
+              userId={user.id}
+              avatarUrl={avatarPreview}
+              name={user.name}
+            />
             <Button
               variant="outline"
               size="sm"

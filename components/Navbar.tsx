@@ -102,6 +102,7 @@ export function Navbar({
                 <li>
                   <Link href="/settings">
                     <UserAvatar
+                      userId={user?.id}
                       avatarUrl={user?.avatar}
                       name={user?.name}
                       size="sm"

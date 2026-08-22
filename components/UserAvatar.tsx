@@ -1,13 +1,22 @@
 import { cn } from "@/lib/utils";
+import { eventColors } from "@/constants";
+import { getColorFromId } from "@/lib/utils/colors";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 interface UserAvatarProps {
+  /**
+   * Picks the fallback color out of the event palette. Without an id the
+   * fallback stays neutral, so a placeholder avatar never claims a color
+   * that belongs to a real account.
+   */
+  userId?: string | null;
   avatarUrl?: string | null;
   name?: string | null;
   size?: "sm" | "md" | "lg";
 }
 
 export default function UserAvatar({
+  userId,
   avatarUrl,
   name,
   size = "md",
@@ -21,7 +30,12 @@ export default function UserAvatar({
         className="object-cover shadow-inner"
         src={avatarUrl || undefined}
       />
-      <AvatarFallback className="font-bold text-lg text-ring bg-ring/20">
+      <AvatarFallback
+        className={cn(
+          "font-bold text-lg",
+          userId ? eventColors[getColorFromId(userId)] : eventColors.fallback,
+        )}
+      >
         {firstLetterOfName}
       </AvatarFallback>
     </Avatar>

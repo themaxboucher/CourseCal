@@ -73,7 +73,11 @@ export default function FriendRail({
                   !hasSchedule && "opacity-50",
                 )}
               >
-                <UserAvatar avatarUrl={profile.avatar} name={profile.name} />
+                <UserAvatar
+                  userId={profile.id}
+                  avatarUrl={profile.avatar}
+                  name={profile.name}
+                />
               </span>
               {hasSchedule && selected && (
                 <span className="absolute -bottom-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-ring text-primary-foreground ring-2 ring-background">
