@@ -101,7 +101,7 @@ function VerifyContent() {
       )}
 
       {status === "error" && (
-        <div className="flex flex-col items-center justify-center gap-4 min-h-[calc(100vh-68px)] w-full">
+        <div className="flex flex-col items-center justify-center gap-4 min-h-[calc(100dvh-68px)] w-full px-4">
           <div className="max-w-md w-full flex flex-col items-center justify-center gap-4">
             <p className="text-sm text-destructive bg-destructive/10 p-4 rounded-md">
               {error ?? "An unknown error occurred."}
