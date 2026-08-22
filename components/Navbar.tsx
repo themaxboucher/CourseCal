@@ -70,7 +70,10 @@ export function Navbar({
               )}
               {user && (
                 <li>
-                  <Link href="/settings">
+                  <Link
+                    href="/settings"
+                    className="flex size-11 items-center justify-center md:size-9"
+                  >
                     <UserAvatar
                       avatarUrl={user?.avatar}
                       name={user?.name}
