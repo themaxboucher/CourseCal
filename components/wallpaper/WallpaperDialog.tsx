@@ -9,7 +9,8 @@ import {
 } from "../ui/dialog";
 import { WallpaperForm } from "./WallpaperForm";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useCompactViewport } from "@/lib/hooks/useMediaQuery";
 import {
   Drawer,
   DrawerTrigger,
@@ -32,7 +33,7 @@ export function WallpaperDialog({
   open: controlledOpen,
   onOpenChange,
 }: WallpaperDialogProps) {
-  const [isMobile, setIsMobile] = useState(false);
+  const isMobile = useCompactViewport();
   const [internalOpen, setInternalOpen] = useState(false);
 
   // Use controlled state if provided, otherwise use internal state
@@ -46,21 +47,6 @@ export function WallpaperDialog({
       setInternalOpen(value);
     }
   };
-
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 768); // md breakpoint is 768px
-    };
-
-    // Check on mount
-    checkScreenSize();
-
-    // Add event listener
-    window.addEventListener("resize", checkScreenSize);
-
-    // Cleanup
-    return () => window.removeEventListener("resize", checkScreenSize);
-  }, []);
 
   // Render trigger button only when uncontrolled
   const trigger = !isControlled ? (
