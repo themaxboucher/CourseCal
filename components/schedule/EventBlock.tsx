@@ -113,16 +113,16 @@ export default function EventBlock({
                 {event.location || "No location"}
               </span>
             ) : (
-              <span className="truncate">
+              <span>
                 {isWallpaper ? (
                   `${formatTime(event.start_time, false)}-${formatTime(event.end_time, false)}`
                 ) : (
                   <>
-                    <span className="md:hidden">
+                    <span className="truncate md:hidden">
                       {formatTime(event.start_time, false)}-
                       {formatTime(event.end_time, false)}
                     </span>
-                    <span className="hidden md:inline">
+                    <span className="hidden truncate md:inline">
                       {formatTime(event.start_time)} -{" "}
                       {formatTime(event.end_time)}
                     </span>
