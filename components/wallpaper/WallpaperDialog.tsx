@@ -84,19 +84,17 @@ export function WallpaperDialog({
     return (
       <Drawer open={open} onOpenChange={setOpen}>
         {trigger}
-        <DrawerContent>
-          <DrawerHeader className="border-b">
+        <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[90dvh]">
+          <DrawerHeader className="shrink-0 border-b py-3">
+            <DrawerTitle>Download wallpaper</DrawerTitle>
             <VisuallyHidden>
-              <DrawerTitle>Download wallpaper</DrawerTitle>
               <DrawerDescription>
                 Download a wallpaper of your schedule that isn&apos;t blocked by
                 your lock screens time or widgets.
               </DrawerDescription>
             </VisuallyHidden>
           </DrawerHeader>
-          <div className="overflow-y-auto">
-            <WallpaperForm events={events} />
-          </div>
+          <WallpaperForm events={events} />
         </DrawerContent>
       </Drawer>
     );

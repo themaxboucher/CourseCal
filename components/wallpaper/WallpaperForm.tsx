@@ -60,6 +60,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
   // Fetching and inlining the font keeps the network off the critical path of
   // an export, so the share sheet opens while the tap that asked for it still
   // counts as user activation.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `font` isn't read here, but the embed CSS is built from the preview's *computed* font families, so it has to be rebuilt whenever the selected font changes.
   useEffect(() => {
     if (previewRef.current) void getWallpaperFontEmbedCSS(previewRef.current);
   }, [font]);
@@ -110,17 +111,17 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
   };
 
   return (
-    <div className="relative grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="relative flex min-h-0 flex-1 flex-col md:grid md:grid-cols-2 md:gap-4">
       {savedImage && (
         <div className="absolute inset-0 z-20 bg-background">
-          {/* The form scrolls behind this, so stay pinned to the visible area. */}
-          <div className="sticky top-0 flex h-[100dvh] max-h-full flex-col items-center justify-center gap-6 p-6 text-center">
+          <div className="flex h-full flex-col items-center justify-center gap-6 p-6 text-center">
             <div className="space-y-1">
               <h2 className="heading-3">Save to Photos</h2>
               <p className="text-muted-foreground">
                 Press and hold the wallpaper, then choose Save to Photos.
               </p>
             </div>
+            {/* biome-ignore lint/performance/noImgElement: `savedImage` is a client-generated data: URL, which next/image cannot optimize, and press-and-hold to save to Photos needs a plain <img>. */}
             <img
               src={savedImage}
               alt="Your schedule wallpaper"
@@ -137,7 +138,9 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
         </div>
       )}
 
-      <div className="flex justify-center items-center bg-muted border-b md:border-b-0 md:border-r p-10 h-full">
+      {/* The export is captured from the preview's laid-out size, so the phone
+          keeps its full width on mobile and is only scaled down for display. */}
+      <div className="flex h-[38dvh] max-h-72 shrink-0 items-center justify-center overflow-hidden border-b bg-muted md:h-full md:max-h-none md:border-b-0 md:border-r md:p-10">
         <WallpaperPreview
           events={events}
           imageRef={previewRef}
@@ -146,10 +149,11 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
           theme={theme}
           cellHeight={cellHeight}
           eventInfo={eventInfo}
+          className="w-70 scale-[0.45] md:w-full md:scale-100"
         />
       </div>
 
-      <div className="p-6 flex flex-col gap-6">
+      <div className="flex min-h-0 flex-1 flex-col gap-6 p-4 md:p-6">
         <div className="space-y-1 hidden md:block">
           <h2 className="heading-3">Download wallpaper</h2>
           <p className="text-muted-foreground">
@@ -158,160 +162,164 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
           </p>
         </div>
 
-        <form className="flex flex-col gap-6 justify-between h-full">
-          <div className="flex flex-col gap-6 md:max-h-[500px] md:pb-2 md:overflow-y-auto md:px-2 md:-mx-2 scrollbar-thin">
-            <div className="flex flex-col gap-4">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <Label>Height</Label>
-                  <HoverCard>
-                    <HoverCardTrigger>
-                      <InformationFilled className="size-4 text-muted-foreground" />
-                    </HoverCardTrigger>
-                    <HoverCardContent align="start">
-                      <p className="text-sm">
-                        The schedule will take up more or less space, depending
-                        on your phone&apos;s dimensions.
-                      </p>
-                    </HoverCardContent>
-                  </HoverCard>
+        <form className="flex min-h-0 flex-1 flex-col justify-between gap-6 md:h-full">
+          <div className="relative flex min-h-0 flex-1 flex-col md:flex-initial">
+            <div className="flex flex-col gap-6 -mx-2 px-2 pb-2 overflow-y-auto md:max-h-[500px] scrollbar-thin">
+              <div className="flex flex-col gap-4">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <Label>Height</Label>
+                    <HoverCard>
+                      <HoverCardTrigger>
+                        <InformationFilled className="size-4 text-muted-foreground" />
+                      </HoverCardTrigger>
+                      <HoverCardContent align="start">
+                        <p className="text-sm">
+                          The schedule will take up more or less space,
+                          depending on your phone&apos;s dimensions.
+                        </p>
+                      </HoverCardContent>
+                    </HoverCard>
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    {cellHeight}%
+                  </span>
                 </div>
-                <span className="text-sm text-muted-foreground">
-                  {cellHeight}%
-                </span>
+                <Slider
+                  value={[cellHeight]}
+                  onValueChange={(value) => setCellHeight(value[0])}
+                  min={0}
+                  max={100}
+                  step={1}
+                />
               </div>
-              <Slider
-                value={[cellHeight]}
-                onValueChange={(value) => setCellHeight(value[0])}
-                min={0}
-                max={100}
-                step={1}
-              />
-            </div>
 
-            <div className="flex flex-col gap-4">
-              <Label>Display info</Label>
-              <div className="flex gap-4">
-                <Button
-                  type="button"
-                  size="lg"
-                  variant="outline"
-                  onClick={() => setEventInfo("location")}
-                  className={cn(
-                    "flex-1 normal-case font-medium flex flex-col items-center justify-center gap-1 h-full py-2",
-                    eventInfo === "location" &&
-                      "ring-2 ring-sky-500 ring-offset-2 ring-offset-background",
-                  )}
-                >
-                  <LocationFilled className="size-4" />
-                  Room
-                </Button>
-                <Button
-                  type="button"
-                  size="lg"
-                  variant="outline"
-                  onClick={() => setEventInfo("time")}
-                  className={cn(
-                    "flex-1 normal-case font-medium flex flex-col items-center justify-center gap-1 h-full py-2",
-                    eventInfo === "time" &&
-                      "ring-2 ring-sky-500 ring-offset-2 ring-offset-background",
-                  )}
-                >
-                  <TimeFilled className="size-4" />
-                  Time
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-4">
-              <Label>Theme</Label>
-              <div className="flex gap-4">
-                <Button
-                  type="button"
-                  size="lg"
-                  variant="outline"
-                  onClick={() => setTheme("light")}
-                  className={cn(
-                    "flex-1 normal-case font-medium flex flex-col items-center justify-center gap-1 h-full py-2",
-                    theme === "light" &&
-                      "ring-2 ring-sky-500 ring-offset-2 ring-offset-background",
-                  )}
-                >
-                  <SunFilled className="size-4" />
-                  Light
-                </Button>
-                <Button
-                  type="button"
-                  size="lg"
-                  variant="outline"
-                  onClick={() => setTheme("dark")}
-                  className={cn(
-                    "flex-1 normal-case font-medium flex flex-col items-center justify-center gap-1 h-full py-2",
-                    theme === "dark" &&
-                      "ring-2 ring-sky-500 ring-offset-2 ring-offset-background",
-                  )}
-                >
-                  <MoonFilled className="size-4" />
-                  Dark
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-4">
-              <Label>Background</Label>
-              <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
-                {backgroundOptions.map((option) => (
+              <div className="flex flex-col gap-4">
+                <Label>Display info</Label>
+                <div className="flex gap-4">
                   <Button
-                    key={option.value}
                     type="button"
-                    size="sm"
+                    size="lg"
                     variant="outline"
-                    onClick={() => setBackground(option.value)}
+                    onClick={() => setEventInfo("location")}
                     className={cn(
-                      "normal-case font-medium",
-                      background === option.value &&
+                      "flex-1 normal-case font-medium flex flex-col items-center justify-center gap-1 h-full py-2",
+                      eventInfo === "location" &&
                         "ring-2 ring-sky-500 ring-offset-2 ring-offset-background",
                     )}
                   >
-                    <span
+                    <LocationFilled className="size-4" />
+                    Room
+                  </Button>
+                  <Button
+                    type="button"
+                    size="lg"
+                    variant="outline"
+                    onClick={() => setEventInfo("time")}
+                    className={cn(
+                      "flex-1 normal-case font-medium flex flex-col items-center justify-center gap-1 h-full py-2",
+                      eventInfo === "time" &&
+                        "ring-2 ring-sky-500 ring-offset-2 ring-offset-background",
+                    )}
+                  >
+                    <TimeFilled className="size-4" />
+                    Time
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-4">
+                <Label>Theme</Label>
+                <div className="flex gap-4">
+                  <Button
+                    type="button"
+                    size="lg"
+                    variant="outline"
+                    onClick={() => setTheme("light")}
+                    className={cn(
+                      "flex-1 normal-case font-medium flex flex-col items-center justify-center gap-1 h-full py-2",
+                      theme === "light" &&
+                        "ring-2 ring-sky-500 ring-offset-2 ring-offset-background",
+                    )}
+                  >
+                    <SunFilled className="size-4" />
+                    Light
+                  </Button>
+                  <Button
+                    type="button"
+                    size="lg"
+                    variant="outline"
+                    onClick={() => setTheme("dark")}
+                    className={cn(
+                      "flex-1 normal-case font-medium flex flex-col items-center justify-center gap-1 h-full py-2",
+                      theme === "dark" &&
+                        "ring-2 ring-sky-500 ring-offset-2 ring-offset-background",
+                    )}
+                  >
+                    <MoonFilled className="size-4" />
+                    Dark
+                  </Button>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-4">
+                <Label>Background</Label>
+                <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
+                  {backgroundOptions.map((option) => (
+                    <Button
+                      key={option.value}
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setBackground(option.value)}
                       className={cn(
-                        "size-3.5 min-w-3.5 rounded-[3.5px]",
-                        option.preview,
+                        "normal-case font-medium",
+                        background === option.value &&
+                          "ring-2 ring-sky-500 ring-offset-2 ring-offset-background",
                       )}
-                    />
-                    {option.label}
-                  </Button>
-                ))}
+                    >
+                      <span
+                        className={cn(
+                          "size-3.5 min-w-3.5 rounded-[3.5px]",
+                          option.preview,
+                        )}
+                      />
+                      {option.label}
+                    </Button>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            <div className="flex flex-col gap-4">
-              <Label>Font</Label>
-              <div className="grid grid-cols-3 gap-3">
-                {fontOptions.map((option) => (
-                  <Button
-                    key={option.value}
-                    type="button"
-                    variant="outline"
-                    onClick={() => setFont(option.value)}
-                    className={cn(
-                      "normal-case font-medium",
-                      option.className,
-                      font === option.value &&
-                        "ring-2 ring-sky-500 ring-offset-2 ring-offset-background",
-                    )}
-                  >
-                    {option.label}
-                  </Button>
-                ))}
+              <div className="flex flex-col gap-4">
+                <Label>Font</Label>
+                <div className="grid grid-cols-3 gap-3">
+                  {fontOptions.map((option) => (
+                    <Button
+                      key={option.value}
+                      type="button"
+                      variant="outline"
+                      onClick={() => setFont(option.value)}
+                      className={cn(
+                        "normal-case font-medium",
+                        option.className,
+                        font === option.value &&
+                          "ring-2 ring-sky-500 ring-offset-2 ring-offset-background",
+                      )}
+                    >
+                      {option.label}
+                    </Button>
+                  ))}
+                </div>
               </div>
             </div>
+            {/* Hints that the drawer's control list runs past the fold. */}
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-linear-to-t from-background md:hidden" />
           </div>
           <Button
             type="button"
             onClick={handleDownload}
             disabled={isSaving}
-            className="gap-2"
+            className="shrink-0 gap-2"
           >
             {isSaving ? (
               <>
