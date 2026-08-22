@@ -59,7 +59,7 @@ export default function EventBlock({
           <TriangleAlert className="size-3 md:size-3.5" />
         </div>
       )}
-      <div className="flex items-start justify-between gap-1">
+      <div className="flex h-full items-start justify-between gap-1 overflow-hidden">
         <div
           className={cn(
             "w-full",
@@ -103,8 +103,7 @@ export default function EventBlock({
           <div
             className={cn(
               "opacity-75 flex justify-start items-center gap-0.5 flex-wrap tracking-tight",
-              !isWallpaper && "md:text-xs",
-              isWallpaper ? "text-[5.5px]" : "text-xxs",
+              isWallpaper ? "text-[5.5px]" : "text-xxxs sm:text-xxs md:text-xs",
             )}
           >
             {isWallpaper && eventInfo === "location" ? (
@@ -112,10 +111,21 @@ export default function EventBlock({
                 {event.location || "No location"}
               </span>
             ) : (
-              <span>
-                {formatTime(event.start_time, !isWallpaper)}
-                {isWallpaper ? "-" : " - "}
-                {formatTime(event.end_time, !isWallpaper)}
+              <span className="truncate">
+                {isWallpaper ? (
+                  `${formatTime(event.start_time, false)}-${formatTime(event.end_time, false)}`
+                ) : (
+                  <>
+                    <span className="md:hidden">
+                      {formatTime(event.start_time, false)}-
+                      {formatTime(event.end_time, false)}
+                    </span>
+                    <span className="hidden md:inline">
+                      {formatTime(event.start_time)} -{" "}
+                      {formatTime(event.end_time)}
+                    </span>
+                  </>
+                )}
               </span>
             )}
           </div>
