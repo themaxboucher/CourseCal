@@ -36,7 +36,7 @@ export default function FriendRail({
 }: FriendRailProps) {
   if (friends.length === 0) {
     return (
-      <div className="flex items-center justify-between gap-4 rounded-lg border border-dashed px-4 py-3">
+      <div className="flex items-center justify-between gap-4 rounded-lg border border-dashed px-4 py-3 mb-4">
         <p className="text-sm text-muted-foreground">
           Add friends to see when you&apos;re all free.
         </p>
@@ -48,7 +48,7 @@ export default function FriendRail({
   }
 
   return (
-    <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+    <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-2">
       {friends.map(({ profile, selected, hasSchedule }) => {
         const label = profile.name ?? profile.username;
         return (
