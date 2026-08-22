@@ -74,7 +74,7 @@ export default function WeekView({
           <div
             key={day}
             className={cn(
-              "md:text-sm text-xs text-muted-foreground font-medium px-4 py-2 sm:py-4 bg-muted/50 text-center uppercase border-l-2 border-t-2 relative z-20",
+              "md:text-sm text-xs text-muted-foreground font-medium px-2 md:px-4 py-2 sm:py-4 bg-muted/50 text-center uppercase border-l-2 border-t-2 relative z-20",
               index === 0 && "rounded-tl-xl",
               index === weekdays.length - 1 && "border-r-2 rounded-tr-xl",
             )}
