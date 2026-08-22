@@ -30,59 +30,63 @@ export function Navbar({
   }
   return (
     <>
-      <header className="flex justify-between items-center gap-3 px-3 sm:px-4 md:px-6 py-4 relative z-50">
-        <Logo />
-        <div>
-          <div>
-            <ul className="flex shrink-0 items-center gap-2">
-              {hasSchedule && (
-                <li>
-                  <Button size="sm" className="hidden md:flex" asChild>
-                    <Link href="/schedule">View Schedule</Link>
-                  </Button>
-                  <Button size="icon" className="md:hidden" asChild>
-                    <Link href="/schedule">
-                      <CalendarFold className="size-4.5" />
+      {/* Matches the page container so the logo and account control line up
+          with the content below them instead of hugging the window edges. */}
+      <header className="relative z-50 w-full">
+        <div className="w-full max-w-[90rem] mx-auto px-3 sm:px-4 md:px-8 py-4">
+          <div className="flex justify-between items-center gap-3 w-full max-w-[70rem] mx-auto">
+            <Logo />
+            <div>
+              <ul className="flex shrink-0 items-center gap-2">
+                {hasSchedule && (
+                  <li>
+                    <Button size="sm" className="hidden md:flex" asChild>
+                      <Link href="/schedule">View Schedule</Link>
+                    </Button>
+                    <Button size="icon" className="md:hidden" asChild>
+                      <Link href="/schedule">
+                        <CalendarFold className="size-4.5" />
+                      </Link>
+                    </Button>
+                  </li>
+                )}
+                {!isLoggedIn && user === null && !hasSchedule && (
+                  <>
+                    <li>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleAuthDialogOpen("login")}
+                      >
+                        Log in
+                      </Button>
+                    </li>
+                    <li>
+                      <Button
+                        size="sm"
+                        onClick={() => handleAuthDialogOpen("signup")}
+                      >
+                        Join
+                      </Button>
+                    </li>
+                  </>
+                )}
+                {user && (
+                  <li>
+                    <Link
+                      href="/settings"
+                      className="flex size-11 items-center justify-center md:size-9"
+                    >
+                      <UserAvatar
+                        avatarUrl={user?.avatar}
+                        name={user?.name}
+                        size="sm"
+                      />
                     </Link>
-                  </Button>
-                </li>
-              )}
-              {!isLoggedIn && user === null && !hasSchedule && (
-                <>
-                  <li>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleAuthDialogOpen("login")}
-                    >
-                      Log in
-                    </Button>
                   </li>
-                  <li>
-                    <Button
-                      size="sm"
-                      onClick={() => handleAuthDialogOpen("signup")}
-                    >
-                      Join
-                    </Button>
-                  </li>
-                </>
-              )}
-              {user && (
-                <li>
-                  <Link
-                    href="/settings"
-                    className="flex size-11 items-center justify-center md:size-9"
-                  >
-                    <UserAvatar
-                      avatarUrl={user?.avatar}
-                      name={user?.name}
-                      size="sm"
-                    />
-                  </Link>
-                </li>
-              )}
-            </ul>
+                )}
+              </ul>
+            </div>
           </div>
         </div>
       </header>
