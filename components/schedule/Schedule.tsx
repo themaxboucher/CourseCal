@@ -156,6 +156,21 @@ export default function Schedule({
     [friends, selectedUsernames],
   );
 
+  /**
+   * Only friends with events in this term can be compared against. A selection
+   * can outlive the schedule behind it — a term switch, or a `?with=` link
+   * shared before somebody uploaded — and with none of them left there is no
+   * comparison to show, so the overlap controls and the availability layer both
+   * stay away rather than reporting the viewer's own week back to them.
+   */
+  const comparisonFriends = useMemo(
+    () =>
+      selectedFriends.filter((friend) =>
+        termFriendEvents.some((event) => event.user === friend.id),
+      ),
+    [selectedFriends, termFriendEvents],
+  );
+
   const railFriends: RailFriend[] = useMemo(
     () =>
       friends.map((friend) => ({
@@ -167,7 +182,7 @@ export default function Schedule({
   );
 
   const availability = useMemo(() => {
-    if (!user || selectedFriends.length === 0) return null;
+    if (!user || comparisonFriends.length === 0) return null;
 
     const participants: Participant[] = [
       {
@@ -175,7 +190,7 @@ export default function Schedule({
         events: selectedTermServerEvents,
         hasSchedule: selectedTermServerEvents.length > 0,
       },
-      ...selectedFriends.map((friend) => {
+      ...comparisonFriends.map((friend) => {
         const events = termFriendEvents.filter(
           (event) => event.user === friend.id,
         );
@@ -188,7 +203,7 @@ export default function Schedule({
     const rangeEvents = [
       ...selectedTermServerEvents,
       ...termFriendEvents.filter((event) =>
-        selectedFriends.some((friend) => friend.id === event.user),
+        comparisonFriends.some((friend) => friend.id === event.user),
       ),
     ];
     const { startHour, endHour } = getTimeRange(rangeEvents);
@@ -207,7 +222,7 @@ export default function Schedule({
     };
   }, [
     user,
-    selectedFriends,
+    comparisonFriends,
     selectedTermServerEvents,
     termFriendEvents,
     minDurationMin,
@@ -239,16 +254,10 @@ export default function Schedule({
   }
 
   const displayEvents = isLoggedIn ? selectedTermServerEvents : localEvents;
-  const excludedNames = availability
-    ? availability.excludedIds
-        .filter((id) => id !== user?.id)
-        .map((id) => participantPeople[id]?.name)
-        .filter(Boolean)
-    : [];
 
   return (
     <>
-      {isLoggedIn && hasEvents && (
+      {isLoggedIn && (
         <FriendRail
           friends={railFriends}
           onToggle={toggleFriend}
@@ -268,21 +277,6 @@ export default function Schedule({
         </div>
       )}
 
-      {excludedNames.length > 0 && (
-        <p className="pb-2 text-xs text-muted-foreground">
-          {excludedNames.join(", ")}{" "}
-          {excludedNames.length === 1 ? "has" : "have"} no schedule for{" "}
-          <span className="capitalize">{selectedTerm.season}</span>{" "}
-          {selectedTerm.year}, so they are not counted below.
-        </p>
-      )}
-
-      {availability && availability.slots.length === 0 && (
-        <p className="pb-2 text-xs text-muted-foreground">
-          No shared free time. Try a shorter minimum gap, or fewer people.
-        </p>
-      )}
-
       <div className="flex items-center justify-between pb-4">
         {isLoggedIn && (
           <TermSelector
@@ -297,7 +291,7 @@ export default function Schedule({
             !isLoggedIn && "justify-between w-full",
           )}
         >
-          {selectedFriends.length > 0 && (
+          {comparisonFriends.length > 0 && (
             <OverlapSettings
               minDurationMin={minDurationMin}
               onMinDurationChange={setMinDurationMin}
@@ -347,16 +341,26 @@ export default function Schedule({
         </div>
       </div>
 
-      <WeekView
-        events={displayEvents}
-        user={user ?? undefined}
-        isGuest={!isLoggedIn}
-        onEventsChange={refreshLocalEvents}
-        busyBlocks={availability?.busyBlocks}
-        freeSlots={availability?.slots}
-        people={participantPeople}
-        rangeEvents={availability?.rangeEvents}
-      />
+      <div className="relative w-full max-w-[75rem] mx-auto">
+        <WeekView
+          events={displayEvents}
+          user={user ?? undefined}
+          isGuest={!isLoggedIn}
+          onEventsChange={refreshLocalEvents}
+          busyBlocks={availability?.busyBlocks}
+          freeSlots={availability?.slots}
+          people={participantPeople}
+          rangeEvents={availability?.rangeEvents}
+        />
+
+        {availability && availability.slots.length === 0 && (
+          <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center p-4">
+            <p className="max-w-xs rounded-lg border bg-background/90 px-4 py-3 text-center text-sm text-muted-foreground shadow-sm backdrop-blur-sm">
+              No shared free time. Try a shorter minimum gap, or fewer people.
+            </p>
+          </div>
+        )}
+      </div>
 
       <AuthDialog
         open={authDialogOpen}

@@ -20,7 +20,7 @@ interface FriendRailProps {
   termLabel: string;
 }
 
-/** Shared footprint so the "add" tile lines up with the friend tiles. */
+// Shared footprint so the "add" tile lines up with the friend tiles.
 const tileClass =
   "flex w-18 shrink-0 cursor-pointer flex-col items-center gap-1 rounded-lg px-1 py-2 transition-colors hover:bg-accent/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
 
@@ -61,25 +61,27 @@ export default function FriendRail({
               hasSchedule ? label : `${label} has no schedule for ${termLabel}`
             }
             className={tileClass}
+            disabled={!hasSchedule}
           >
             <span className="relative">
               <span
                 className={cn(
                   "block rounded-full transition-all",
-                  selected &&
+                  hasSchedule &&
+                    selected &&
                     "ring-2 ring-ring ring-offset-2 ring-offset-background",
-                  !hasSchedule && "opacity-40",
+                  !hasSchedule && "opacity-50",
                 )}
               >
                 <UserAvatar avatarUrl={profile.avatar} name={profile.name} />
               </span>
-              {selected && (
+              {hasSchedule && selected && (
                 <span className="absolute -bottom-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-ring text-primary-foreground ring-2 ring-background">
                   <CheckFilled className="size-2.5" />
                 </span>
               )}
               {!hasSchedule && (
-                <span className="absolute -bottom-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-muted text-muted-foreground border">
+                <span className="absolute -bottom-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-muted-foreground text-white ring-2 ring-background">
                   <CalendarXFilled className="size-2.5" />
                 </span>
               )}
