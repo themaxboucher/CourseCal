@@ -14,7 +14,13 @@ export function UploadDialog({ term }: UploadDialogProps) {
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="hidden md:flex">
           <Upload className="size-4" />
-          <span className="hidden md:block">Upload</span>
+          <span>Upload</span>
+        </Button>
+      </DialogTrigger>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="icon" className="md:hidden">
+          <Upload className="size-4" />
+          <span className="sr-only">Upload schedule</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="flex flex-col items-center gap-8">
