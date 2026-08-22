@@ -88,10 +88,9 @@ export function Navbar({
                       Log in
                     </Button>
                   </li>
-                  <li>
+                  <li className="hidden sm:inline-flex">
                     <Button
                       size="sm"
-                      className="hidden sm:inline-flex"
                       onClick={() => handleAuthDialogOpen("signup")}
                     >
                       Join
