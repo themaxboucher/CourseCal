@@ -40,6 +40,7 @@ export function AddEventButton({
       </Button>
       <Button className="md:hidden" size="icon" onClick={handleOpenDialog}>
         <AddFilled className="size-5" />
+        <span className="sr-only">Add class</span>
       </Button>
       <EventDialog
         open={isDialogOpen}
