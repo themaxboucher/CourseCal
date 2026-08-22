@@ -2,6 +2,7 @@
 
 import { Moon, Sun, Monitor } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 import {
   Select,
@@ -13,6 +14,12 @@ import {
 
 export function ThemeSelector() {
   const { theme, setTheme } = useTheme();
+  // The stored theme is only readable in the browser, so the server has no
+  // value to render. Hold the trigger empty until mount rather than printing
+  // a guess the client then has to correct.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const current = mounted ? theme || "system" : undefined;
 
   const getThemeIcon = (themeValue: string) => {
     switch (themeValue) {
@@ -41,11 +48,11 @@ export function ThemeSelector() {
   };
 
   return (
-    <Select value={theme} onValueChange={setTheme}>
-      <SelectTrigger className="w-fit gap-2" size="sm">
-        {getThemeIcon(theme || "system")}
-        <SelectValue placeholder="Select theme">
-          {getThemeLabel(theme || "system")}
+    <Select value={current} onValueChange={setTheme}>
+      <SelectTrigger className="w-fit gap-2" size="sm" aria-label="Theme">
+        {current && getThemeIcon(current)}
+        <SelectValue placeholder="Theme">
+          {current && getThemeLabel(current)}
         </SelectValue>
       </SelectTrigger>
       <SelectContent>
