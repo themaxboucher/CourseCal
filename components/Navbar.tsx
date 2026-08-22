@@ -64,12 +64,12 @@ export function Navbar({
               )}
               {hasSchedule && (
                 <li>
-                  <Button size="icon" className="md:invisible" asChild>
+                  <Button size="icon" className="md:hidden" asChild>
                     <Link href="/schedule">
                       <CalendarFilled className="size-4.5" />
                     </Link>
                   </Button>
-                  <Button size="sm" className="invisible md:visible" asChild>
+                  <Button size="sm" className="hidden md:flex" asChild>
                     <Link href="/schedule">
                       <CalendarFilled className="size-4.5" />
                       <span>View schedule</span>

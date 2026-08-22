@@ -48,7 +48,7 @@ export default function FriendRail({
   if (!isLoggedIn) {
     return (
       <>
-        <div className="flex items-center justify-between gap-4 rounded-xl border-[1.5px] border-dashed px-4 py-3 mb-4">
+        <div className="flex items-center justify-between gap-4 rounded-xl border-[1.5px] border-dashed bg-muted/75 px-4 py-3 mb-4">
           <p className="text-sm text-muted-foreground">
             <GroupFilled className="mr-2 inline size-4 align-text-bottom" />
             Sign up to see when you and your friends are free.
@@ -70,7 +70,7 @@ export default function FriendRail({
     return (
       <Link
         href="/friends?tab=discover"
-        className="flex items-center justify-center gap-1.5 rounded-xl border-[1.5px] border-dashed px-4 py-3 mb-4 text-sm text-muted-foreground transition-colors hover:border-ring hover:text-ring hover:bg-ring/10"
+        className="flex items-center justify-center gap-1.5 rounded-xl border-[1.5px] border-dashed bg-muted/75 px-4 py-3 mb-4 text-sm text-muted-foreground transition-colors hover:border-ring hover:text-ring hover:bg-ring/10"
       >
         <AddFilled className="size-3.5" />
         <p className="invisible hidden sm:visible sm:block">
@@ -140,7 +140,7 @@ export default function FriendRail({
         title="Find more friends"
         className={cn(tileClass, "group")}
       >
-        <span className="flex size-12 items-center justify-center rounded-full border-2 border-dashed border-border text-muted-foreground bg-muted/40 transition-colors group-hover:border-ring group-hover:text-ring group-hover:bg-ring/10">
+        <span className="flex size-12 items-center justify-center rounded-full border-2 border-dashed border-border text-muted-foreground bg-muted/75 transition-colors group-hover:border-ring group-hover:text-ring group-hover:bg-ring/10">
           <AddFilled className="size-5" />
         </span>
         <span className="w-full truncate text-center text-xs transition-colors text-muted-foreground invisible group-hover:visible">
