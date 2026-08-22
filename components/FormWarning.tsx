@@ -1,4 +1,4 @@
-import { AlertTriangle } from "lucide-react";
+import { AlertFilled } from "@/components/icons";
 import { cn } from "@/lib/utils";
 
 interface FormWarningProps {
@@ -14,7 +14,7 @@ export function FormWarning({ message, className }: FormWarningProps) {
         className,
       )}
     >
-      <AlertTriangle className="h-3 w-3" />
+      <AlertFilled className="h-3 w-3" />
       <span>{message}</span>
     </div>
   );

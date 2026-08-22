@@ -1,4 +1,4 @@
-import { Upload } from "lucide-react";
+import { UploadFilled } from "@/components/icons";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 import UploadSchedule from "./UploadSchedule";
@@ -13,13 +13,13 @@ export function UploadDialog({ term }: UploadDialogProps) {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="hidden md:flex">
-          <Upload className="size-4" />
+          <UploadFilled className="size-4" />
           <span>Upload</span>
         </Button>
       </DialogTrigger>
       <DialogTrigger asChild>
         <Button variant="outline" size="icon" className="md:hidden">
-          <Upload className="size-4" />
+          <UploadFilled className="size-4" />
           <span className="sr-only">Upload schedule</span>
         </Button>
       </DialogTrigger>

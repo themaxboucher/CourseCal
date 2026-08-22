@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { OutlookIcon } from "@/components/icons/OutlookIcon";
-import { Inbox } from "lucide-react";
+import { InboxFilled } from "@/components/icons";
 
 interface CheckEmailPageProps {
   searchParams: Promise<{ intent?: string }>;
@@ -16,7 +16,7 @@ export default async function CheckEmailPage({
     <section className="flex min-h-[calc(100dvh-68px)] flex-col gap-2 max-w-[75rem] mx-auto px-4 md:px-8 py-16">
       <div className="flex flex-1 flex-col items-center justify-center gap-6">
         <div className="flex items-center justify-center rounded-full bg-red-500 border-2 border-red-300 dark:border-red-800 text-white p-3.5">
-          <Inbox className="size-8" />
+          <InboxFilled className="size-8" />
         </div>
         <div className="flex flex-col items-center gap-2 max-w-md">
           <h1 className="heading-3 text-center max-w-64">

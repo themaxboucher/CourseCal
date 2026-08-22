@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarFold } from "lucide-react";
+import { CalendarFilled, GroupFilled } from "@/components/icons";
 import { Logo } from "./Logo";
 import { Button } from "./ui/button";
 import Link from "next/link";
@@ -13,12 +13,15 @@ interface NavbarProps {
   hasSchedule?: boolean;
   isLoggedIn?: boolean;
   user?: Tables<"users"> | null;
+  /** Incoming friend requests awaiting a response; drives the badge. */
+  pendingRequestCount?: number;
 }
 
 export function Navbar({
   hasSchedule = false,
   isLoggedIn = false,
   user = null,
+  pendingRequestCount = 0,
 }: NavbarProps) {
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [authDialogType, setAuthDialogType] = useState<"signup" | "login">(
@@ -38,14 +41,44 @@ export function Navbar({
             <Logo />
             <div>
               <ul className="flex shrink-0 items-center gap-2">
+                {isLoggedIn && user && (
+                  <li>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="relative"
+                      aria-label={
+                        pendingRequestCount > 0
+                          ? `Friends, ${pendingRequestCount} pending request${pendingRequestCount === 1 ? "" : "s"}`
+                          : "Friends"
+                      }
+                      asChild
+                    >
+                      <Link href="/friends">
+                        <GroupFilled className="size-4.5" />
+                        {pendingRequestCount > 0 && (
+                          <span className="absolute -right-0.5 -top-0.5 inline-flex min-w-4.5 items-center justify-center rounded-full bg-red-500 px-1 text-[0.625rem] font-semibold leading-4.5 text-white">
+                            {pendingRequestCount > 9
+                              ? "9+"
+                              : pendingRequestCount}
+                          </span>
+                        )}
+                      </Link>
+                    </Button>
+                  </li>
+                )}
                 {hasSchedule && (
                   <li>
-                    <Button size="sm" className="hidden md:flex" asChild>
-                      <Link href="/schedule">View Schedule</Link>
-                    </Button>
                     <Button size="icon" className="md:hidden" asChild>
                       <Link href="/schedule">
-                        <CalendarFold className="size-4.5" />
+                        <CalendarFilled className="size-4.5" />
+                        <span className="sr-only">View schedule</span>
+                      </Link>
+                    </Button>
+                    <Button size="sm" className="hidden md:flex" asChild>
+                      <Link href="/schedule">
+                        <CalendarFilled className="size-4.5" />
+                        <span>View schedule</span>
                       </Link>
                     </Button>
                   </li>
@@ -71,13 +104,14 @@ export function Navbar({
                     </li>
                   </>
                 )}
-                {user && (
+                {isLoggedIn && user && (
                   <li>
                     <Link
                       href="/settings"
                       className="flex size-11 items-center justify-center md:size-9"
                     >
                       <UserAvatar
+                        userId={user?.id}
                         avatarUrl={user?.avatar}
                         name={user?.name}
                         size="sm"

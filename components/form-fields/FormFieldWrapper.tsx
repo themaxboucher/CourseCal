@@ -20,6 +20,7 @@ interface FormFieldWrapperProps {
   className?: string;
   description?: React.ReactNode;
   warning?: string;
+  suffix?: string;
 }
 
 export function FormFieldWrapper({
@@ -30,8 +31,23 @@ export function FormFieldWrapper({
   className,
   description,
   warning,
+  suffix,
 }: FormFieldWrapperProps) {
   const hasError = form.formState.errors[name];
+
+  // The suffix is drawn over the right edge of the control, so it only needs a
+  // positioned wrapper when there is one to show.
+  const withSuffix = (control: ReactNode) =>
+    suffix ? (
+      <div className="relative">
+        {control}
+        <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-base md:text-sm">
+          {suffix}
+        </span>
+      </div>
+    ) : (
+      control
+    );
 
   return (
     <FormField
@@ -40,9 +56,11 @@ export function FormFieldWrapper({
       render={({ field }) => (
         <FormItem className={className}>
           {label && <FormLabel>{label}</FormLabel>}
-          <FormControl>
-            {typeof children === "function" ? children({ field }) : children}
-          </FormControl>
+          {withSuffix(
+            <FormControl>
+              {typeof children === "function" ? children({ field }) : children}
+            </FormControl>,
+          )}
           {description && (
             <FormDescription className="text-xs text-muted-foreground">
               {description}

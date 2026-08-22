@@ -6,7 +6,7 @@ import {
   type ScheduleAnalysisResult,
 } from "@/lib/actions/ai.actions";
 import { saveEvents as saveLocalEvents } from "@/lib/indexeddb";
-import { Loader2, CalendarArrowUp } from "lucide-react";
+import { CalendarAddFilled, Loading3Filled } from "@/components/icons";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -21,9 +21,19 @@ import { getRelevantTerm } from "@/lib/utils/schedule";
 
 interface UploadScheduleProps {
   term?: Tables<"terms"> | null;
+  /**
+   * True for the upload step inside onboarding. The friends step that follows
+   * is what completes onboarding, so this upload must not do it early —
+   * otherwise `proxy.ts` bounces the user out of `/onboarding/*` before they
+   * ever see it.
+   */
+  isOnboardingStep?: boolean;
 }
 
-export default function UploadSchedule({ term }: UploadScheduleProps) {
+export default function UploadSchedule({
+  term,
+  isOnboardingStep = false,
+}: UploadScheduleProps) {
   const [result, setResult] = useState<ScheduleAnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -68,6 +78,11 @@ export default function UploadSchedule({ term }: UploadScheduleProps) {
           effectiveTerm.id,
         );
         await saveLocalEvents(localEvents);
+      }
+
+      if (isOnboardingStep) {
+        router.push("/onboarding/friends");
+        return;
       }
 
       // If the user is logged in and has a name and major, mark them as completed onboarding
@@ -183,7 +198,7 @@ export default function UploadSchedule({ term }: UploadScheduleProps) {
           {!isLoading ? (
             <>
               <div className="flex items-center justify-center rounded-2xl bg-muted/50 group-hover:bg-ring/5 group-hover:text-ring p-3">
-                <CalendarArrowUp className="size-6" />
+                <CalendarAddFilled className="size-6" />
               </div>
 
               {isDragging ? (
@@ -197,7 +212,7 @@ export default function UploadSchedule({ term }: UploadScheduleProps) {
             </>
           ) : (
             <>
-              <Loader2 className="size-8 animate-spin text-primary" />
+              <Loading3Filled className="size-8 animate-spin text-primary" />
               <ShinyText text="Analyzing schedule" speed={1.5} />
             </>
           )}
@@ -207,7 +222,7 @@ export default function UploadSchedule({ term }: UploadScheduleProps) {
         {!isLoading ? (
           <div className="flex flex-col items-center justify-center gap-3 lg:hidden">
             <Button onClick={() => fileInputRef.current?.click()}>
-              <CalendarArrowUp className="size-4" />
+              <CalendarAddFilled className="size-4" />
               Choose file
             </Button>
             <p className="text-muted-foreground text-sm">
@@ -216,7 +231,7 @@ export default function UploadSchedule({ term }: UploadScheduleProps) {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center gap-3 text-muted-foreground lg:hidden">
-            <Loader2 className="size-6 text-primary animate-spin" />
+            <Loading3Filled className="size-6 text-primary animate-spin" />
             <ShinyText text="Analyzing schedule" speed={1.5} />
           </div>
         )}

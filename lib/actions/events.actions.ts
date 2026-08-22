@@ -1,7 +1,7 @@
 "use server";
 
 import type { QueryData } from "@supabase/supabase-js";
-import type { TablesInsert } from "@/types/supabase";
+import type { Tables, TablesInsert } from "@/types/supabase";
 import { createClient } from "../supabase/server";
 import { pickNextColor } from "@/lib/utils/colors";
 
@@ -24,6 +24,55 @@ export type EventWithCourse = QueryData<
 export async function getEvents(userId: string): Promise<EventWithCourse[]> {
   const supabase = await createClient();
   const { data, error } = await eventsWithCourseQuery(supabase, userId);
+  if (error) {
+    console.error(error);
+    throw new Error(error.message);
+  }
+  return data;
+}
+
+/**
+ * Columns needed to place a friend's classes on the grid and describe one on
+ * hover. Deliberately not the `courses`/`course_colors` join the viewer's own
+ * events use: friends' classes are drawn as neutral grey blocks rather than in
+ * their own course colours, so their palette is never needed here.
+ */
+const FRIEND_EVENT_COLUMNS =
+  "id, user, course_code, type, location, start_time, end_time, days, recurrence, term";
+
+export type FriendEvent = Pick<
+  Tables<"events">,
+  | "id"
+  | "user"
+  | "course_code"
+  | "type"
+  | "location"
+  | "start_time"
+  | "end_time"
+  | "days"
+  | "recurrence"
+  | "term"
+>;
+
+/**
+ * Every term's events for the given friends, in one round trip.
+ *
+ * Access is decided entirely by the `Friends can read events` policy — an id
+ * that is not an accepted friend simply contributes no rows. There is no
+ * membership check here and no admin client, on purpose: the database is the
+ * only thing standing between a user id and somebody's room-by-room week.
+ */
+export async function getFriendsEvents(
+  friendIds: string[],
+): Promise<FriendEvent[]> {
+  if (friendIds.length === 0) return [];
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("events")
+    .select(FRIEND_EVENT_COLUMNS)
+    .in("user", friendIds);
+
   if (error) {
     console.error(error);
     throw new Error(error.message);

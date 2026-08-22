@@ -1,23 +1,23 @@
 import {
-  LoaderCircle,
-  Snowflake,
-  Sun,
-  Leaf,
-  Sprout,
-  GraduationCap,
-  Book,
-  FlaskConical,
-  Presentation,
-  Users,
-} from "lucide-react";
+  BookFilled,
+  FlaskFilled,
+  GrassFilled,
+  GroupFilled,
+  LeafFilled,
+  Loading3Filled,
+  MortarboardFilled,
+  Presentation1Filled,
+  SnowflakeFilled,
+  SunFilled,
+} from "@/components/icons";
 
 export const icons = {
-  LoaderCircle,
-  Snowflake,
-  Sun,
-  Leaf,
-  Sprout,
-  GraduationCap,
+  Loading3Filled,
+  SnowflakeFilled,
+  SunFilled,
+  LeafFilled,
+  GrassFilled,
+  MortarboardFilled,
 };
 
 export const seasonColors = {
@@ -29,19 +29,19 @@ export const seasonColors = {
 };
 
 export const seasonIcons = {
-  winter: Snowflake,
-  spring: Sprout,
-  summer: Sun,
-  fall: Leaf,
-  default: GraduationCap,
+  winter: SnowflakeFilled,
+  spring: GrassFilled,
+  summer: SunFilled,
+  fall: LeafFilled,
+  default: MortarboardFilled,
 };
 
 export const classTypeIcons = {
-  lecture: Presentation,
-  tutorial: Book,
-  lab: FlaskConical,
-  seminar: Users,
-  default: Book,
+  lecture: Presentation1Filled,
+  tutorial: BookFilled,
+  lab: FlaskFilled,
+  seminar: GroupFilled,
+  default: BookFilled,
 };
 
 export const colors: Color[] = [

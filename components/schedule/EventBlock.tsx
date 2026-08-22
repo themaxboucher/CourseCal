@@ -3,12 +3,22 @@
 import { cn } from "@/lib/utils";
 import { formatTime } from "@/lib/utils/schedule";
 import { eventColors, lightEventColors } from "@/constants";
-import { TriangleAlert } from "lucide-react";
+import { AlertFilled } from "@/components/icons";
 import {
   type AnyEvent,
   getCourseTitle,
   getEventColor,
 } from "@/lib/utils/events";
+
+/**
+ * Diagonal stripes for events that only happen every other week. Reads as
+ * "not every week" without dimming the block, and matches the hatch
+ * AvailabilityLayer draws over a friend's classes. The stripe width shrinks
+ * on wallpapers, where blocks are only a few pixels tall.
+ */
+function hatch(stripePx: number): string {
+  return `repeating-linear-gradient(45deg, transparent 0 ${stripePx}px, color-mix(in srgb, currentColor 25%, transparent) ${stripePx}px ${stripePx * 2}px)`;
+}
 
 interface EventProps {
   event: AnyEvent;
@@ -43,20 +53,23 @@ export default function EventBlock({
       className={cn(
         "absolute left-0 right-0 mx-[0.08rem] border-[1.5px]",
         "text-xs font-medium z-20 relative",
-        !isWallpaper && "md:my-1 md:mx-0.5 sm:p-2",
+        !isWallpaper && "md:mx-0.5 sm:p-2",
         isWallpaper
           ? "rounded-sm px-[0.15rem] py-[0.1rem] my-[0.1rem]"
-          : "rounded-lg p-[0.3rem] my-[0.2rem]",
+          : "rounded-lg p-[0.3rem]",
         colorClass,
-        event.recurrence !== "weekly" && "opacity-75",
         className,
       )}
-      style={style}
+      style={
+        event.recurrence === "biweekly"
+          ? { backgroundImage: hatch(isWallpaper ? 7 : 18), ...style }
+          : style
+      }
       {...props}
     >
       {(!event.course_code || !event.type) && !isWallpaper && (
         <div className="absolute -top-1.5 -right-1.5 size-5 md:size-6 flex justify-center items-center rounded-full border-[1.5px] text-amber-600 bg-amber-200 border-amber-100">
-          <TriangleAlert className="size-3 md:size-3.5" />
+          <AlertFilled className="size-3 md:size-3.5" />
         </div>
       )}
       <div className="flex h-full items-start justify-between gap-1 overflow-hidden">

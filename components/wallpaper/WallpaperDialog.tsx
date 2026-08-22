@@ -1,4 +1,4 @@
-import { Smartphone } from "lucide-react";
+import { CellphoneFilled } from "@/components/icons";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -53,14 +53,14 @@ export function WallpaperDialog({
     isMobile ? (
       <DrawerTrigger asChild>
         <Button variant="outline" size="icon">
-          <Smartphone className="size-5" />
+          <CellphoneFilled className="size-5" />
           <span className="sr-only">Wallpaper</span>
         </Button>
       </DrawerTrigger>
     ) : (
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
-          <Smartphone className="size-4" />
+          <CellphoneFilled className="size-4" />
           Wallpaper
         </Button>
       </DialogTrigger>
@@ -92,7 +92,7 @@ export function WallpaperDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       {trigger}
-      <DialogContent className="w-full sm:max-w-[min(64rem,calc(100%-2rem))] p-0">
+      <DialogContent className="sm:max-w-5xl p-0 overflow-hidden">
         <VisuallyHidden>
           <DialogHeader>
             <DialogTitle>Wallpaper</DialogTitle>
