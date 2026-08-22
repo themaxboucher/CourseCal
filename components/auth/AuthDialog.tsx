@@ -22,7 +22,7 @@ export function AuthDialog({ open, onOpenChange, type }: AuthDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-full !max-w-sm flex flex-col items-center gap-8">
+      <DialogContent className="w-full sm:max-w-[min(24rem,calc(100%-2rem))] flex flex-col items-center gap-8">
         <DialogHeader className="flex flex-col items-center gap-2">
           <Image
             src="/coursecal-logo.svg"

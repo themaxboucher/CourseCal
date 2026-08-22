@@ -105,7 +105,7 @@ export function WallpaperDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       {trigger}
-      <DialogContent className="w-full !max-w-5xl p-0">
+      <DialogContent className="w-full sm:max-w-[min(64rem,calc(100%-2rem))] p-0">
         <VisuallyHidden>
           <DialogHeader>
             <DialogTitle>Wallpaper</DialogTitle>
