@@ -71,6 +71,30 @@ export async function getFriends(): Promise<Profile[]> {
     .sort((a, b) => (a.name ?? a.username).localeCompare(b.name ?? b.username));
 }
 
+/**
+ * Ids of the viewer's accepted friends, for queries that need to leave them
+ * out. Cheaper than `getFriends` when only the ids matter.
+ */
+export async function getFriendIds(): Promise<string[]> {
+  const supabase = await createClient();
+  const viewerId = await requireUserId();
+  if (!viewerId) return [];
+
+  const { data, error } = await supabase
+    .from("friendships")
+    .select("requester, addressee")
+    .eq("status", "accepted");
+
+  if (error) {
+    console.error(error);
+    throw new Error(error.message);
+  }
+
+  return data.map((row) =>
+    row.requester === viewerId ? row.addressee : row.requester,
+  );
+}
+
 /** Requests waiting on the viewer to accept or decline. */
 export async function getIncomingRequests(): Promise<FriendRequest[]> {
   const supabase = await createClient();

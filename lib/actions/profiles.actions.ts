@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "../supabase/server";
+import { getFriendIds } from "./friends.actions";
 import { normalizeUsername } from "../utils/username";
 import {
   DIRECTORY_PAGE_SIZE,
@@ -19,12 +20,14 @@ async function currentUserId(): Promise<string | null> {
 }
 
 /**
- * The full directory, newest accounts first. Paginated because the page size is
- * the only thing bounding how much of the roster a single request can pull.
+ * The directory minus the viewer's existing friends, newest accounts first.
+ * Paginated because the page size is the only thing bounding how much of the
+ * roster a single request can pull.
  */
 export async function browseProfiles(page = 0): Promise<ProfilePage> {
   const supabase = await createClient();
   const viewerId = await currentUserId();
+  const friendIds = await getFriendIds();
 
   const from = page * DIRECTORY_PAGE_SIZE;
   // PostgREST ranges are inclusive, so this asks for one row beyond the page.
@@ -40,6 +43,11 @@ export async function browseProfiles(page = 0): Promise<ProfilePage> {
   if (viewerId) {
     request = request.neq("id", viewerId);
   }
+  // Excluded in the query rather than after the fact so a page still comes back
+  // full and `hasMore` keeps counting rows the viewer can actually act on.
+  if (friendIds.length > 0) {
+    request = request.not("id", "in", `(${friendIds.join(",")})`);
+  }
 
   const { data, error } = await request;
   if (error) {
@@ -53,7 +61,10 @@ export async function browseProfiles(page = 0): Promise<ProfilePage> {
   };
 }
 
-/** Matches on username or display name. A query under 2 characters matches nothing. */
+/**
+ * Matches on username or display name, excluding the viewer's existing friends.
+ * A query under 2 characters matches nothing.
+ */
 export async function searchProfiles(
   rawQuery: string,
   page = 0,
@@ -65,6 +76,7 @@ export async function searchProfiles(
 
   const supabase = await createClient();
   const viewerId = await currentUserId();
+  const friendIds = await getFriendIds();
 
   const from = page * DIRECTORY_PAGE_SIZE;
   const to = from + DIRECTORY_PAGE_SIZE;
@@ -78,6 +90,11 @@ export async function searchProfiles(
 
   if (viewerId) {
     request = request.neq("id", viewerId);
+  }
+  // Excluded in the query rather than after the fact so a page still comes back
+  // full and `hasMore` keeps counting rows the viewer can actually act on.
+  if (friendIds.length > 0) {
+    request = request.not("id", "in", `(${friendIds.join(",")})`);
   }
 
   const { data, error } = await request;

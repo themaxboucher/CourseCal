@@ -68,7 +68,7 @@ export default async function FriendsPage({ searchParams }: FriendsPageProps) {
             <h1 className="heading-3">Friends</h1>
           </div>
 
-          <nav className="flex items-center gap-1 border-b">
+          <nav className="flex items-center gap-1 border-b-[1.5px]">
             {TABS.map((entry) => {
               const isActive = entry.key === activeTab;
               return (
