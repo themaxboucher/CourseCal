@@ -5,11 +5,6 @@ import { CheckFilled, UploadFilled } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-/**
- * The growth loop. No email is sent — students coordinate in iMessage and
- * Discord, and a link they paste themselves lands better than a cold send from
- * a domain UCalgary's mail filters have never seen.
- */
 export default function InviteLink({ username }: { username: string }) {
   const [copied, setCopied] = useState(false);
   // Built in the browser so it is correct on localhost, previews and prod
@@ -55,7 +50,7 @@ export default function InviteLink({ username }: { username: string }) {
           onFocus={(event) => event.currentTarget.select()}
           className="text-muted-foreground"
         />
-        <Button type="button" variant="outline" onClick={share}>
+        <Button type="button" onClick={share}>
           {copied ? (
             <CheckFilled className="size-4" />
           ) : (
@@ -64,9 +59,6 @@ export default function InviteLink({ username }: { username: string }) {
           {copied ? "Copied" : canShare ? "Share" : "Copy"}
         </Button>
       </div>
-      <p className="text-xs text-muted-foreground">
-        Anyone who signs up through your link sees you first.
-      </p>
     </div>
   );
 }

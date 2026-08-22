@@ -4,7 +4,10 @@ import FriendsStep from "@/components/onboarding/FriendsStep";
 import { getLoggedInUser } from "@/lib/actions/users.actions";
 import { getRelationshipMap } from "@/lib/actions/friends.actions";
 import { getProfileByUsername } from "@/lib/actions/profiles.actions";
-import { getSuggestedFriends } from "@/lib/actions/suggestions.actions";
+import {
+  getFallbackProfiles,
+  getSuggestedFriends,
+} from "@/lib/actions/suggestions.actions";
 import { getTerms } from "@/lib/actions/terms.actions";
 import { getRelevantTerm } from "@/lib/utils/schedule";
 import { REFERRAL_COOKIE, sanitizeReferral } from "@/lib/utils/referral";
@@ -44,15 +47,24 @@ export default async function OnboardingFriendsPage() {
     (suggestion) => suggestion.id !== referrer?.id,
   );
 
+  // No classmates and no mutuals — for the earliest accounts that is every
+  // account. Rather than leave the step bare, fall back to whoever is around.
+  const fallback =
+    filteredSuggestions.length === 0
+      ? (await getFallbackProfiles()).filter(
+          (profile) => profile.id !== referrer?.id,
+        )
+      : [];
+
   const termLabel = `${term.season.charAt(0).toUpperCase() + term.season.slice(1)} ${term.year}`;
 
   return (
-    <div className="flex flex-col items-center gap-8">
-      <div className="max-w-md space-y-2 text-center">
+    <div className="flex w-full flex-col gap-8">
+      <div className="mx-auto w-full max-w-md space-y-2 text-center">
         <h1 className="heading-3">Add your friends</h1>
         <p className="text-muted-foreground">
           Overlay their schedule on yours to find the hours you&apos;re all
-          free. You can always do this later.
+          free.
         </p>
       </div>
       <FriendsStep
@@ -62,6 +74,7 @@ export default async function OnboardingFriendsPage() {
           referrer ? (relationships[referrer.id] ?? "none") : "none"
         }
         suggestions={filteredSuggestions}
+        fallback={fallback}
         relationships={relationships}
         termLabel={termLabel}
       />

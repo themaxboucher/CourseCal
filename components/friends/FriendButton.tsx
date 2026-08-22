@@ -5,13 +5,16 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   CheckCircleFilled,
+  CheckFilled,
   CloseCircleFilled,
+  CloseFilled,
   Loading3Filled,
   TimeFilled,
   UserAddFilled,
   UserFilled,
 } from "@/components/icons";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   acceptFriendRequest,
   declineFriendRequest,
@@ -23,6 +26,9 @@ import {
   type FriendActionResult,
   type RelationshipStatus,
 } from "@/lib/utils/profiles";
+
+const COMPACT_BUTTON =
+  "sm:h-8 sm:w-auto sm:gap-1.5 sm:px-3 sm:has-[>svg]:px-2.5";
 
 interface FriendButtonProps {
   userId: string;
@@ -84,14 +90,15 @@ export default function FriendButton({
 
   if (status === "self") return null;
 
-  const spinner = <Loading3Filled className="size-4 animate-spin" />;
+  const spinner = <Loading3Filled className="size-5 sm:size-4 animate-spin" />;
 
   if (status === "incoming_pending") {
     return (
       <div className={className}>
         <div className="flex items-center gap-2">
           <Button
-            size="sm"
+            size="icon"
+            className={COMPACT_BUTTON}
             disabled={busy}
             onClick={() =>
               run(
@@ -101,11 +108,17 @@ export default function FriendButton({
               )
             }
           >
-            {busy ? spinner : "Accept"}
+            {busy ? (
+              spinner
+            ) : (
+              <CheckFilled className="size-5 sm:size-4 sm:hidden" />
+            )}
+            <span className="max-sm:sr-only">Accept</span>
           </Button>
           <Button
-            size="sm"
+            size="icon"
             variant="secondary"
+            className={COMPACT_BUTTON}
             disabled={busy}
             onClick={() =>
               run(
@@ -115,7 +128,8 @@ export default function FriendButton({
               )
             }
           >
-            Decline
+            <CloseFilled className="size-5 sm:size-4 sm:hidden" />
+            <span className="max-sm:sr-only">Decline</span>
           </Button>
         </div>
       </div>
@@ -125,16 +139,16 @@ export default function FriendButton({
   if (status === "outgoing_pending") {
     return (
       <Button
-        size="sm"
+        size="icon"
         variant="secondary"
-        className={className}
+        className={cn(COMPACT_BUTTON, className)}
         disabled={busy}
         onClick={() =>
           run(() => removeFriend(userId), "none", "Request cancelled")
         }
       >
-        {busy ? spinner : <TimeFilled className="size-4" />}
-        Requested
+        {busy ? spinner : <TimeFilled className="size-5 sm:size-4" />}
+        <span className="max-sm:sr-only">Requested</span>
       </Button>
     );
   }
@@ -142,31 +156,31 @@ export default function FriendButton({
   if (status === "friends") {
     return (
       <Button
-        size="sm"
+        size="icon"
         variant="secondary"
-        className={className}
+        className={cn(COMPACT_BUTTON, className)}
         disabled={busy}
         onClick={() =>
           run(() => removeFriend(userId), "none", "Removed from friends")
         }
       >
-        {busy ? spinner : <UserFilled className="size-4" />}
-        Friends
+        {busy ? spinner : <UserFilled className="size-5 sm:size-4" />}
+        <span className="max-sm:sr-only">Friends</span>
       </Button>
     );
   }
 
   return (
     <Button
-      size="sm"
-      className={className}
+      size="icon"
+      className={cn(COMPACT_BUTTON, className)}
       disabled={busy}
       onClick={() =>
         run(() => sendFriendRequest(userId), "outgoing_pending", "Request sent")
       }
     >
-      {busy ? spinner : <UserAddFilled className="size-4" />}
-      Add friend
+      {busy ? spinner : <UserAddFilled className="size-5 sm:size-4" />}
+      <span className="max-sm:sr-only">Add friend</span>
     </Button>
   );
 }

@@ -2,15 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import {
-  GroupFilled,
-  Loading3Filled,
-  UserSearchFilled,
-} from "@/components/icons";
+import { Loading3Filled } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import UserAvatar from "@/components/UserAvatar";
-import FriendButton from "@/components/friends/FriendButton";
+import ProfileCard from "@/components/friends/ProfileCard";
 import InviteLink from "./InviteLink";
 import { completeOnboarding } from "@/lib/actions/onboarding.actions";
 import type {
@@ -25,6 +19,8 @@ interface FriendsStepProps {
   referrer: Profile | null;
   referrerStatus: RelationshipStatus;
   suggestions: SuggestedFriend[];
+  /** Shown only when neither signal produced a suggestion. */
+  fallback: Profile[];
   relationships: Record<string, RelationshipStatus>;
   termLabel: string;
 }
@@ -50,12 +46,22 @@ export default function FriendsStep({
   referrer,
   referrerStatus,
   suggestions,
+  fallback,
   relationships,
   termLabel,
 }: FriendsStepProps) {
   const router = useRouter();
   const [finishing, setFinishing] = useState(false);
   const [addedCount, setAddedCount] = useState(0);
+
+  // A suggestion can qualify on both signals; the mutual-friends section runs
+  // first, so it claims those. Nobody is listed twice.
+  const mutuals = suggestions
+    .filter((suggestion) => suggestion.mutualFriends > 0)
+    .sort((a, b) => b.mutualFriends - a.mutualFriends);
+  const classmates = suggestions.filter(
+    (suggestion) => suggestion.mutualFriends === 0,
+  );
 
   async function finish() {
     setFinishing(true);
@@ -70,90 +76,72 @@ export default function FriendsStep({
     }
   }
 
-  const hasAnything = referrer !== null || suggestions.length > 0;
-
   return (
-    <div className="w-full max-w-md space-y-8">
+    <div className="mx-auto w-full max-w-md space-y-8">
       {referrer && (
         <div className="space-y-2">
           <p className="text-sm font-medium">Invited you</p>
-          <div className="flex items-center gap-3 rounded-lg border-[1.5px] p-3 shadow-xs">
-            <Link href={`/u/${referrer.username}`} className="shrink-0">
-              <UserAvatar
-                userId={referrer.id}
-                avatarUrl={referrer.avatar}
-                name={referrer.name}
-              />
-            </Link>
-            <div className="min-w-0 flex-grow">
-              <p className="truncate font-medium">
-                {referrer.name ?? referrer.username}
-              </p>
-              <p className="truncate text-sm text-muted-foreground">
-                @{referrer.username}
-              </p>
-            </div>
-            <FriendButton
-              userId={referrer.id}
-              status={referrerStatus}
-              onActionComplete={() => setAddedCount((count) => count + 1)}
-            />
-          </div>
+          <ProfileCard
+            profile={referrer}
+            status={referrerStatus}
+            linkToProfile={false}
+            onActionComplete={() => setAddedCount((count) => count + 1)}
+          />
         </div>
       )}
 
-      {suggestions.length > 0 && (
+      {mutuals.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-medium">People in your classes</p>
+          <p className="text-sm font-medium">Mutual friends</p>
           <div className="space-y-2">
-            {suggestions.map((suggestion) => (
-              <div
+            {mutuals.map((suggestion) => (
+              <ProfileCard
                 key={suggestion.id}
-                className="flex items-center gap-3 rounded-lg border-[1.5px] p-3 shadow-xs"
-              >
-                <Link href={`/u/${suggestion.username}`} className="shrink-0">
-                  <UserAvatar
-                    userId={suggestion.id}
-                    avatarUrl={suggestion.avatar}
-                    name={suggestion.name}
-                  />
-                </Link>
-                <div className="min-w-0 flex-grow">
-                  <p className="truncate font-medium">
-                    {suggestion.name ?? suggestion.username}
-                  </p>
-                  <p className="truncate text-sm text-muted-foreground">
-                    {reasonFor(suggestion, termLabel) ||
-                      `@${suggestion.username}`}
-                  </p>
-                </div>
-                <FriendButton
-                  userId={suggestion.id}
-                  status={relationships[suggestion.id] ?? "none"}
-                  onActionComplete={() => setAddedCount((count) => count + 1)}
-                />
-              </div>
+                profile={suggestion}
+                status={relationships[suggestion.id] ?? "none"}
+                subtitle={reasonFor(suggestion, termLabel) || undefined}
+                linkToProfile={false}
+                onActionComplete={() => setAddedCount((count) => count + 1)}
+              />
             ))}
           </div>
         </div>
       )}
 
-      {!hasAnything && (
-        <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed px-6 py-10 text-center">
-          <GroupFilled className="size-8 text-muted-foreground" />
-          <div className="space-y-1">
-            <p className="font-medium">Nobody to suggest yet</p>
-            <p className="text-sm text-muted-foreground">
-              Once classmates join, they&apos;ll show up here. Send them your
-              link below to get started.
-            </p>
+      {classmates.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-medium">People in your classes</p>
+          <div className="space-y-2">
+            {classmates.map((suggestion) => (
+              <ProfileCard
+                key={suggestion.id}
+                profile={suggestion}
+                status={relationships[suggestion.id] ?? "none"}
+                // Falls back to the card's own "@username · major" line when
+                // there is no shared course or mutual friend to point at.
+                subtitle={reasonFor(suggestion, termLabel) || undefined}
+                linkToProfile={false}
+                onActionComplete={() => setAddedCount((count) => count + 1)}
+              />
+            ))}
           </div>
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/friends?tab=discover">
-              <UserSearchFilled className="size-4" />
-              Browse everyone
-            </Link>
-          </Button>
+        </div>
+      )}
+
+      {fallback.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-sm font-medium">People on CourseCal</p>
+          <div className="space-y-2">
+            {fallback.map((profile) => (
+              <ProfileCard
+                key={profile.id}
+                profile={profile}
+                status={relationships[profile.id] ?? "none"}
+                linkToProfile={false}
+                onActionComplete={() => setAddedCount((count) => count + 1)}
+              />
+            ))}
+          </div>
         </div>
       )}
 

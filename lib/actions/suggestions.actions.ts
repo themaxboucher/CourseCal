@@ -1,7 +1,12 @@
 "use server";
 
 import { createClient } from "../supabase/server";
-import type { SuggestedFriend } from "../utils/profiles";
+import { getFriendIds } from "./friends.actions";
+import {
+  PROFILE_COLUMNS,
+  type Profile,
+  type SuggestedFriend,
+} from "../utils/profiles";
 
 /**
  * Ranked people worth following, for the term being viewed.
@@ -40,4 +45,42 @@ export async function getSuggestedFriends(
     sharedCourses: row.shared_courses ?? 0,
     mutualFriends: row.mutual_friends ?? 0,
   }));
+}
+
+/**
+ * A handful of recent accounts, for when neither signal produced anything.
+ *
+ * The first person on campus has no classmates and no mutuals; showing them an
+ * empty step teaches them the feature is dead. Existing friends are left out —
+ * everybody else is fair game, newest first, so the people still onboarding
+ * alongside them are the ones they see.
+ *
+ * Like `getSuggestedFriends`, failures degrade to an empty list.
+ */
+export async function getFallbackProfiles(limit = 6): Promise<Profile[]> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const friendIds = await getFriendIds();
+
+  let request = supabase
+    .from("users")
+    .select(PROFILE_COLUMNS)
+    .neq("id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (friendIds.length > 0) {
+    request = request.not("id", "in", `(${friendIds.join(",")})`);
+  }
+
+  const { data, error } = await request;
+  if (error) {
+    console.error(error);
+    return [];
+  }
+  return data;
 }
