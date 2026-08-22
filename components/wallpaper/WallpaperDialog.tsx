@@ -52,8 +52,9 @@ export function WallpaperDialog({
   const trigger = !isControlled ? (
     isMobile ? (
       <DrawerTrigger asChild>
-        <Button variant="outline" size="icon" className="md:hidden">
+        <Button variant="outline" size="icon">
           <Smartphone className="size-5" />
+          <span className="sr-only">Wallpaper</span>
         </Button>
       </DrawerTrigger>
     ) : (
