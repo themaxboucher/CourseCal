@@ -148,7 +148,7 @@ async function FriendSchedule({
 
   return (
     <div className="space-y-3">
-      <h2 className="text-lg font-medium">
+      <h2 className="font-medium">
         <span className="capitalize">{term.season}</span> {term.year}
       </h2>
       <WeekView events={termEvents} />

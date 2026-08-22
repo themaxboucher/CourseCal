@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   CheckCircleFilled,
-  CheckFilled,
   CloseCircleFilled,
   Loading3Filled,
   TimeFilled,
   UserAddFilled,
+  UserFilled,
 } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
@@ -105,7 +105,7 @@ export default function FriendButton({
           </Button>
           <Button
             size="sm"
-            variant="outline"
+            variant="secondary"
             disabled={busy}
             onClick={() =>
               run(
@@ -126,7 +126,7 @@ export default function FriendButton({
     return (
       <Button
         size="sm"
-        variant="outline"
+        variant="secondary"
         className={className}
         disabled={busy}
         onClick={() =>
@@ -143,14 +143,14 @@ export default function FriendButton({
     return (
       <Button
         size="sm"
-        variant="outline"
+        variant="secondary"
         className={className}
         disabled={busy}
         onClick={() =>
           run(() => removeFriend(userId), "none", "Removed from friends")
         }
       >
-        {busy ? spinner : <CheckFilled className="size-4" />}
+        {busy ? spinner : <UserFilled className="size-4" />}
         Friends
       </Button>
     );

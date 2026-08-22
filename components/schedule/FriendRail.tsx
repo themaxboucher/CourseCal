@@ -22,7 +22,7 @@ interface FriendRailProps {
 
 // Shared footprint so the "add" tile lines up with the friend tiles.
 const tileClass =
-  "flex w-18 shrink-0 cursor-pointer flex-col items-center gap-1 rounded-lg px-1 py-2 transition-colors hover:bg-accent/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
+  "flex w-18 shrink-0 cursor-pointer flex-col items-center gap-1 rounded-lg px-1 py-2 transition-colors hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
 
 /**
  * Horizontal strip of friends to overlay. Friends with no schedule for the

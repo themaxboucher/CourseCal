@@ -10,7 +10,7 @@ import { TextField } from "../form-fields/TextField";
 import {
   CloseCircleFilled,
   Loading3Filled,
-  User1Filled,
+  UserFilled,
 } from "@/components/icons";
 import { useRouter } from "next/navigation";
 import { uploadAvatar } from "@/lib/actions/avatars.actions";
@@ -119,7 +119,7 @@ export default function ProfileForm({ user }: { user: Tables<"users"> }) {
                   src={avatarPreview || undefined}
                 />
                 <AvatarFallback className="bg-muted text-muted-foreground">
-                  <User1Filled className="size-10" />
+                  <UserFilled className="size-10" />
                 </AvatarFallback>
               </Avatar>
               <div className="text-sm underline">Pick an image</div>

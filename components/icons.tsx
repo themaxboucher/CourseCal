@@ -36,7 +36,7 @@ import {
   RefreshAnticlockwise1Filled as BaseRefreshAnticlockwise1Filled,
   RoundFilled as BaseRoundFilled,
   ScheduleFilled as BaseScheduleFilled,
-  SearchFilled as BaseSearchFilled,
+  Search2Filled as BaseSearchFilled,
   SelectorVerticalFilled as BaseSelectorVerticalFilled,
   Settings6Filled as BaseSettings6Filled,
   SnowflakeFilled as BaseSnowflakeFilled,
@@ -44,8 +44,8 @@ import {
   TimeFilled as BaseTimeFilled,
   UpFilled as BaseUpFilled,
   UploadFilled as BaseUploadFilled,
-  User1Filled as BaseUser1Filled,
-  UserAddFilled as BaseUserAddFilled,
+  User3Filled as BaseUser1Filled,
+  UserAdd2Filled as BaseUserAddFilled,
   UserSearchFilled as BaseUserSearchFilled,
   WarningFilled as BaseWarningFilled,
 } from "@mingcute/react/core-filled";
@@ -111,7 +111,7 @@ export const SunFilled = themeable(BaseSunFilled);
 export const TimeFilled = themeable(BaseTimeFilled);
 export const UpFilled = themeable(BaseUpFilled);
 export const UploadFilled = themeable(BaseUploadFilled);
-export const User1Filled = themeable(BaseUser1Filled);
+export const UserFilled = themeable(BaseUser1Filled);
 export const UserAddFilled = themeable(BaseUserAddFilled);
 export const UserSearchFilled = themeable(BaseUserSearchFilled);
 export const WarningFilled = themeable(BaseWarningFilled);

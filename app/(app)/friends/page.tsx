@@ -151,7 +151,7 @@ async function RequestsTab() {
     <div className="space-y-8">
       {incoming.length > 0 && (
         <div className="space-y-2">
-          <h2 className="text-lg font-medium">Waiting on you</h2>
+          <h2 className="font-medium">Waiting on you</h2>
           {incoming.map((request) => (
             <ProfileCard
               key={request.friendshipId}
@@ -163,7 +163,7 @@ async function RequestsTab() {
       )}
       {outgoing.length > 0 && (
         <div className="space-y-2">
-          <h2 className="text-lg font-medium">Sent</h2>
+          <h2 className="font-medium">Sent</h2>
           {outgoing.map((request) => (
             <ProfileCard
               key={request.friendshipId}

@@ -10,23 +10,22 @@ interface ProfileCardProps {
 
 export default function ProfileCard({ profile, status }: ProfileCardProps) {
   return (
-    <div className="flex items-center gap-3 rounded-lg border p-3 shadow-xs">
-      <Link href={`/u/${profile.username}`} className="shrink-0">
-        <UserAvatar avatarUrl={profile.avatar} name={profile.name} />
-      </Link>
+    <Link
+      href={`/u/${profile.username}`}
+      className="flex items-center gap-3 rounded-xl border-[1.5px] p-3 shadow-xs hover:bg-muted/40 transition duration-200 ease-out"
+    >
+      <UserAvatar avatarUrl={profile.avatar} name={profile.name} />
       <div className="min-w-0 flex-grow">
-        <Link
-          href={`/u/${profile.username}`}
-          className="font-medium hover:underline block truncate"
-        >
+        <h3 className="font-medium block truncate">
           {profile.name ?? profile.username}
-        </Link>
-        <p className="text-sm text-muted-foreground truncate">
+        </h3>
+        <p className="text-sm text-muted-foreground truncate flex items-center gap-1.5">
           @{profile.username}
-          {profile.major ? ` · ${profile.major}` : ""}
+          {profile.major && <span>·</span>}
+          {profile.major && <span>{profile.major}</span>}
         </p>
       </div>
-      <FriendButton userId={profile.id} status={status} />
-    </div>
+      <FriendButton userId={profile.id} status={status} className="mr-2" />
+    </Link>
   );
 }

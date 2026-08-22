@@ -38,8 +38,8 @@ export default async function SettingsPage() {
               <h1 className="heading-3">Settings</h1>
             </div>
             <p className="text-muted-foreground">
-              💬 Got feedback? Send questions, feature requests, bug reports,
-              love letters, or hate mail to{" "}
+              Have feedback? Send questions, feature requests, bug reports, love
+              letters, or hate mail to{" "}
               <a
                 href="mailto:max@maxboucher.com"
                 className="text-ring hover:underline"
@@ -67,7 +67,7 @@ export default async function SettingsPage() {
             <h2 className="text-lg font-medium">Appearance</h2>
             <ThemeSelector />
           </div>
-          <div className="space-y-4 p-6 border rounded-lg bg-destructive/10 border-destructive/30 shadow-xs">
+          <div className="space-y-4 p-6 border-[1.5px] rounded-lg bg-destructive/10 border-destructive/30 shadow-xs">
             <div>
               <h2 className="text-lg font-medium">Delete Account</h2>
               <p className="text-muted-foreground">

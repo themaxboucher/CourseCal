@@ -38,14 +38,41 @@ export function Navbar({
         <div>
           <div>
             <ul className="flex items-center gap-2">
+              {isLoggedIn && user && (
+                <li>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="relative"
+                    aria-label={
+                      pendingRequestCount > 0
+                        ? `Friends, ${pendingRequestCount} pending request${pendingRequestCount === 1 ? "" : "s"}`
+                        : "Friends"
+                    }
+                    asChild
+                  >
+                    <Link href="/friends">
+                      <GroupFilled className="size-4.5" />
+                      {pendingRequestCount > 0 && (
+                        <span className="absolute -right-0.5 -top-0.5 inline-flex min-w-4.5 items-center justify-center rounded-full bg-red-500 px-1 text-[0.625rem] font-semibold leading-4.5 text-white">
+                          {pendingRequestCount > 9 ? "9+" : pendingRequestCount}
+                        </span>
+                      )}
+                    </Link>
+                  </Button>
+                </li>
+              )}
               {hasSchedule && (
                 <li>
-                  <Button size="sm" className="hidden md:flex" asChild>
-                    <Link href="/schedule">View Schedule</Link>
-                  </Button>
-                  <Button size="icon" className="md:hidden" asChild>
+                  <Button size="icon" className="md:invisible" asChild>
                     <Link href="/schedule">
                       <CalendarFilled className="size-4.5" />
+                    </Link>
+                  </Button>
+                  <Button size="sm" className="invisible md:visible" asChild>
+                    <Link href="/schedule">
+                      <CalendarFilled className="size-4.5" />
+                      <span>View schedule</span>
                     </Link>
                   </Button>
                 </li>
@@ -71,31 +98,7 @@ export function Navbar({
                   </li>
                 </>
               )}
-              {user && (
-                <li>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="relative"
-                    aria-label={
-                      pendingRequestCount > 0
-                        ? `Friends, ${pendingRequestCount} pending request${pendingRequestCount === 1 ? "" : "s"}`
-                        : "Friends"
-                    }
-                    asChild
-                  >
-                    <Link href="/friends">
-                      <GroupFilled className="size-4.5" />
-                      {pendingRequestCount > 0 && (
-                        <span className="absolute -right-0.5 -top-0.5 inline-flex min-w-4.5 items-center justify-center rounded-full bg-red-500 px-1 text-[0.625rem] font-semibold leading-4.5 text-white">
-                          {pendingRequestCount > 9 ? "9+" : pendingRequestCount}
-                        </span>
-                      )}
-                    </Link>
-                  </Button>
-                </li>
-              )}
-              {user && (
+              {isLoggedIn && user && (
                 <li>
                   <Link href="/settings">
                     <UserAvatar
