@@ -32,7 +32,7 @@ export function CheckboxesField({
       warning={warning}
     >
       {({ field }: { field: ControllerRenderProps<any, string> }) => (
-        <div className="flex flex-wrap sm:gap-5 gap-3 py-2">
+        <div className="flex flex-wrap gap-x-2 gap-y-3 sm:gap-5 py-2">
           {options.map((option) => {
             const isChecked = field.value?.includes(option.value) || false;
 
