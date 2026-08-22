@@ -30,11 +30,11 @@ export function Navbar({
   }
   return (
     <>
-      <header className="flex justify-between items-center px-4 md:px-6 py-4 relative z-50">
+      <header className="flex justify-between items-center gap-3 px-3 sm:px-4 md:px-6 py-4 relative z-50">
         <Logo />
         <div>
           <div>
-            <ul className="flex items-center gap-2">
+            <ul className="flex shrink-0 items-center gap-2">
               {hasSchedule && (
                 <li>
                   <Button size="sm" className="hidden md:flex" asChild>
