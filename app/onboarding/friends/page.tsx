@@ -44,27 +44,27 @@ export default async function OnboardingFriendsPage() {
     (suggestion) => suggestion.id !== referrer?.id,
   );
 
+  const termLabel = `${term.season.charAt(0).toUpperCase() + term.season.slice(1)} ${term.year}`;
+
   return (
-    <section className="flex flex-col gap-2 max-w-[75rem] mx-auto px-8 py-16">
-      <div className="flex flex-col items-center gap-8">
-        <div className="max-w-md space-y-2 text-center">
-          <h1 className="heading-3">Add your friends</h1>
-          <p className="text-muted-foreground">
-            Overlay their schedule on yours to find the hours you&apos;re all
-            free. You can always do this later.
-          </p>
-        </div>
-        <FriendsStep
-          username={user.username}
-          referrer={referrer}
-          referrerStatus={
-            referrer ? (relationships[referrer.id] ?? "none") : "none"
-          }
-          suggestions={filteredSuggestions}
-          relationships={relationships}
-          termLabel={`${term.season} ${term.year}`}
-        />
+    <div className="flex flex-col items-center gap-8">
+      <div className="max-w-md space-y-2 text-center">
+        <h1 className="heading-3">Add your friends</h1>
+        <p className="text-muted-foreground">
+          Overlay their schedule on yours to find the hours you&apos;re all
+          free. You can always do this later.
+        </p>
       </div>
-    </section>
+      <FriendsStep
+        username={user.username}
+        referrer={referrer}
+        referrerStatus={
+          referrer ? (relationships[referrer.id] ?? "none") : "none"
+        }
+        suggestions={filteredSuggestions}
+        relationships={relationships}
+        termLabel={termLabel}
+      />
+    </div>
   );
 }

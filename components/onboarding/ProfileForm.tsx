@@ -104,7 +104,7 @@ export default function ProfileForm({ user }: { user: Tables<"users"> }) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-4 max-w-sm w-full"
+        className="space-y-4 max-w-64 w-full"
       >
         <div className="space-y-2">
           <div className="flex flex-col items-center gap-2 mb-2">

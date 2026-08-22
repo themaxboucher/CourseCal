@@ -29,7 +29,7 @@ interface FriendsStepProps {
   termLabel: string;
 }
 
-/** Why this person is being suggested, in the reader's words. */
+// Why this person is being suggested, in the reader's words.
 function reasonFor(suggestion: SuggestedFriend, termLabel: string): string {
   const parts: string[] = [];
   if (suggestion.sharedCourses > 0) {
@@ -77,7 +77,7 @@ export default function FriendsStep({
       {referrer && (
         <div className="space-y-2">
           <p className="text-sm font-medium">Invited you</p>
-          <div className="flex items-center gap-3 rounded-lg border p-3 shadow-xs">
+          <div className="flex items-center gap-3 rounded-lg border-[1.5px] p-3 shadow-xs">
             <Link href={`/u/${referrer.username}`} className="shrink-0">
               <UserAvatar
                 userId={referrer.id}
@@ -109,7 +109,7 @@ export default function FriendsStep({
             {suggestions.map((suggestion) => (
               <div
                 key={suggestion.id}
-                className="flex items-center gap-3 rounded-lg border p-3 shadow-xs"
+                className="flex items-center gap-3 rounded-lg border-[1.5px] p-3 shadow-xs"
               >
                 <Link href={`/u/${suggestion.username}`} className="shrink-0">
                   <UserAvatar
@@ -159,10 +159,22 @@ export default function FriendsStep({
 
       <InviteLink username={username} />
 
-      <Button className="w-full" onClick={finish} disabled={finishing}>
-        {finishing && <Loading3Filled className="size-4 animate-spin" />}
-        {!finishing && (addedCount > 0 ? "Continue" : "Skip for now")}
-      </Button>
+      {addedCount > 0 ? (
+        <Button className="w-full" onClick={finish} disabled={finishing}>
+          {finishing && <Loading3Filled className="size-4 animate-spin" />}
+          {!finishing && "Continue"}
+        </Button>
+      ) : (
+        <Button
+          className="w-full"
+          variant="outline"
+          onClick={finish}
+          disabled={finishing}
+        >
+          {finishing && <Loading3Filled className="size-4 animate-spin" />}
+          {!finishing && "Skip for now"}
+        </Button>
+      )}
     </div>
   );
 }
