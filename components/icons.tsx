@@ -8,7 +8,7 @@ import {
   CalendarFilled as BaseCalendarFilled,
   CalendarXFilled as BaseCalendarXFilled,
   CellphoneFilled as BaseCellphoneFilled,
-  Chat2Filled as BaseChat2Filled,
+  Chat1Filled as BaseChat2Filled,
   CheckCircleFilled as BaseCheckCircleFilled,
   CheckFilled as BaseCheckFilled,
   CloseCircleFilled as BaseCloseCircleFilled,
