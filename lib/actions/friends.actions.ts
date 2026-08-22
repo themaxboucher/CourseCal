@@ -14,17 +14,12 @@ const UUID_PATTERN =
 
 /**
  * Ids reach these actions from the browser and are interpolated into PostgREST
- * `or(...)` filter strings, where `,` and `)` are operators. RLS would still
- * confine any damage to the caller's own rows, but a malformed id should be
- * rejected outright rather than reshaping the query.
+ * filter strings, where `,` and `)` are operators. RLS would still confine any
+ * damage to the caller's own rows, but a malformed id should be rejected
+ * outright rather than reshaping the query.
  */
 function isUuid(value: string): boolean {
   return UUID_PATTERN.test(value);
-}
-
-/** Matches a friendship row for this unordered pair, in either direction. */
-function pairFilter(a: string, b: string): string {
-  return `and(requester.eq.${a},addressee.eq.${b}),and(requester.eq.${b},addressee.eq.${a})`;
 }
 
 async function requireUserId(): Promise<string | null> {
@@ -189,10 +184,13 @@ export async function getRelationship(
   if (viewerId === otherUserId) return "self";
 
   const supabase = await createClient();
+  // See `removeFriend` for why the pair is matched with two `in` filters.
+  const pairIds = [viewerId, otherUserId];
   const { data, error } = await supabase
     .from("friendships")
     .select("requester, addressee, status")
-    .or(pairFilter(viewerId, otherUserId))
+    .in("requester", pairIds)
+    .in("addressee", pairIds)
     .maybeSingle();
 
   if (error) {
@@ -338,10 +336,18 @@ export async function removeFriend(
   if (!isUuid(otherUserId)) return { ok: false, reason: "unknown" };
 
   const supabase = await createClient();
+  // Both columns must hold one of the two ids, and `friendships_no_self` rules
+  // out a row holding the same id twice, so this matches the pair in whichever
+  // direction it was created. An `or(and(...),and(...))` says that more
+  // directly but cannot be used here: PostgREST rejects a logical operator on a
+  // delete that also returns its rows, with `column friendships.requester does
+  // not exist` (42703).
+  const pairIds = [viewerId, otherUserId];
   const { data, error } = await supabase
     .from("friendships")
     .delete()
-    .or(pairFilter(viewerId, otherUserId))
+    .in("requester", pairIds)
+    .in("addressee", pairIds)
     .select("id");
 
   if (error) {
