@@ -25,7 +25,7 @@ export function UploadDialog({ term }: UploadDialogProps) {
             upload the image here.
           </p>
         </div>
-        <div className="w-full min-w-[28rem] space-y-4">
+        <div className="w-full max-w-[30rem] space-y-4">
           <UploadSchedule term={term} />
         </div>
       </DialogContent>

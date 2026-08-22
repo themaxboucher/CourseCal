@@ -20,7 +20,7 @@ export default async function UploadPage() {
             upload the image here.
           </p>
         </div>
-        <div className="w-full min-w-[28rem] space-y-4">
+        <div className="w-full max-w-[30rem] space-y-4">
           <UploadSchedule />
         </div>
       </div>
