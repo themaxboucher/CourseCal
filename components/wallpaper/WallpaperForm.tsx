@@ -151,7 +151,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
         />
       </div>
 
-      <div className="p-6 flex flex-col gap-6">
+      <div className="@container p-6 flex flex-col gap-6">
         <div className="space-y-1 hidden md:block">
           <h2 className="heading-3">Download wallpaper</h2>
           <p className="text-muted-foreground">
@@ -261,7 +261,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
 
             <div className="flex flex-col gap-4">
               <Label>Background</Label>
-              <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 @[22rem]:grid-cols-3 gap-3">
                 {backgroundOptions.map((option) => (
                   <Button
                     key={option.value}
@@ -270,7 +270,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
                     variant="outline"
                     onClick={() => setBackground(option.value)}
                     className={cn(
-                      "normal-case font-medium",
+                      "min-w-0 normal-case font-medium",
                       background === option.value &&
                         "ring-2 ring-sky-500 ring-offset-2 ring-offset-background",
                     )}
@@ -281,7 +281,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
                         option.preview,
                       )}
                     />
-                    {option.label}
+                    <span className="truncate">{option.label}</span>
                   </Button>
                 ))}
               </div>
@@ -289,7 +289,7 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
 
             <div className="flex flex-col gap-4">
               <Label>Font</Label>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 @[20rem]:grid-cols-3 gap-3">
                 {fontOptions.map((option) => (
                   <Button
                     key={option.value}
@@ -297,13 +297,13 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
                     variant="outline"
                     onClick={() => setFont(option.value)}
                     className={cn(
-                      "normal-case font-medium",
+                      "min-w-0 normal-case font-medium",
                       option.className,
                       font === option.value &&
                         "ring-2 ring-sky-500 ring-offset-2 ring-offset-background",
                     )}
                   >
-                    {option.label}
+                    <span className="truncate">{option.label}</span>
                   </Button>
                 ))}
               </div>
