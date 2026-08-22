@@ -137,9 +137,11 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
         </div>
       )}
 
-      <div className="flex justify-center items-center bg-muted border-b md:border-b-0 md:border-r p-10 h-full">
+      <div className="flex h-[38dvh] justify-center items-center bg-muted border-b md:border-b-0 md:border-r p-4 md:p-10 md:h-full">
         <WallpaperPreview
           events={events}
+          fitToBox
+          className="h-full"
           imageRef={previewRef}
           background={background}
           font={font}
@@ -307,24 +309,28 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
               </div>
             </div>
           </div>
-          <Button
-            type="button"
-            onClick={handleDownload}
-            disabled={isSaving}
-            className="gap-2"
-          >
-            {isSaving ? (
-              <>
-                <Loader2 className="size-4 animate-spin" />
-                Preparing
-              </>
-            ) : (
-              <>
-                <Download className="size-4" />
-                Download
-              </>
-            )}
-          </Button>
+          {/* On mobile the controls are taller than the drawer, so the
+              primary action stays pinned to the bottom of the scroll area. */}
+          <div className="flex flex-col max-md:sticky max-md:bottom-0 max-md:-mx-6 max-md:-mb-6 max-md:bg-background max-md:px-6 max-md:pt-3 max-md:pb-6">
+            <Button
+              type="button"
+              onClick={handleDownload}
+              disabled={isSaving}
+              className="gap-2"
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  Preparing
+                </>
+              ) : (
+                <>
+                  <Download className="size-4" />
+                  Download
+                </>
+              )}
+            </Button>
+          </div>
         </form>
       </div>
     </div>
