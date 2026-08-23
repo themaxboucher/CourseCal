@@ -9,7 +9,7 @@ export default function FeedbackBox() {
       </PopoverTrigger>
       <PopoverContent align="end" sideOffset={10}>
         <div className="space-y-1">
-          <p className="font-semibold">Got feedback?</p>
+          <p className="font-semibold">Have feedback?</p>
 
           <p className="text-sm text-muted-foreground">
             Send me a DM on{" "}
