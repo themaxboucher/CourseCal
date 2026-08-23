@@ -50,16 +50,23 @@ function DialogOverlay({
 
 function DialogContent({
   className,
+  containerClassName,
   children,
   showCloseButton = true,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
+  containerClassName?: string
 }) {
   return (
     <DialogPortal data-slot="dialog-portal">
       <DialogOverlay />
-      <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto p-4 pointer-events-none">
+      <div
+        className={cn(
+          "fixed inset-0 z-50 grid items-center justify-items-center overflow-y-auto p-4 pointer-events-none",
+          containerClassName
+        )}
+      >
         <DialogPrimitive.Content
           data-slot="dialog-content"
           className={cn(
