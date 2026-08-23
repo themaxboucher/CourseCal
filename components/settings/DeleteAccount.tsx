@@ -8,7 +8,6 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogCancel,
-  AlertDialogAction,
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
 import { Form } from "../ui/form";
@@ -99,14 +98,14 @@ export default function DeleteAccount() {
 
             <AlertDialogFooter>
               <AlertDialogCancel type="button">Cancel</AlertDialogCancel>
-              <AlertDialogAction
+              <Button
                 type="submit"
                 className="bg-destructive hover:bg-destructive/90"
                 disabled={!deleteForm.formState.isValid}
               >
                 {loading && <Loading3Filled className="h-4 w-4 animate-spin" />}
                 {!loading && "Delete account"}
-              </AlertDialogAction>
+              </Button>
             </AlertDialogFooter>
           </form>
         </Form>
