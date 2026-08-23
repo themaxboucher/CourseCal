@@ -1,6 +1,6 @@
 "use client"
 
-import type * as React from "react"
+import * as React from "react"
 import { Drawer as DrawerPrimitive } from "vaul"
 
 import { cn } from "@/lib/utils"
@@ -8,7 +8,18 @@ import { cn } from "@/lib/utils"
 function Drawer({
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) {
-  return <DrawerPrimitive.Root data-slot="drawer" {...props} />
+  return (
+    <DrawerPrimitive.Root
+      data-slot="drawer"
+      // vaul lifts the drawer over the on-screen keyboard by
+      // `innerHeight - visualViewport.height`, which ignores how far the
+      // browser has already scrolled the layout viewport. On iOS that scroll
+      // is most of the keyboard's height, so the correction lands the drawer
+      // near the top of the screen. useKeyboardOffset below does it right.
+      repositionInputs={false}
+      {...props}
+    />
+  )
 }
 
 function DrawerTrigger({
@@ -45,15 +56,47 @@ function DrawerOverlay({
   )
 }
 
+// Holds a bottom drawer against the bottom of the *visible* area, so the
+// on-screen keyboard can't cover it. A fixed element is placed against the
+// layout viewport, of which `offsetTop` is already scrolled out of sight and
+// `height - offsetTop - visualViewport.height` sits under the keyboard.
+// Both terms are 0 with no keyboard, and on browsers that don't scroll the
+// layout viewport `offsetTop` stays 0 and this is just the keyboard height.
+function useKeyboardOffset(ref: React.RefObject<HTMLDivElement | null>) {
+  React.useEffect(() => {
+    const viewport = window.visualViewport
+    if (!viewport) return
+
+    const apply = () => {
+      const drawer = ref.current
+      if (drawer?.dataset.vaulDrawerDirection !== "bottom") return
+      const covered =
+        window.innerHeight - viewport.offsetTop - viewport.height
+      drawer.style.bottom = `${Math.max(0, covered)}px`
+    }
+
+    apply()
+    viewport.addEventListener("resize", apply)
+    viewport.addEventListener("scroll", apply)
+    return () => {
+      viewport.removeEventListener("resize", apply)
+      viewport.removeEventListener("scroll", apply)
+    }
+  }, [ref])
+}
+
 function DrawerContent({
   className,
   children,
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Content>) {
+  const ref = React.useRef<HTMLDivElement>(null)
+  useKeyboardOffset(ref)
   return (
     <DrawerPortal data-slot="drawer-portal">
       <DrawerOverlay />
       <DrawerPrimitive.Content
+        ref={ref}
         data-slot="drawer-content"
         className={cn(
           "group/drawer-content bg-background fixed z-50 flex h-auto flex-col",
