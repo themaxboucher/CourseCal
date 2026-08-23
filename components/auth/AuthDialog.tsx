@@ -55,14 +55,7 @@ export function AuthDialog({ open, onOpenChange, type }: AuthDialogProps) {
   // bottom edge instead, and vaul lifts it as the keyboard comes up.
   if (isMobile) {
     return (
-      <Drawer
-        open={open}
-        onOpenChange={onOpenChange}
-        direction="bottom"
-        // Let the sheet finish opening before the keyboard appears, so the
-        // ucalgary.ca instruction is readable. Tapping the field raises it.
-        autoFocus={false}
-      >
+      <Drawer open={open} onOpenChange={onOpenChange} direction="bottom">
         <DrawerContent>
           <DrawerHeader className="flex flex-col items-center gap-2 pt-6">
             {logo}
