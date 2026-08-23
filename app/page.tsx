@@ -23,7 +23,7 @@ export default async function Home() {
                   once={true}
                   className="heading-1 md:text-6xl max-w-[18rem] md:max-w-[28rem]"
                 >
-                  New schedule, new lock screen.
+                  Find time when everyone&rsquo;s free.
                 </TextAnimate>
                 <TextAnimate
                   animation="slideUp"
@@ -32,8 +32,8 @@ export default async function Home() {
                   delay={0.3}
                   className="text-muted-foreground text-lg md:text-2xl max-w-[18rem] md:max-w-lg"
                 >
-                  Get a beautiful lock screen wallpaper of your University of
-                  Calgary schedule in seconds.
+                  Easily compare your University of Calgary schedule with
+                  friends.
                 </TextAnimate>
               </div>
               <AnimatedContent
@@ -94,10 +94,10 @@ export default async function Home() {
                   <div className="font-bold size-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
                     2
                   </div>
-                  <h3 className="heading-3">Customize</h3>
+                  <h3 className="heading-3">Add friends</h3>
                 </div>
                 <p className="text-muted-foreground max-w-[15rem]">
-                  Choose a background and font for your wallpaper.
+                  Follow your friends to see their schedules.
                 </p>
               </div>
               <div className="flex flex-col items-center gap-2 py-10 px-6 w-full bg-muted/75 dark:bg-muted/50 rounded-xl">
@@ -105,10 +105,10 @@ export default async function Home() {
                   <div className="font-bold size-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
                     3
                   </div>
-                  <h3 className="heading-3">Download</h3>
+                  <h3 className="heading-3">Compare</h3>
                 </div>
                 <p className="text-muted-foreground max-w-[15rem]">
-                  Download your wallpaper and set it as your lock screen.
+                  See when everyone has overlapping free time.
                 </p>
               </div>
             </div>
