@@ -30,5 +30,5 @@ export function LandingNavbar() {
     checkSchedule();
   }, []);
 
-  return <Navbar hasSchedule={hasSchedule} user={user} />;
+  return <Navbar onLandingPage={true} hasSchedule={hasSchedule} user={user} />;
 }

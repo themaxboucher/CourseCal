@@ -47,11 +47,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
 
   return (
     <>
-      <Navbar
-        isLoggedIn={true}
-        user={user}
-        pendingRequestCount={pendingCount}
-      />
+      <Navbar user={user} pendingRequestCount={pendingCount} />
       <section className="flex flex-col gap-2 max-w-[70rem] mx-auto px-4 md:px-8 py-12">
         <div className="space-y-8">
           <div className="flex items-center gap-2">

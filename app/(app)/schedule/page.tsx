@@ -41,8 +41,8 @@ export default async function SchedulePage({
       <UploadSuccessDialog show={justUploaded} />
 
       <Navbar
-        isLoggedIn={isLoggedIn}
         user={user || null}
+        hasSchedule={true}
         pendingRequestCount={pendingRequestCount}
       />
       <section className="flex flex-col gap-2 max-w-[90rem] mx-auto md:px-8 px-2 md:py-8 pb-4">

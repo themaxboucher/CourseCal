@@ -21,11 +21,7 @@ export default async function SettingsPage() {
 
   return (
     <>
-      <Navbar
-        isLoggedIn={true}
-        user={user}
-        pendingRequestCount={pendingRequestCount}
-      />
+      <Navbar user={user} pendingRequestCount={pendingRequestCount} />
       <section className="flex flex-col gap-2 max-w-[45rem] mx-auto px-4 md:px-8 pb-4 md:py-8">
         <div className="space-y-8">
           <div className="space-y-2">

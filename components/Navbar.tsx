@@ -11,15 +11,14 @@ import type { Tables } from "@/types/supabase";
 
 interface NavbarProps {
   hasSchedule?: boolean;
-  isLoggedIn?: boolean;
+  onLandingPage?: boolean;
   user?: Tables<"users"> | null;
-  /** Incoming friend requests awaiting a response; drives the badge. */
   pendingRequestCount?: number;
 }
 
 export function Navbar({
   hasSchedule = false,
-  isLoggedIn = false,
+  onLandingPage = false,
   user = null,
   pendingRequestCount = 0,
 }: NavbarProps) {
@@ -31,6 +30,9 @@ export function Navbar({
     setAuthDialogOpen(true);
     setAuthDialogType(type);
   }
+
+  const isLoggedIn = user !== null;
+
   return (
     <>
       <header className="flex justify-between items-center gap-2 px-3 sm:px-4 md:px-6 py-4 relative z-50">
@@ -38,7 +40,8 @@ export function Navbar({
         <div>
           <div>
             <ul className="flex shrink-0 items-center gap-2">
-              {isLoggedIn && user && (
+              {/* Friends link */}
+              {!onLandingPage && user && (
                 <li>
                   <Button
                     size="icon"
@@ -62,7 +65,8 @@ export function Navbar({
                   </Button>
                 </li>
               )}
-              {hasSchedule && (
+              {/* View schedule link */}
+              {onLandingPage && hasSchedule && (
                 <li>
                   <Button size="icon" className="md:hidden" asChild>
                     <Link href="/schedule">
@@ -77,28 +81,36 @@ export function Navbar({
                   </Button>
                 </li>
               )}
-              {!isLoggedIn && user === null && !hasSchedule && (
-                <>
-                  <li>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleAuthDialogOpen("login")}
+              {/* Auth buttons */}
+              {!isLoggedIn &&
+                ((!hasSchedule && onLandingPage) ||
+                  (hasSchedule && !onLandingPage)) && (
+                  <>
+                    <li
+                      className={!onLandingPage ? "hidden sm:inline-flex" : ""}
                     >
-                      Log in
-                    </Button>
-                  </li>
-                  <li className="hidden sm:inline-flex">
-                    <Button
-                      size="sm"
-                      onClick={() => handleAuthDialogOpen("signup")}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleAuthDialogOpen("login")}
+                      >
+                        Log in
+                      </Button>
+                    </li>
+                    <li
+                      className={onLandingPage ? "hidden sm:inline-flex" : ""}
                     >
-                      Join
-                    </Button>
-                  </li>
-                </>
-              )}
-              {isLoggedIn && user && (
+                      <Button
+                        size="sm"
+                        onClick={() => handleAuthDialogOpen("signup")}
+                      >
+                        Join
+                      </Button>
+                    </li>
+                  </>
+                )}
+              {/* User avatar settings link */}
+              {!onLandingPage && isLoggedIn && (
                 <li>
                   <Link href="/settings">
                     <UserAvatar
