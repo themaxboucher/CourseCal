@@ -1,5 +1,5 @@
 import { Analytics } from "@vercel/analytics/next";
-import type { Metadata, Viewport } from "next";
+import type { Metadata } from "next";
 import {
   Outfit,
   Merriweather,
@@ -64,13 +64,6 @@ const sfProSoft = localFont({
   ],
   variable: "--font-sf-pro-soft",
 });
-
-export const viewport: Viewport = {
-  // Shrink the layout viewport when the on-screen keyboard opens, so fixed
-  // overlays stay above it instead of hiding behind it. Width and initial
-  // scale keep Next's defaults.
-  interactiveWidget: "resizes-content",
-};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.coursecal.com"),
