@@ -54,15 +54,6 @@ export default function FriendsStep({
   const [finishing, setFinishing] = useState(false);
   const [addedCount, setAddedCount] = useState(0);
 
-  // A suggestion can qualify on both signals; the mutual-friends section runs
-  // first, so it claims those. Nobody is listed twice.
-  const mutuals = suggestions
-    .filter((suggestion) => suggestion.mutualFriends > 0)
-    .sort((a, b) => b.mutualFriends - a.mutualFriends);
-  const classmates = suggestions.filter(
-    (suggestion) => suggestion.mutualFriends === 0,
-  );
-
   async function finish() {
     setFinishing(true);
     try {
@@ -90,29 +81,11 @@ export default function FriendsStep({
         </div>
       )}
 
-      {mutuals.length > 0 && (
+      {suggestions.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-medium">Mutual friends</p>
+          <p className="text-sm font-medium">People you may know</p>
           <div className="space-y-2">
-            {mutuals.map((suggestion) => (
-              <ProfileCard
-                key={suggestion.id}
-                profile={suggestion}
-                status={relationships[suggestion.id] ?? "none"}
-                subtitle={reasonFor(suggestion, termLabel) || undefined}
-                linkToProfile={false}
-                onActionComplete={() => setAddedCount((count) => count + 1)}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {classmates.length > 0 && (
-        <div className="space-y-2">
-          <p className="text-sm font-medium">People in your classes</p>
-          <div className="space-y-2">
-            {classmates.map((suggestion) => (
+            {suggestions.map((suggestion) => (
               <ProfileCard
                 key={suggestion.id}
                 profile={suggestion}
