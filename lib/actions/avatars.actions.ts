@@ -28,5 +28,9 @@ export async function uploadAvatar(file: File, userId: string) {
     data: { publicUrl },
   } = supabase.storage.from("avatars").getPublicUrl(filePath);
 
-  return publicUrl;
+  // Every upload lands on the same path, so the public URL is identical each
+  // time and browsers keep showing the previous image until Storage's
+  // `max-age` expires. The version stamp gives the new file its own cache key
+  // without giving up caching for everyone who is only viewing avatars.
+  return `${publicUrl}?v=${Date.now()}`;
 }

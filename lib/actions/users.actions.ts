@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import type { Tables, TablesUpdate } from "@/types/supabase";
 import { createAdminClient, createClient } from "../supabase/server";
 import { normalizeUsername } from "../utils/username";
@@ -86,6 +87,11 @@ export async function updateProfile(
     console.error(error);
     return { ok: false, reason: "unknown" };
   }
+
+  // The name and avatar are server-rendered well outside the settings page —
+  // the navbar, public profiles, the friend rail — so the whole tree has to be
+  // rebuilt before any of them show the new values.
+  revalidatePath("/", "layout");
   return { ok: true };
 }
 
