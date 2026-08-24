@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
@@ -22,6 +23,13 @@ import type { ProfilePage } from "@/lib/utils/profiles";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
+
+// Behind auth, and the directory it renders is other people's names — nothing
+// here should end up in an index or an unfurl.
+export const metadata: Metadata = {
+  title: "Friends",
+  robots: { index: false, follow: false },
+};
 
 const TABS = [
   { key: "friends", label: "Friends" },

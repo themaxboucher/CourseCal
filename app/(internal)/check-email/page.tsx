@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import { OutlookIcon } from "@/components/icons/OutlookIcon";
 import { InboxFilled } from "@/components/icons";
+
+export const metadata: Metadata = { title: "Check your email" };
 
 interface CheckEmailPageProps {
   searchParams: Promise<{ intent?: string }>;

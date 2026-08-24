@@ -96,6 +96,10 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    // Crawlers fetch the metadata files and the generated preview images with
+    // no session, so those paths have to stay outside the auth gate above.
+    // Otherwise every unfurl of a shared invite link gets a 307 to `/` where
+    // the card should be, and the preview quietly disappears.
+    "/((?!_next/static|_next/image|api/og|opengraph-image|twitter-image|icon|apple-icon|favicon.ico|robots.txt|sitemap.xml|manifest.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import FriendsStep from "@/components/onboarding/FriendsStep";
@@ -13,6 +14,8 @@ import { getRelevantTerm } from "@/lib/utils/schedule";
 import { REFERRAL_COOKIE, sanitizeReferral } from "@/lib/utils/referral";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = { title: "Add your friends" };
 
 /**
  * Third and last onboarding step.

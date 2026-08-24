@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import { getLoggedInUser } from "@/lib/actions/users.actions";
 import { redirect } from "next/navigation";
 import UploadSchedule from "@/components/UploadSchedule";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = { title: "Upload your schedule" };
 
 export default async function UploadPage() {
   const user = await getLoggedInUser();

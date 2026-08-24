@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import {
@@ -24,6 +25,22 @@ export const dynamic = "force-dynamic";
 
 interface ProfilePageProps {
   params: Promise<{ username: string }>;
+}
+
+/**
+ * Title only, and never indexed. The page redirects signed-out visitors and
+ * hides the schedule from non-friends, so the username in the URL is the only
+ * thing here that is safe to repeat — resolving it to a display name would
+ * leak exactly what those two guards exist to protect.
+ */
+export async function generateMetadata({
+  params,
+}: ProfilePageProps): Promise<Metadata> {
+  const { username } = await params;
+  return {
+    title: `@${username}`,
+    robots: { index: false, follow: false },
+  };
 }
 
 export default async function ProfilePage({ params }: ProfilePageProps) {

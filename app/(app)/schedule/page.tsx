@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Navbar } from "@/components/Navbar";
 import Schedule from "@/components/schedule/Schedule";
 import { getEvents, getFriendsEvents } from "@/lib/actions/events.actions";
@@ -10,7 +11,31 @@ import {
   getFriends,
   getPendingRequestCount,
 } from "@/lib/actions/friends.actions";
+import { SITE_NAME } from "@/lib/site";
 export const dynamic = "force-dynamic";
+
+const DESCRIPTION =
+  "Your week at a glance. Compare your schedule with friends or turn it into a custom lock screen wallpaper.";
+
+// The only signed-in-looking route a logged-out visitor can reach, so it is
+// also the only one worth letting a crawler keep.
+export const metadata: Metadata = {
+  title: "Schedule",
+  description: DESCRIPTION,
+  alternates: { canonical: "/schedule" },
+  openGraph: {
+    siteName: SITE_NAME,
+    title: `Schedule · ${SITE_NAME}`,
+    description: DESCRIPTION,
+    url: "/schedule",
+    locale: "en_CA",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `Schedule · ${SITE_NAME}`,
+    description: DESCRIPTION,
+  },
+};
 
 interface SchedulePageProps {
   searchParams: Promise<{ uploadSuccess?: string }>;

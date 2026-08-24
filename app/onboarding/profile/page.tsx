@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import ProfileForm from "@/components/onboarding/ProfileForm";
 import { getLoggedInUser } from "@/lib/actions/users.actions";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = { title: "Set up your profile" };
 
 export default async function ProfilePage() {
   const user = await getLoggedInUser();

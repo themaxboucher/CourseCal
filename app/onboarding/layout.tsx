@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import { Navbar } from "@/components/Navbar";
+
+// Every onboarding step is behind auth and mid-flow; the pages below set only
+// a title and inherit this.
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default function OnboardingLayout({
   children,

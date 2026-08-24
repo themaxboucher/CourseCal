@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Navbar } from "@/components/Navbar";
 import DeleteAccount from "@/components/settings/DeleteAccount";
 import { LogoutButton } from "@/components/settings/LogoutButton";
@@ -11,6 +12,11 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Settings",
+  robots: { index: false, follow: false },
+};
 
 export default async function SettingsPage() {
   const user = await getLoggedInUser();
