@@ -49,6 +49,9 @@ interface WallpaperFormProps {
 
 export function WallpaperForm({ events }: WallpaperFormProps) {
   const previewRef = useRef<HTMLDivElement>(null);
+  const previewAreaRef = useRef<HTMLDivElement>(null);
+  const previewPhoneRef = useRef<HTMLDivElement>(null);
+  const [previewScale, setPreviewScale] = useState(1);
   const [background, setBackground] = useState<BackgroundType>("plain");
   const [font, setFont] = useState<FontType>("default");
   const [theme, setTheme] = useState<ThemeType>("light");
@@ -56,6 +59,35 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
   const [eventInfo, setEventInfo] = useState<EventInfoType>("location");
   const [isSaving, setIsSaving] = useState(false);
   const [savedImage, setSavedImage] = useState<string | null>(null);
+
+  // The phone is laid out at the size it exports at, so on short screens it
+  // stands taller than the room the layout can spare and gets clipped. Scaling
+  // it to whatever space is left keeps the whole phone in view without
+  // shrinking what gets exported.
+  useEffect(() => {
+    const area = previewAreaRef.current;
+    const phone = previewPhoneRef.current;
+    if (!area || !phone) return;
+
+    // Every measurement here is a layout box, so neither the dialog's open
+    // animation nor the scale being applied can be mistaken for the area
+    // changing size.
+    const fitToArea = () => {
+      const { clientWidth, clientHeight } = area;
+      const { offsetWidth, offsetHeight } = phone;
+      if (!offsetWidth || !offsetHeight) return;
+      setPreviewScale(
+        Math.min(clientWidth / offsetWidth, clientHeight / offsetHeight, 1),
+      );
+    };
+
+    // The observer's first callback only arrives once the page is being
+    // rendered, so measure up front for the case where it opens hidden.
+    fitToArea();
+    const observer = new ResizeObserver(fitToArea);
+    observer.observe(area);
+    return () => observer.disconnect();
+  }, []);
 
   // Fetching and inlining the font keeps the network off the critical path of
   // an export, so the share sheet opens while the tap that asked for it still
@@ -139,18 +171,29 @@ export function WallpaperForm({ events }: WallpaperFormProps) {
       )}
 
       {/* The export is captured from the preview's laid-out size, so the phone
-          keeps its full width on mobile and is only scaled down for display. */}
-      <div className="flex h-[38dvh] max-h-72 shrink-0 items-center justify-center overflow-hidden border-b bg-muted md:h-full md:max-h-none md:border-b-0 md:border-r md:p-10">
-        <WallpaperPreview
-          events={events}
-          imageRef={previewRef}
-          background={background}
-          font={font}
-          theme={theme}
-          cellHeight={cellHeight}
-          eventInfo={eventInfo}
-          className="w-70 scale-[0.45] md:w-full md:scale-100"
-        />
+          always lays out at full width and is only scaled down for display. */}
+      <div className="flex h-[38dvh] max-h-72 shrink-0 items-center justify-center overflow-hidden border-b bg-muted p-2 md:h-full md:max-h-none md:border-b-0 md:border-r md:p-10">
+        <div
+          ref={previewAreaRef}
+          className="flex size-full items-center justify-center"
+        >
+          <div
+            ref={previewPhoneRef}
+            className="w-70 shrink-0"
+            style={{ transform: `scale(${previewScale})` }}
+          >
+            <WallpaperPreview
+              events={events}
+              imageRef={previewRef}
+              background={background}
+              font={font}
+              theme={theme}
+              cellHeight={cellHeight}
+              eventInfo={eventInfo}
+              className="w-full"
+            />
+          </div>
+        </div>
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col gap-6 p-4 md:p-6">
