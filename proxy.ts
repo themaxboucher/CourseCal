@@ -100,6 +100,11 @@ export const config = {
     // no session, so those paths have to stay outside the auth gate above.
     // Otherwise every unfurl of a shared invite link gets a 307 to `/` where
     // the card should be, and the preview quietly disappears.
-    "/((?!_next/static|_next/image|api/og|opengraph-image|twitter-image|icon|apple-icon|favicon.ico|robots.txt|sitemap.xml|manifest.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    //
+    // Static media belongs outside the gate for the same reason: the landing
+    // page is what logged-out visitors see, so its demo video would be
+    // redirected to `/` and the phone would sit there empty. Keep the video
+    // extensions in step with anything added under `public/`.
+    "/((?!_next/static|_next/image|api/og|opengraph-image|twitter-image|icon|apple-icon|favicon.ico|robots.txt|sitemap.xml|manifest.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|mp4|webm)$).*)",
   ],
 };
