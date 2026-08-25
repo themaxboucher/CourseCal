@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { AddFilled } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import EventDialog from "./EventDialog";
@@ -35,11 +35,11 @@ export function AddEventButton({
   return (
     <>
       <Button className="hidden md:flex" size="sm" onClick={handleOpenDialog}>
-        <Plus className="size-4" />
+        <AddFilled className="size-4" />
         <span>Add Class</span>
       </Button>
       <Button className="md:hidden" size="icon" onClick={handleOpenDialog}>
-        <Plus className="size-5" />
+        <AddFilled className="size-5" />
       </Button>
       <EventDialog
         open={isDialogOpen}

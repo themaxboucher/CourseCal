@@ -1,4 +1,4 @@
-import { Smartphone } from "lucide-react";
+import { CellphoneFilled } from "@/components/icons";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -9,7 +9,8 @@ import {
 } from "../ui/dialog";
 import { WallpaperForm } from "./WallpaperForm";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Drawer,
   DrawerTrigger,
@@ -32,7 +33,9 @@ export function WallpaperDialog({
   open: controlledOpen,
   onOpenChange,
 }: WallpaperDialogProps) {
-  const [isMobile, setIsMobile] = useState(false);
+  // The trigger button has to render before the viewport can be measured, so
+  // an unmeasured viewport falls back to the desktop layout.
+  const isMobile = useIsMobile() ?? false;
   const [internalOpen, setInternalOpen] = useState(false);
 
   // Use controlled state if provided, otherwise use internal state
@@ -47,33 +50,18 @@ export function WallpaperDialog({
     }
   };
 
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 768); // md breakpoint is 768px
-    };
-
-    // Check on mount
-    checkScreenSize();
-
-    // Add event listener
-    window.addEventListener("resize", checkScreenSize);
-
-    // Cleanup
-    return () => window.removeEventListener("resize", checkScreenSize);
-  }, []);
-
   // Render trigger button only when uncontrolled
   const trigger = !isControlled ? (
     isMobile ? (
       <DrawerTrigger asChild>
         <Button variant="outline" size="icon" className="md:hidden">
-          <Smartphone className="size-5" />
+          <CellphoneFilled className="size-5" />
         </Button>
       </DrawerTrigger>
     ) : (
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
-          <Smartphone className="size-4" />
+          <CellphoneFilled className="size-4" />
           Wallpaper
         </Button>
       </DialogTrigger>
@@ -84,19 +72,17 @@ export function WallpaperDialog({
     return (
       <Drawer open={open} onOpenChange={setOpen}>
         {trigger}
-        <DrawerContent>
-          <DrawerHeader className="border-b">
+        <DrawerContent className="data-[vaul-drawer-direction=bottom]:max-h-[90dvh]">
+          <DrawerHeader className="shrink-0 border-b py-3">
+            <DrawerTitle>Download wallpaper</DrawerTitle>
             <VisuallyHidden>
-              <DrawerTitle>Download wallpaper</DrawerTitle>
               <DrawerDescription>
                 Download a wallpaper of your schedule that isn&apos;t blocked by
                 your lock screens time or widgets.
               </DrawerDescription>
             </VisuallyHidden>
           </DrawerHeader>
-          <div className="overflow-y-auto">
-            <WallpaperForm events={events} />
-          </div>
+          <WallpaperForm events={events} />
         </DrawerContent>
       </Drawer>
     );
@@ -105,7 +91,7 @@ export function WallpaperDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       {trigger}
-      <DialogContent className="w-full !max-w-5xl p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-5xl p-0 overflow-hidden">
         <VisuallyHidden>
           <DialogHeader>
             <DialogTitle>Wallpaper</DialogTitle>

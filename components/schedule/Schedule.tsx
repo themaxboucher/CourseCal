@@ -1,26 +1,53 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { getRelevantTerm } from "@/lib/utils/schedule";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { getRelevantTerm, getTimeRange } from "@/lib/utils/schedule";
 import { getEvents as getLocalEvents } from "@/lib/indexeddb";
 import { AddEventButton } from "./AddEventButton";
 import { TermSelector } from "./TermSelector";
 import { UploadDialog } from "@/components/UploadDialog";
 import WeekView from "./WeekView";
+import FriendRail, { type RailFriend } from "./FriendRail";
+import OverlapSettings from "./OverlapSettings";
+import type { AvailabilityPerson } from "./AvailabilityLayer";
 import { WallpaperDialog } from "@/components/wallpaper/WallpaperDialog";
-import { Loader2, RotateCcw } from "lucide-react";
+import {
+  Loading3Filled,
+  RefreshAnticlockwise1Filled,
+} from "@/components/icons";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import type { Tables } from "@/types/supabase";
-import type { EventWithCourse } from "@/lib/actions/events.actions";
+import type {
+  EventWithCourse,
+  FriendEvent,
+} from "@/lib/actions/events.actions";
+import type { Profile } from "@/lib/utils/profiles";
+import {
+  buildAvailability,
+  DEFAULT_MIN_SLOT_MINUTES,
+  type Participant,
+} from "@/lib/utils/availability";
 
 interface ScheduleProps {
   events: EventWithCourse[];
   terms: Tables<"terms">[];
   user: Tables<"users"> | null;
   isLoggedIn: boolean;
+  friends?: Profile[];
+  /** Every term's events for all accepted friends; filtered per term below. */
+  friendEvents?: FriendEvent[];
+}
+
+/** `?with=alice,bob` — keeps a comparison shareable and survives a refresh. */
+function parseSelection(value: string | null): string[] {
+  if (!value) return [];
+  return value
+    .split(",")
+    .map((entry) => entry.trim().toLowerCase())
+    .filter(Boolean);
 }
 
 export default function Schedule({
@@ -28,12 +55,23 @@ export default function Schedule({
   terms,
   user,
   isLoggedIn,
+  friends = [],
+  friendEvents = [],
 }: ScheduleProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const relevantTerm = getRelevantTerm(terms);
   const [selectedTermId, setSelectedTermId] = useState<number>(relevantTerm.id);
   const [localEvents, setLocalEvents] = useState<LocalEvent[]>([]);
   const [isLoading, setIsLoading] = useState(!isLoggedIn);
+
+  const [selectedUsernames, setSelectedUsernames] = useState<string[]>(() =>
+    parseSelection(searchParams.get("with")),
+  );
+  const [minDurationMin, setMinDurationMin] = useState(
+    DEFAULT_MIN_SLOT_MINUTES,
+  );
+  const [betweenClassesOnly, setBetweenClassesOnly] = useState(false);
 
   // Refresh local events from IndexedDB
   const refreshLocalEvents = useCallback(async () => {
@@ -72,11 +110,132 @@ export default function Schedule({
     checkLocalData();
   }, [isLoggedIn, router]);
 
+  /**
+   * Selection is client state mirrored into the URL rather than routed state.
+   * Every friend's events are already on the client, so a toggle needs no
+   * server round trip — `replaceState` keeps the address bar shareable without
+   * re-rendering the page or filling the history stack.
+   */
+  const toggleFriend = useCallback((username: string) => {
+    setSelectedUsernames((current) => {
+      const next = current.includes(username)
+        ? current.filter((entry) => entry !== username)
+        : [...current, username];
+
+      const params = new URLSearchParams(window.location.search);
+      if (next.length > 0) params.set("with", next.join(","));
+      else params.delete("with");
+      const query = params.toString();
+      window.history.replaceState(
+        null,
+        "",
+        query ? `?${query}` : window.location.pathname,
+      );
+
+      return next;
+    });
+  }, []);
+
   const selectedTerm =
     terms.find((term) => term.id === selectedTermId) ?? relevantTerm;
-  const selectedTermServerEvents = serverEvents.filter(
-    (event) => event.term === selectedTermId,
+  const selectedTermServerEvents = useMemo(
+    () => serverEvents.filter((event) => event.term === selectedTermId),
+    [serverEvents, selectedTermId],
   );
+  const termFriendEvents = useMemo(
+    () => friendEvents.filter((event) => event.term === selectedTermId),
+    [friendEvents, selectedTermId],
+  );
+
+  const selectedFriends = useMemo(
+    () =>
+      friends.filter((friend) => selectedUsernames.includes(friend.username)),
+    [friends, selectedUsernames],
+  );
+
+  /**
+   * Only friends with events in this term can be compared against. A selection
+   * can outlive the schedule behind it — a term switch, or a `?with=` link
+   * shared before somebody uploaded — and with none of them left there is no
+   * comparison to show, so the overlap controls and the availability layer both
+   * stay away rather than reporting the viewer's own week back to them.
+   */
+  const comparisonFriends = useMemo(
+    () =>
+      selectedFriends.filter((friend) =>
+        termFriendEvents.some((event) => event.user === friend.id),
+      ),
+    [selectedFriends, termFriendEvents],
+  );
+
+  const railFriends: RailFriend[] = useMemo(
+    () =>
+      friends.map((friend) => ({
+        profile: friend,
+        selected: selectedUsernames.includes(friend.username),
+        hasSchedule: termFriendEvents.some((event) => event.user === friend.id),
+      })),
+    [friends, selectedUsernames, termFriendEvents],
+  );
+
+  const availability = useMemo(() => {
+    if (!user || comparisonFriends.length === 0) return null;
+
+    const participants: Participant[] = [
+      {
+        id: user.id,
+        events: selectedTermServerEvents,
+        hasSchedule: selectedTermServerEvents.length > 0,
+      },
+      ...comparisonFriends.map((friend) => {
+        const events = termFriendEvents.filter(
+          (event) => event.user === friend.id,
+        );
+        return { id: friend.id, events, hasSchedule: events.length > 0 };
+      }),
+    ];
+
+    // The grid must already be tall enough for everyone's classes, or bands
+    // computed against a wider range would render outside it.
+    const rangeEvents = [
+      ...selectedTermServerEvents,
+      ...termFriendEvents.filter((event) =>
+        comparisonFriends.some((friend) => friend.id === event.user),
+      ),
+    ];
+    const { startHour, endHour } = getTimeRange(rangeEvents);
+
+    return {
+      ...buildAvailability(participants, {
+        minDurationMin,
+        betweenClassesOnly,
+        dayStartMin: startHour * 60,
+        // `endHour` is the hour label of the last row, which covers the hour
+        // after it — so the grid ends at endHour + 1.
+        dayEndMin: (endHour + 1) * 60,
+        viewerId: user.id,
+      }),
+      rangeEvents,
+    };
+  }, [
+    user,
+    comparisonFriends,
+    selectedTermServerEvents,
+    termFriendEvents,
+    minDurationMin,
+    betweenClassesOnly,
+  ]);
+
+  const participantPeople = useMemo(() => {
+    const people: Record<string, AvailabilityPerson> = {};
+    if (user) {
+      people[user.id] = { name: "You" };
+    }
+    for (const friend of friends) {
+      people[friend.id] = { name: friend.name ?? friend.username };
+    }
+    return people;
+  }, [user, friends]);
 
   const hasEvents = isLoggedIn
     ? selectedTermServerEvents.length > 0
@@ -86,7 +245,7 @@ export default function Schedule({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-[600px]">
-        <Loader2 className="size-8 animate-spin text-primary" />
+        <Loading3Filled className="size-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -95,6 +254,15 @@ export default function Schedule({
 
   return (
     <>
+      {isLoggedIn && (
+        <FriendRail
+          friends={railFriends}
+          isLoggedIn={isLoggedIn}
+          onToggle={toggleFriend}
+          termLabel={`${selectedTerm.season} ${selectedTerm.year}`}
+        />
+      )}
+
       <div className="flex items-center justify-between pb-4">
         {isLoggedIn && (
           <TermSelector
@@ -109,6 +277,14 @@ export default function Schedule({
             !isLoggedIn && "justify-between w-full",
           )}
         >
+          {comparisonFriends.length > 0 && (
+            <OverlapSettings
+              minDurationMin={minDurationMin}
+              onMinDurationChange={setMinDurationMin}
+              betweenClassesOnly={betweenClassesOnly}
+              onBetweenClassesOnlyChange={setBetweenClassesOnly}
+            />
+          )}
           {!hasEvents ? (
             <UploadDialog term={selectedTerm} />
           ) : (
@@ -124,7 +300,7 @@ export default function Schedule({
                   asChild
                 >
                   <Link href="/">
-                    <RotateCcw className="size-4" />
+                    <RefreshAnticlockwise1Filled className="size-4" />
                     Retry upload
                   </Link>
                 </Button>
@@ -135,7 +311,7 @@ export default function Schedule({
                   asChild
                 >
                   <Link href="/">
-                    <RotateCcw className="size-4" />
+                    <RefreshAnticlockwise1Filled className="size-4" />
                   </Link>
                 </Button>
               </>
@@ -150,12 +326,27 @@ export default function Schedule({
           </div>
         </div>
       </div>
-      <WeekView
-        events={displayEvents}
-        user={user ?? undefined}
-        isGuest={!isLoggedIn}
-        onEventsChange={refreshLocalEvents}
-      />
+
+      <div className="relative w-full max-w-[75rem] mx-auto">
+        <WeekView
+          events={displayEvents}
+          user={user ?? undefined}
+          isGuest={!isLoggedIn}
+          onEventsChange={refreshLocalEvents}
+          busyBlocks={availability?.busyBlocks}
+          freeSlots={availability?.slots}
+          people={participantPeople}
+          rangeEvents={availability?.rangeEvents}
+        />
+
+        {availability && availability.slots.length === 0 && (
+          <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center p-4">
+            <p className="max-w-xs rounded-lg border bg-background/90 px-4 py-3 text-center text-sm text-muted-foreground shadow-sm backdrop-blur-sm">
+              No shared free time. Try a shorter minimum gap, or fewer people.
+            </p>
+          </div>
+        )}
+      </div>
     </>
   );
 }

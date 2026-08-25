@@ -1,16 +1,22 @@
 import { LandingNavbar } from "@/components/landing-page/LandingNavbar";
 import { Footer } from "@/components/landing-page/Footer";
 import UploadSchedule from "@/components/UploadSchedule";
-import WallpaperPreview from "@/components/wallpaper/WallpaperPreview";
-import { displayEvents1, displayEvents2 } from "@/constants";
 import { TextAnimate } from "@/components/ui/text-animate";
 import AnimatedContent from "@/components/ui/AnimatedContent";
+import { Iphone } from "@/components/ui/iphone";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
   return (
     <>
+      <link
+        rel="preload"
+        as="image"
+        href="/video/coursecal-demo-poster.webp"
+        type="image/webp"
+        fetchPriority="high"
+      />
       <LandingNavbar />
       <main>
         <section className="grid grid-cols-1 lg:grid-cols-2 items-center gap-4 max-w-[75rem] mx-auto md:px-8 px-2 py-12">
@@ -23,7 +29,7 @@ export default async function Home() {
                   once={true}
                   className="heading-1 md:text-6xl max-w-[18rem] md:max-w-[28rem]"
                 >
-                  New schedule, new lock screen.
+                  Find time when everyone&rsquo;s free.
                 </TextAnimate>
                 <TextAnimate
                   animation="slideUp"
@@ -32,8 +38,8 @@ export default async function Home() {
                   delay={0.3}
                   className="text-muted-foreground text-lg md:text-2xl max-w-[18rem] md:max-w-lg"
                 >
-                  Get a beautiful lock screen wallpaper of your University of
-                  Calgary schedule in seconds.
+                  Easily compare your University of Calgary schedule with
+                  friends.
                 </TextAnimate>
               </div>
               <AnimatedContent
@@ -48,25 +54,16 @@ export default async function Home() {
           <div className="flex justify-center items-center w-full relative h-[500px] -mb-[100px] md:mb-0 md:h-full overflow-hidden">
             <div className="w-full h-[60%] lg:h-[70%] absolute left-0 right-0 top-auto bottom-auto bg-muted/75 dark:bg-muted/50 rounded-xl" />
             <div className="w-full h-[20%] lg:h-[15%] absolute left-0 right-0 top-auto bottom-0 bg-background z-10" />
-            <AnimatedContent className="w-full" distance={50} delay={0.6}>
-              <div className="size-full scale-75 md:scale-90 -rotate-3 flex justify-center items-center -translate-x-10">
-                <WallpaperPreview
-                  events={displayEvents2}
-                  background="midnight"
-                  font="default"
-                  theme="dark"
-                  cellHeight={100}
-                  eventInfo="time"
-                />
-              </div>
-              <div className="size-full absolute inset-0 flex justify-center items-center scale-65 md:scale-75 rotate-4 translate-x-14 sm:translate-x-20 translate-y-12">
-                <WallpaperPreview
-                  events={displayEvents1}
-                  background="ice"
-                  font="rounded"
-                  theme="light"
-                  cellHeight={100}
-                  eventInfo="time"
+            <AnimatedContent
+              className="w-full flex justify-between items-center"
+              distance={50}
+              delay={0.6}
+            >
+              <div className="w-54 md:w-72 md:rotate-2 mx-auto translate-y-4">
+                <Iphone
+                  videoSrc="/video/coursecal-demo.mp4"
+                  poster="/video/coursecal-demo-poster.webp"
+                  priority
                 />
               </div>
             </AnimatedContent>
@@ -94,10 +91,10 @@ export default async function Home() {
                   <div className="font-bold size-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
                     2
                   </div>
-                  <h3 className="heading-3">Customize</h3>
+                  <h3 className="heading-3">Add friends</h3>
                 </div>
                 <p className="text-muted-foreground max-w-[15rem]">
-                  Choose a background and font for your wallpaper.
+                  Follow your friends to see their schedules.
                 </p>
               </div>
               <div className="flex flex-col items-center gap-2 py-10 px-6 w-full bg-muted/75 dark:bg-muted/50 rounded-xl">
@@ -105,10 +102,10 @@ export default async function Home() {
                   <div className="font-bold size-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
                     3
                   </div>
-                  <h3 className="heading-3">Download</h3>
+                  <h3 className="heading-3">Compare</h3>
                 </div>
                 <p className="text-muted-foreground max-w-[15rem]">
-                  Download your wallpaper and set it as your lock screen.
+                  See when everyone has overlapping free time.
                 </p>
               </div>
             </div>

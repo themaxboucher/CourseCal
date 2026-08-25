@@ -6,19 +6,43 @@ import { cn } from "@/lib/utils";
 import EventBlock from "./EventBlock";
 import { weekdays } from "@/constants";
 import {
+  BLOCK_GAP_CLASS,
   generateTimeSlots,
   getEventPosition,
   getTimeRange,
   getWeekdayIndex,
+  withBlockGap,
 } from "@/lib/utils/schedule";
 import type { Tables } from "@/types/supabase";
 import type { AnyEvent } from "@/lib/utils/events";
+import {
+  WEEK_DAYS,
+  type BusyBlock,
+  type SharedSlot,
+} from "@/lib/utils/availability";
+import AvailabilityLayer, {
+  type AvailabilityPerson,
+} from "./AvailabilityLayer";
 
 interface WeekViewProps {
   events: AnyEvent[];
   user?: Tables<"users"> | null;
   isGuest?: boolean;
   onEventsChange?: () => void;
+  /**
+   * Shared availability overlay: the selected friends' classes, and the gaps
+   * they leave everybody. Both omitted when no friends are selected.
+   */
+  busyBlocks?: BusyBlock[];
+  freeSlots?: SharedSlot[];
+  /** Participant id to display name, for the overlay. */
+  people?: Record<string, AvailabilityPerson>;
+  /**
+   * Events the visible hour range must accommodate. Defaults to `events`, but
+   * the overlay needs the range widened to cover friends' classes too —
+   * otherwise a friend's 8am lab lands above the top of the grid.
+   */
+  rangeEvents?: { start_time: string; end_time: string }[];
 }
 
 export default function WeekView({
@@ -26,9 +50,16 @@ export default function WeekView({
   user,
   isGuest = false,
   onEventsChange,
+  busyBlocks,
+  freeSlots,
+  people = {},
+  rangeEvents,
 }: WeekViewProps) {
   // Calculate dynamic time range based on events
-  const { startHour, endHour } = useMemo(() => getTimeRange(events), [events]);
+  const { startHour, endHour } = useMemo(
+    () => getTimeRange(rangeEvents ?? events),
+    [rangeEvents, events],
+  );
   const timeSlots = useMemo(
     () => generateTimeSlots(startHour, endHour, false),
     [startHour, endHour],
@@ -109,6 +140,7 @@ export default function WeekView({
             key={day}
             className={cn(
               "relative border-l-2 border-b-2",
+              BLOCK_GAP_CLASS,
               dayIndex === 0 && "rounded-bl-xl",
               dayIndex === weekdays.length - 1 && "border-r-2 rounded-br-xl",
             )}
@@ -117,6 +149,21 @@ export default function WeekView({
             {timeSlots.map((time) => (
               <div key={time} className="h-16 border-t-2"></div>
             ))}
+
+            {/* Shared availability, beneath the event blocks */}
+            {busyBlocks && freeSlots && (
+              <AvailabilityLayer
+                busyBlocks={busyBlocks.filter(
+                  (block) => block.day === WEEK_DAYS[dayIndex],
+                )}
+                slots={freeSlots.filter(
+                  (slot) => slot.day === WEEK_DAYS[dayIndex],
+                )}
+                startHour={startHour}
+                pxPerHour={64}
+                people={people}
+              />
+            )}
 
             {/* Events for this day */}
             {eventsByDay[dayIndex]?.map((event) => {
@@ -138,8 +185,7 @@ export default function WeekView({
                   onEventsChange={onEventsChange}
                   style={{
                     position: "absolute",
-                    top: `${top}px`,
-                    height: `${height}px`,
+                    ...withBlockGap(top, height),
                     zIndex: 10,
                   }}
                 />
@@ -149,8 +195,7 @@ export default function WeekView({
                   event={event}
                   style={{
                     position: "absolute",
-                    top: `${top}px`,
-                    height: `${height}px`,
+                    ...withBlockGap(top, height),
                     zIndex: 10,
                   }}
                 />

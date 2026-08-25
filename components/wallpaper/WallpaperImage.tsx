@@ -175,7 +175,10 @@ export default function WallpaperImage({
 
               return (
                 <EventBlock
-                  key={event.id}
+                  key={
+                    event.id ??
+                    `${dayIndex}-${event.course_code}-${event.start_time}-${event.type}`
+                  }
                   event={event}
                   isWallpaper={true}
                   wallpaperTheme={theme}

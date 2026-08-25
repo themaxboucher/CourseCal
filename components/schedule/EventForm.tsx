@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-import { LoaderCircle } from "lucide-react";
+import { Loading3Filled } from "@/components/icons";
 
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -388,7 +388,7 @@ export default function EventForm({
           )}
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? (
-              <LoaderCircle className="size-4 animate-spin" />
+              <Loading3Filled className="size-4 animate-spin" />
             ) : (
               "Save"
             )}

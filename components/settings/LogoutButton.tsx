@@ -3,7 +3,7 @@
 import { logout } from "@/lib/actions/auth.actions";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
-import { LogOut } from "lucide-react";
+import { ExitFilled } from "@/components/icons";
 
 export function LogoutButton() {
   const router = useRouter();
@@ -18,7 +18,7 @@ export function LogoutButton() {
   };
   return (
     <Button variant="outline" onClick={handleLogout}>
-      <LogOut className="size-4" />
+      <ExitFilled className="size-4" />
       Log out
     </Button>
   );

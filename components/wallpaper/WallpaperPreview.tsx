@@ -22,6 +22,7 @@ interface WallpaperPreviewProps {
   theme: ThemeType;
   cellHeight: number;
   eventInfo: EventInfoType;
+  className?: string;
 }
 
 export default function WallpaperPreview({
@@ -32,12 +33,13 @@ export default function WallpaperPreview({
   theme,
   cellHeight,
   eventInfo,
+  className,
 }: WallpaperPreviewProps) {
   const bgOption = backgroundOptions.find((opt) => opt.value === background);
   const bgClass = bgOption?.[theme] ?? "";
 
   return (
-    <Iphone className="max-w-70" theme={theme}>
+    <Iphone className={cn("max-w-70", className)} theme={theme}>
       <div ref={imageRef}>
         <div
           className={cn(

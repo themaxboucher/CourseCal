@@ -1,6 +1,7 @@
 "use client";
 
 import type { HTMLAttributes } from "react";
+import { useEffect, useRef } from "react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
@@ -20,24 +21,90 @@ const HEIGHT_PCT = (SCREEN_HEIGHT / PHONE_HEIGHT) * 100;
 const RADIUS_H = (SCREEN_RADIUS / SCREEN_WIDTH) * 100;
 const RADIUS_V = (SCREEN_RADIUS / SCREEN_HEIGHT) * 100;
 
+// The shell is themed by prop rather than the `dark` variant so a preview can
+// render light while the surrounding page is dark, and vice versa.
+const shellColors: Record<
+  ThemeType,
+  { frame: string; body: string; notch: string }
+> = {
+  light: { frame: "#E5E5E5", body: "#FFFFFF", notch: "#F5F5F5" },
+  dark: { frame: "#404040", body: "#262626", notch: "#262626" },
+};
+
 export interface IphoneProps extends HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
+  src?: string;
+  videoSrc?: string;
+  /** Still frame held until the video has decoded — give it the first frame. */
+  poster?: string;
+  /** Fetch the video up front. Only for a phone that is above the fold. */
+  priority?: boolean;
   theme?: ThemeType;
 }
 
 export function Iphone({
   children,
+  src,
+  videoSrc,
+  poster,
+  priority = false,
+  theme = "dark",
   className,
   style,
-  theme = "light",
   ...props
 }: IphoneProps) {
   const date = new Date();
+  const colors = shellColors[theme];
+  const hasScreen = !!videoSrc || !!src || !!children;
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // `autoPlay` alone is not enough here: the phone is usually revealed by a
+  // scroll animation, so it mounts inside a `visibility: hidden` wrapper, and
+  // a browser that declines to start playback while it is hidden gets no
+  // second chance from the attribute. Retry on both signals that can unblock
+  // it — the phone scrolling into view, and the video buffering enough to
+  // play — and pause once it scrolls away so a looping video is not decoding
+  // for the whole page.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    let isOnScreen = false;
+    let hasBeenOnScreen = false;
+    const tryPlay = () => {
+      if (isOnScreen) video.play().catch(() => {});
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isOnScreen = entry.isIntersecting;
+        if (isOnScreen) {
+          hasBeenOnScreen = true;
+          tryPlay();
+        } else if (hasBeenOnScreen) {
+          // Only ever pause a video that has been watched. The first layout
+          // pass can measure the phone at zero size and so report it off
+          // screen, and pausing there would cancel the autoplay the browser
+          // was about to start on its own.
+          video.pause();
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    observer.observe(video);
+    video.addEventListener("canplay", tryPlay);
+
+    return () => {
+      observer.disconnect();
+      video.removeEventListener("canplay", tryPlay);
+    };
+  }, [videoSrc]);
+
   return (
     <div
       className={cn(
         "relative inline-block w-full align-middle leading-none",
-        theme === "dark" ? "dark" : "",
         className,
       )}
       style={{
@@ -46,20 +113,23 @@ export function Iphone({
       }}
       {...props}
     >
-      <div
-        className={cn(
-          "absolute inset-0 pt-17 size-full flex flex-col justify-start items-center gap-3 z-10",
-          theme === "dark" ? "text-white" : "text-black/75",
-        )}
-      >
-        <div className="text-[15px] font-sf-pro tracking-tight font-semibold opacity-90">
-          {format(date, "EEEE, MMMM d")}
-        </div>
-        <div className="text-6xl font-sf-pro-soft font-semibold tracking-tighter opacity-90">
-          {format(date, "h:mm")}
-        </div>
-      </div>
       {children && (
+        <div
+          className={cn(
+            "absolute inset-0 pt-17 size-full flex flex-col justify-start items-center gap-3 z-10",
+            theme === "dark" ? "text-white" : "text-black/75",
+          )}
+        >
+          <div className="text-[15px] font-sf-pro tracking-tight font-semibold opacity-90">
+            {format(date, "EEEE, MMMM d")}
+          </div>
+          <div className="text-6xl font-sf-pro-soft font-semibold tracking-tighter opacity-90">
+            {format(date, "h:mm")}
+          </div>
+        </div>
+      )}
+
+      {hasScreen && (
         <div
           className="pointer-events-none absolute z-0 overflow-hidden"
           style={{
@@ -70,7 +140,28 @@ export function Iphone({
             borderRadius: `${RADIUS_H}% / ${RADIUS_V}%`,
           }}
         >
-          <div className="absolute inset-0">{children}</div>
+          {videoSrc ? (
+            <video
+              ref={videoRef}
+              className="block size-full object-cover"
+              src={videoSrc}
+              poster={poster}
+              autoPlay
+              loop
+              muted
+              playsInline
+              disablePictureInPicture
+              preload={priority ? "auto" : "metadata"}
+            />
+          ) : src ? (
+            <img
+              src={src}
+              alt=""
+              className="block size-full object-cover object-top"
+            />
+          ) : (
+            <div className="absolute inset-0">{children}</div>
+          )}
         </div>
       )}
 
@@ -83,56 +174,58 @@ export function Iphone({
         className="absolute inset-0 size-full"
         style={{ transform: "translateZ(0)" }}
       >
-        <g mask={children ? "url(#screenPunch)" : undefined}>
+        <g mask={hasScreen ? "url(#screenPunch)" : undefined}>
           <path
             d="M2 73C2 32.6832 34.6832 0 75 0H357C397.317 0 430 32.6832 430 73V809C430 849.317 397.317 882 357 882H75C34.6832 882 2 849.317 2 809V73Z"
-            className="fill-[#E5E5E5] dark:fill-[#404040]"
+            fill={colors.frame}
           />
           <path
             d="M0 171C0 170.448 0.447715 170 1 170H3V204H1C0.447715 204 0 203.552 0 203V171Z"
-            className="fill-[#E5E5E5] dark:fill-[#404040]"
+            fill={colors.frame}
           />
           <path
             d="M1 234C1 233.448 1.44772 233 2 233H3.5V300H2C1.44772 300 1 299.552 1 299V234Z"
-            className="fill-[#E5E5E5] dark:fill-[#404040]"
+            fill={colors.frame}
           />
           <path
             d="M1 319C1 318.448 1.44772 318 2 318H3.5V385H2C1.44772 385 1 384.552 1 384V319Z"
-            className="fill-[#E5E5E5] dark:fill-[#404040]"
+            fill={colors.frame}
           />
           <path
             d="M430 279H432C432.552 279 433 279.448 433 280V384C433 384.552 432.552 385 432 385H430V279Z"
-            className="fill-[#E5E5E5] dark:fill-[#404040]"
+            fill={colors.frame}
           />
           <path
             d="M6 74C6 35.3401 37.3401 4 76 4H356C394.66 4 426 35.3401 426 74V808C426 846.66 394.66 878 356 878H76C37.3401 878 6 846.66 6 808V74Z"
-            className="fill-white dark:fill-[#262626]"
+            fill={colors.body}
           />
         </g>
 
         <path
           opacity="0.5"
           d="M174 5H258V5.5C258 6.60457 257.105 7.5 256 7.5H176C174.895 7.5 174 6.60457 174 5.5V5Z"
-          className="fill-[#E5E5E5] dark:fill-[#404040]"
+          fill={colors.frame}
         />
 
         <path
           d={`M${SCREEN_X} 75C${SCREEN_X} 44.2101 46.2101 ${SCREEN_Y} 77 ${SCREEN_Y}H355C385.79 ${SCREEN_Y} 410.75 44.2101 410.75 75V807C410.75 837.79 385.79 862.75 355 862.75H77C46.2101 862.75 ${SCREEN_X} 837.79 ${SCREEN_X} 807V75Z`}
-          className="fill-[#E5E5E5] stroke-[#E5E5E5] stroke-[0.5] dark:fill-[#404040] dark:stroke-[#404040]"
-          mask={children ? "url(#screenPunch)" : undefined}
+          fill={colors.frame}
+          stroke={colors.frame}
+          strokeWidth="0.5"
+          mask={hasScreen ? "url(#screenPunch)" : undefined}
         />
 
         <path
           d="M154 48.5C154 38.2827 162.283 30 172.5 30H259.5C269.717 30 278 38.2827 278 48.5C278 58.7173 269.717 67 259.5 67H172.5C162.283 67 154 58.7173 154 48.5Z"
-          className="fill-[#F5F5F5] dark:fill-[#262626]"
+          fill={colors.notch}
         />
         <path
           d="M249 48.5C249 42.701 253.701 38 259.5 38C265.299 38 270 42.701 270 48.5C270 54.299 265.299 59 259.5 59C253.701 59 249 54.299 249 48.5Z"
-          className="fill-[#F5F5F5] dark:fill-[#262626]"
+          fill={colors.notch}
         />
         <path
           d="M254 48.5C254 45.4624 256.462 43 259.5 43C262.538 43 265 45.4624 265 48.5C265 51.5376 262.538 54 259.5 54C256.462 54 254 51.5376 254 48.5Z"
-          className="fill-[#E5E5E5] dark:fill-[#404040]"
+          fill={colors.frame}
         />
 
         <defs>

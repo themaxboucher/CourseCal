@@ -1,6 +1,6 @@
 "use client";
 
-import { Moon, Sun, Monitor } from "lucide-react";
+import { MonitorFilled, MoonFilled, SunFilled } from "@/components/icons";
 import { useTheme } from "next-themes";
 
 import {
@@ -17,13 +17,13 @@ export function ThemeSelector() {
   const getThemeIcon = (themeValue: string) => {
     switch (themeValue) {
       case "light":
-        return <Sun className="size-4" />;
+        return <SunFilled className="size-4" />;
       case "dark":
-        return <Moon className="size-4" />;
+        return <MoonFilled className="size-4" />;
       case "system":
-        return <Monitor className="size-4" />;
+        return <MonitorFilled className="size-4" />;
       default:
-        return <Monitor className="size-4" />;
+        return <MonitorFilled className="size-4" />;
     }
   };
 
@@ -50,15 +50,15 @@ export function ThemeSelector() {
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="light">
-          <Sun className="size-4" />
+          <SunFilled className="size-4" />
           Light
         </SelectItem>
         <SelectItem value="dark">
-          <Moon className="size-4" />
+          <MoonFilled className="size-4" />
           Dark
         </SelectItem>
         <SelectItem value="system">
-          <Monitor className="size-4" />
+          <MonitorFilled className="size-4" />
           System
         </SelectItem>
       </SelectContent>

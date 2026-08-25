@@ -1,12 +1,41 @@
+import type { Metadata } from "next";
 import { Navbar } from "@/components/Navbar";
 import Schedule from "@/components/schedule/Schedule";
-import { getEvents } from "@/lib/actions/events.actions";
+import { getEvents, getFriendsEvents } from "@/lib/actions/events.actions";
 import { getTerms } from "@/lib/actions/terms.actions";
 import WelcomeDialog from "@/components/WelcomeDialog";
 import UploadSuccessDialog from "@/components/UploadSuccessDialog";
 import FeedbackBox from "@/components/FeedbackBox";
 import { getLoggedInUser } from "@/lib/actions/users.actions";
+import {
+  getFriends,
+  getPendingRequestCount,
+} from "@/lib/actions/friends.actions";
+import { SITE_NAME } from "@/lib/site";
 export const dynamic = "force-dynamic";
+
+const DESCRIPTION =
+  "Your week at a glance. Compare your schedule with friends or turn it into a custom lock screen wallpaper.";
+
+// The only signed-in-looking route a logged-out visitor can reach, so it is
+// also the only one worth letting a crawler keep.
+export const metadata: Metadata = {
+  title: "Schedule",
+  description: DESCRIPTION,
+  alternates: { canonical: "/schedule" },
+  openGraph: {
+    siteName: SITE_NAME,
+    title: `Schedule · ${SITE_NAME}`,
+    description: DESCRIPTION,
+    url: "/schedule",
+    locale: "en_CA",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `Schedule · ${SITE_NAME}`,
+    description: DESCRIPTION,
+  },
+};
 
 interface SchedulePageProps {
   searchParams: Promise<{ uploadSuccess?: string }>;
@@ -21,6 +50,13 @@ export default async function SchedulePage({
   const terms = await getTerms();
   const events = user ? await getEvents(user.id) : [];
   const isLoggedIn = user !== false;
+  const pendingRequestCount = user ? await getPendingRequestCount() : 0;
+  const friends = user ? await getFriends() : [];
+  // Every term at once, matching how the viewer's own events are loaded — the
+  // term filter is applied client-side so switching terms needs no refetch.
+  const friendEvents = user
+    ? await getFriendsEvents(friends.map((friend) => friend.id))
+    : [];
 
   return (
     <>
@@ -29,8 +65,12 @@ export default async function SchedulePage({
       )}
       <UploadSuccessDialog show={justUploaded} />
 
-      <Navbar isLoggedIn={isLoggedIn} user={user || null} />
-      <section className="flex flex-col gap-2 max-w-[90rem] mx-auto md:px-8 px-2 md:py-8 py-2">
+      <Navbar
+        user={user || null}
+        hasSchedule={true}
+        pendingRequestCount={pendingRequestCount}
+      />
+      <section className="flex flex-col gap-2 max-w-[90rem] mx-auto md:px-8 px-2 md:py-8 pb-4">
         <div className="flex flex-col items-center gap-8">
           <div className="flex flex-col items-center gap-4 w-full">
             <div className="max-w-[70rem] w-full">
@@ -39,6 +79,8 @@ export default async function SchedulePage({
                 terms={terms}
                 user={user || null}
                 isLoggedIn={isLoggedIn}
+                friends={friends}
+                friendEvents={friendEvents}
               />
             </div>
           </div>

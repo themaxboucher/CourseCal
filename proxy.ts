@@ -1,8 +1,19 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { requireEnv } from "@/lib/env";
+import {
+  REFERRAL_COOKIE,
+  REFERRAL_COOKIE_MAX_AGE,
+  sanitizeReferral,
+} from "@/lib/utils/referral";
 
-const PUBLIC_ROUTES = ["/", "/verify", "/check-email", "/auth/confirm"];
+const PUBLIC_ROUTES = [
+  "/",
+  "/join",
+  "/verify",
+  "/check-email",
+  "/auth/confirm",
+];
 
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -65,11 +76,35 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  // Capturing the referral here rather than in the page means it survives
+  // without JavaScript and is written before anything renders. A Server
+  // Component cannot set a cookie during render; middleware can.
+  if (pathname === "/join") {
+    const referral = sanitizeReferral(request.nextUrl.searchParams.get("ref"));
+    if (referral) {
+      supabaseResponse.cookies.set(REFERRAL_COOKIE, referral, {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        maxAge: REFERRAL_COOKIE_MAX_AGE,
+      });
+    }
+  }
+
   return supabaseResponse;
 }
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    // Crawlers fetch the metadata files and the generated preview images with
+    // no session, so those paths have to stay outside the auth gate above.
+    // Otherwise every unfurl of a shared invite link gets a 307 to `/` where
+    // the card should be, and the preview quietly disappears.
+    //
+    // Static media belongs outside the gate for the same reason: the landing
+    // page is what logged-out visitors see, so its demo video would be
+    // redirected to `/` and the phone would sit there empty. Keep the video
+    // extensions in step with anything added under `public/`.
+    "/((?!_next/static|_next/image|api/og|opengraph-image|twitter-image|icon|apple-icon|favicon.ico|robots.txt|sitemap.xml|manifest.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|mp4|webm)$).*)",
   ],
 };

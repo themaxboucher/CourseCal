@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CalendarCheck2 } from "lucide-react";
+import { ScheduleFilled } from "@/components/icons";
 
 interface UploadSuccessDialogProps {
   show: boolean;
@@ -49,7 +49,7 @@ export default function UploadSuccessDialog({
       >
         <DialogHeader className="flex flex-col items-center gap-6">
           <div className="flex items-center justify-center rounded-full bg-red-500 border-2 border-red-300 dark:border-red-800 text-white p-3.5">
-            <CalendarCheck2 className="size-6" />
+            <ScheduleFilled className="size-6" />
           </div>
           <DialogTitle>Schedule imported successfully!</DialogTitle>
         </DialogHeader>

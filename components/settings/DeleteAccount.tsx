@@ -8,7 +8,6 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogCancel,
-  AlertDialogAction,
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
 import { Form } from "../ui/form";
@@ -18,7 +17,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { TextField } from "../form-fields/TextField";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
-import { CircleCheck, CircleX, LoaderCircle, Trash } from "lucide-react";
+import {
+  CheckCircleFilled,
+  CloseCircleFilled,
+  DeleteFilled,
+  Loading3Filled,
+} from "@/components/icons";
 import { deleteAccount } from "@/lib/actions/users.actions";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -46,7 +50,7 @@ export default function DeleteAccount() {
       await deleteAccount();
 
       toast("Account deleted", {
-        icon: <CircleCheck className="text-green-500 size-5" />,
+        icon: <CheckCircleFilled className="text-green-500 size-5" />,
       });
       router.push("/");
       // Drop the cached RSC payload so the landing page is not rendered from
@@ -54,7 +58,7 @@ export default function DeleteAccount() {
       router.refresh();
     } catch {
       toast("Error deleting account", {
-        icon: <CircleX className="text-destructive size-5" />,
+        icon: <CloseCircleFilled className="text-destructive size-5" />,
       });
     } finally {
       setLoading(false);
@@ -65,7 +69,7 @@ export default function DeleteAccount() {
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button variant="destructive">
-          <Trash className="size-4" />
+          <DeleteFilled className="size-4" />
           Delete Account
         </Button>
       </AlertDialogTrigger>
@@ -94,14 +98,14 @@ export default function DeleteAccount() {
 
             <AlertDialogFooter>
               <AlertDialogCancel type="button">Cancel</AlertDialogCancel>
-              <AlertDialogAction
+              <Button
                 type="submit"
                 className="bg-destructive hover:bg-destructive/90"
                 disabled={!deleteForm.formState.isValid}
               >
-                {loading && <LoaderCircle className="h-4 w-4 animate-spin" />}
+                {loading && <Loading3Filled className="h-4 w-4 animate-spin" />}
                 {!loading && "Delete account"}
-              </AlertDialogAction>
+              </Button>
             </AlertDialogFooter>
           </form>
         </Form>

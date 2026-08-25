@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/drawer";
 import EventForm from "./EventForm";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { useEffect, useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import type { Tables } from "@/types/supabase";
 import type { AnyEvent } from "@/lib/utils/events";
 
@@ -41,22 +41,13 @@ export default function EventDialog({
   isGuest = false,
   onEventSaved,
 }: EventDialogProps) {
-  const [isMobile, setIsMobile] = useState(false);
+  const isMobile = useIsMobile();
 
-  useEffect(() => {
-    const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 768); // md breakpoint is 768px
-    };
-
-    // Check on mount
-    checkScreenSize();
-
-    // Add event listener
-    window.addEventListener("resize", checkScreenSize);
-
-    // Cleanup
-    return () => window.removeEventListener("resize", checkScreenSize);
-  }, []);
+  // Nothing renders until the viewport is measured, so the drawer never has to
+  // replace an already-painted dialog.
+  if (isMobile === undefined) {
+    return null;
+  }
 
   // Render drawer for mobile
   if (isMobile) {
