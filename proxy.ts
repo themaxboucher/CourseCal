@@ -102,8 +102,8 @@ export const config = {
     // the card should be, and the preview quietly disappears.
     //
     // Static media belongs outside the gate for the same reason: the landing
-    // page is what logged-out visitors see, so its demo video would be
-    // redirected to `/` and the phone would sit there empty. Keep the video
+    // page is what logged-out visitors see, so an asset it references would be
+    // redirected to `/` and the page would render without it. Keep these
     // extensions in step with anything added under `public/`.
     "/((?!_next/static|_next/image|api/og|opengraph-image|twitter-image|icon|apple-icon|favicon.ico|robots.txt|sitemap.xml|manifest.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|mp4|webm)$).*)",
   ],
