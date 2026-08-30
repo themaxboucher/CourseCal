@@ -154,7 +154,7 @@ export default function HeroSchedule() {
     // upload prompt the hero stacks above the card on a phone.
     <div className="relative mx-auto w-full max-w-[calc(36rem*0.75)] pt-10">
       {selectedIds.length === 0 && <TapHint />}
-      <div className="w-full bg-card border-[1.5px] shadow-lg md:shadow-xl p-4 md:px-8 md:pb-8 md:pt-6 max-w-xl mx-auto rounded-3xl [zoom:0.75]">
+      <div className="w-full bg-card border-2 shadow-lg md:shadow-xl p-4 md:px-8 md:pb-8 md:pt-6 max-w-xl mx-auto rounded-3xl [zoom:0.75]">
         <div className="w-full">
           <div className="mb-4">
             <div className="-mx-1 flex px-1 md:gap-2">
