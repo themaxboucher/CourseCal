@@ -1,7 +1,7 @@
 import { renderOgCard } from "@/lib/og/card";
 import { OG_IMAGE_SIZE } from "@/lib/site";
 
-export const alt = "Your CourseCal week, with your friends' classes on top";
+export const alt = "Compare your UCalgary schedule with friends on CourseCal";
 export const size = OG_IMAGE_SIZE;
 export const contentType = "image/png";
 
@@ -13,7 +13,6 @@ export const contentType = "image/png";
 export default async function Image() {
   return renderOgCard({
     eyebrow: "For UCalgary students",
-    headline: "Your whole week on one screen.",
-    body: "Upload your schedule, add your friends, and find out when everyone’s free.",
+    headline: "Compare your schedule with friends",
   });
 }

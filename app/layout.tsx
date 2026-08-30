@@ -69,7 +69,7 @@ const sfProSoft = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} — Compare UCalgary schedules with friends`,
+    default: `${SITE_NAME} - Compare your schedule with friends`,
     // Every nested page sets a bare page name; this is what turns it into a
     // tab title that still says whose app it is.
     template: `%s · ${SITE_NAME}`,
@@ -93,7 +93,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: SITE_NAME,
-    title: `${SITE_NAME} — Compare UCalgary schedules with friends`,
+    title: `${SITE_NAME} - Compare your schedule with friends`,
     description: SITE_DESCRIPTION,
     url: "/",
     locale: "en_CA",
@@ -101,7 +101,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE_NAME} — Compare UCalgary schedules with friends`,
+    title: `${SITE_NAME} - Compare your schedule with friends`,
     description: SITE_DESCRIPTION,
   },
   icons: {

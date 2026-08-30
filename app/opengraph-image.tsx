@@ -1,5 +1,5 @@
 import { renderOgCard } from "@/lib/og/card";
-import { OG_IMAGE_SIZE, SITE_DESCRIPTION } from "@/lib/site";
+import { OG_IMAGE_SIZE } from "@/lib/site";
 
 export const alt =
   "CourseCal — compare your University of Calgary schedule with friends";
@@ -15,9 +15,6 @@ export const contentType = "image/png";
 export default async function Image() {
   return renderOgCard({
     eyebrow: "For UCalgary students",
-    // Word for word the landing-page hero. Straight apostrophe on purpose:
-    // satori leaves a visible gap after U+2019 that the browser does not.
-    headline: "Find time when everyone's free.",
-    body: SITE_DESCRIPTION,
+    headline: "Compare your schedule with friends",
   });
 }

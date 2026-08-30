@@ -1,6 +1,5 @@
 import type { NextRequest } from "next/server";
 import { renderOgCard } from "@/lib/og/card";
-import { INVITE_DESCRIPTION } from "@/lib/site";
 import { sanitizeReferral } from "@/lib/utils/referral";
 
 // The card reads its fonts and mascot off disk, which the edge runtime cannot do.
@@ -26,8 +25,7 @@ export async function GET(request: NextRequest) {
   return renderOgCard({
     eyebrow: "Invite from a friend",
     headline: referral
-      ? `@${referral} wants to compare schedules.`
-      : "Compare schedules with your friends.",
-    body: INVITE_DESCRIPTION,
+      ? `@${referral} wants to compare schedules`
+      : "Compare your schedule with friends",
   });
 }
