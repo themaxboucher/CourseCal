@@ -137,7 +137,11 @@ export default function EventBlock({
             className={cn(
               "opacity-75 flex justify-start items-center gap-0.5 flex-wrap tracking-tight",
               roomy && "md:text-xs",
-              isWallpaper ? "text-[5.5px]" : "text-xxs",
+              isWallpaper
+                ? "text-[5.5px]"
+                : compact
+                  ? "text-[8px] leading-tight sm:text-[10px]"
+                  : "text-xxs",
             )}
           >
             {isWallpaper && eventInfo === "location" ? (
