@@ -72,6 +72,23 @@ export const eventColors = {
     "bg-zinc-500 border-zinc-300 dark:bg-zinc-700 dark:border-zinc-900 text-white hover:bg-zinc-500 hover:dark:bg-zinc-700",
 };
 
+/**
+ * Wallpaper palettes are picked by the wallpaper's own theme prop, not the
+ * `dark` variant, so a dark wallpaper renders with dark colors even while the
+ * app around it is in light mode (and vice versa).
+ */
+export const darkEventColors = {
+  red: "bg-red-700 border-red-900 text-white",
+  orange: "bg-orange-700 border-orange-900 text-white",
+  yellow: "bg-yellow-500 border-yellow-700 text-white",
+  green: "bg-green-700 border-green-900 text-white",
+  cyan: "bg-cyan-700 border-cyan-900 text-white",
+  blue: "bg-blue-700 border-blue-900 text-white",
+  purple: "bg-purple-700 border-purple-900 text-white",
+  pink: "bg-pink-700 border-pink-900 text-white",
+  fallback: "bg-zinc-700 border-zinc-900 text-white",
+};
+
 export const lightEventColors = {
   red: "bg-red-500 border-red-300 text-white hover:bg-red-500",
   orange: "bg-orange-500 border-orange-300 text-white hover:bg-orange-500",

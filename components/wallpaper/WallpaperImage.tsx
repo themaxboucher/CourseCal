@@ -25,7 +25,10 @@ interface WallpaperImageProps {
 const MIN_CELL_HEIGHT = 24;
 const TARGET_MAX_TOTAL_HEIGHT = 352; // Target max total height for the schedule grid
 
-// Light theme CSS variables from globals.css
+// Theme CSS variables from globals.css, inlined on the exported node. The
+// wallpaper's theme is a prop, so it can't lean on the `dark` class the way the
+// rest of the app does — without these, a dark wallpaper built while the app is
+// in light mode picks up the light grid and text colors.
 const lightThemeStyles: React.CSSProperties = {
   "--background": "oklch(1 0 0)",
   "--foreground": "oklch(0.141 0.005 285.823)",
@@ -58,6 +61,40 @@ const lightThemeStyles: React.CSSProperties = {
   "--sidebar-accent-foreground": "oklch(0.21 0.006 285.885)",
   "--sidebar-border": "oklch(0.92 0.004 286.32)",
   "--sidebar-ring": "oklch(0.705 0.015 286.067)",
+} as React.CSSProperties;
+
+const darkThemeStyles: React.CSSProperties = {
+  "--background": "oklch(0.141 0.005 285.823)",
+  "--foreground": "oklch(0.985 0 0)",
+  "--card": "oklch(0.21 0.006 285.885)",
+  "--card-foreground": "oklch(0.985 0 0)",
+  "--popover": "oklch(0.21 0.006 285.885)",
+  "--popover-foreground": "oklch(0.985 0 0)",
+  "--primary": "oklch(63.7% 0.237 25.331)",
+  "--primary-foreground": "oklch(0.21 0.006 285.885)",
+  "--secondary": "oklch(0.274 0.006 286.033)",
+  "--secondary-foreground": "oklch(0.985 0 0)",
+  "--muted": "oklch(0.274 0.006 286.033)",
+  "--muted-foreground": "oklch(0.705 0.015 286.067)",
+  "--accent": "oklch(0.274 0.006 286.033)",
+  "--accent-foreground": "oklch(0.985 0 0)",
+  "--destructive": "oklch(0.704 0.191 22.216)",
+  "--border": "oklch(1 0 0 / 10%)",
+  "--input": "oklch(1 0 0 / 15%)",
+  "--ring": "oklch(68.5% 0.169 237.323)",
+  "--chart-1": "oklch(0.488 0.243 264.376)",
+  "--chart-2": "oklch(0.696 0.17 162.48)",
+  "--chart-3": "oklch(0.769 0.188 70.08)",
+  "--chart-4": "oklch(0.627 0.265 303.9)",
+  "--chart-5": "oklch(0.645 0.246 16.439)",
+  "--sidebar": "oklch(0.21 0.006 285.885)",
+  "--sidebar-foreground": "oklch(0.985 0 0)",
+  "--sidebar-primary": "oklch(0.488 0.243 264.376)",
+  "--sidebar-primary-foreground": "oklch(0.985 0 0)",
+  "--sidebar-accent": "oklch(0.274 0.006 286.033)",
+  "--sidebar-accent-foreground": "oklch(0.985 0 0)",
+  "--sidebar-border": "oklch(1 0 0 / 10%)",
+  "--sidebar-ring": "oklch(0.552 0.016 285.938)",
 } as React.CSSProperties;
 
 export default function WallpaperImage({
@@ -113,7 +150,7 @@ export default function WallpaperImage({
   return (
     <div
       className="w-full mx-auto"
-      style={theme === "light" ? lightThemeStyles : undefined}
+      style={theme === "dark" ? darkThemeStyles : lightThemeStyles}
     >
       {/* Schedule grid */}
       <div

@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { formatTime } from "@/lib/utils/schedule";
-import { eventColors, lightEventColors } from "@/constants";
+import { darkEventColors, eventColors, lightEventColors } from "@/constants";
 import { AlertFilled } from "@/components/icons";
 import {
   type AnyEvent,
@@ -41,8 +41,14 @@ export default function EventBlock({
   const color = getEventColor(event);
   const courseTitle = getCourseTitle(event);
 
-  const colorPalette =
-    isWallpaper && wallpaperTheme === "light" ? lightEventColors : eventColors;
+  // A wallpaper carries its own theme, so its palette can't come from the
+  // `dark` variant — that follows the app's theme, which would leave a dark
+  // wallpaper wearing light colors whenever the app is in light mode.
+  const colorPalette = isWallpaper
+    ? wallpaperTheme === "dark"
+      ? darkEventColors
+      : lightEventColors
+    : eventColors;
   const colorClass = color
     ? (colorPalette[color as keyof typeof colorPalette] ??
       colorPalette.fallback)
