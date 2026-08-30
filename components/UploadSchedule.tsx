@@ -226,7 +226,7 @@ export default function UploadSchedule({
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           className={cn(
-            "hidden lg:flex group w-full h-54 border-2 border-input border-dashed hover:border-ring hover:bg-ring/5 ring-white rounded-xl flex-col items-center justify-center gap-4 text-muted-foreground transition-colors cursor-pointer",
+            "hidden lg:flex group w-full h-54 border-2 border-input border-dashed hover:border-ring hover:bg-ring/5 hover:text-ring ring-white rounded-2xl flex-col items-center justify-center gap-4 text-muted-foreground transition-colors cursor-pointer",
             isDragging && "border-ring bg-ring/5",
           )}
         >
@@ -244,7 +244,7 @@ export default function UploadSchedule({
                   <div className="flex flex-col items-center gap-2">
                     <Button>Choose file</Button>
                     {isMac !== null && (
-                      <span className="text-xs text-muted-foreground/70">
+                      <span className="text-xs text-muted-foreground/70 group-hover:text-ring/70">
                         or paste with {isMac ? "⌘V" : "Ctrl+V"}
                       </span>
                     )}
