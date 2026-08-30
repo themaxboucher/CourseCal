@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { preload } from "react-dom";
 import { CheckFilled } from "@/components/icons";
 import UserAvatar from "@/components/UserAvatar";
 import type { AvailabilityPerson } from "@/components/schedule/AvailabilityLayer";
@@ -76,6 +77,17 @@ function TapHint() {
  * of which belongs on a demo control.
  */
 export default function HeroSchedule() {
+  // Radix's `AvatarImage` renders nothing until a `new Image()` it creates
+  // itself reports a load, so the friends' photos are invisible to the
+  // preload scanner and only get requested once this component hydrates —
+  // late enough that the rail visibly pops from initials to faces. Preloading
+  // during render puts a `<link rel="preload">` in the server HTML, so the
+  // bytes are on their way while the bundle is still downloading and Radix
+  // finds them already cached.
+  for (const friend of heroFriends) {
+    preload(friend.avatar, { as: "image", fetchPriority: "high" });
+  }
+
   // Nothing starts selected: the grid opens as the visitor's own week, and the
   // shared free time is what their first tap buys them.
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
