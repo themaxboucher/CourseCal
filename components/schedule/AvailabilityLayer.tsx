@@ -14,6 +14,8 @@ interface AvailabilityLayerProps {
   pxPerHour: number;
   /** Participant id to display name. */
   people: Record<string, AvailabilityPerson>;
+  /** Phone scale at any viewport — see `EventBlock.compact`. */
+  compact?: boolean;
 }
 
 /** Fine diagonal stripes: the "somebody is in class here" mark. */
@@ -89,16 +91,18 @@ function FreeSlot({
   top,
   height,
   people,
+  compact,
 }: {
   slot: SharedSlot;
   top: number;
   height: number;
   people: Record<string, AvailabilityPerson>;
+  compact: boolean;
 }) {
   // Budgeted against the desktop type, the taller of the two: each row of text
   // costs 16px, the row gap 2-4px, and the padding 10px tight or 32px roomy.
   // Mobile type is smaller, so anything clearing these clears there too.
-  const roomy = height >= 92;
+  const roomy = height >= 92 && !compact;
   const showTimeRow = height >= 46;
 
   return (
@@ -119,22 +123,30 @@ function FreeSlot({
       title={describeSlot(slot, people)}
     >
       <div className={cn("w-full space-y-0.5", roomy && "md:space-y-1")}>
-        <div className="text-xxs font-bold md:text-xs">
+        <div className={cn("text-xxs font-bold", !compact && "md:text-xs")}>
           {durationLabel(slot.endMin - slot.startMin)}
         </div>
 
         {showTimeRow && (
-          <div className="flex flex-wrap items-center justify-start gap-0.5 text-xxxs tracking-tight opacity-75 md:text-xs">
+          <div
+            className={cn(
+              "flex flex-wrap items-center justify-start gap-0.5 text-xxxs tracking-tight opacity-75",
+              !compact && "md:text-xs",
+            )}
+          >
             {/* The full "9:00 AM - 10:00 AM" only wraps at that width, and it
                 breaks after the dash, so the phone gets the short form a size
-                down — matching the grid's own time gutter. */}
-            <span className="whitespace-nowrap md:hidden">
+                down — matching the grid's own time gutter. A compact grid is a
+                phone-width column whatever the viewport, so it takes the same. */}
+            <span className={cn("whitespace-nowrap", !compact && "md:hidden")}>
               {minutesToLabel(slot.startMin, false)}–
               {minutesToLabel(slot.endMin, false)}
             </span>
-            <span className="hidden md:inline">
-              {minutesToLabel(slot.startMin)} - {minutesToLabel(slot.endMin)}
-            </span>
+            {!compact && (
+              <span className="hidden md:inline">
+                {minutesToLabel(slot.startMin)} - {minutesToLabel(slot.endMin)}
+              </span>
+            )}
           </div>
         )}
       </div>
@@ -184,6 +196,7 @@ export default function AvailabilityLayer({
   startHour,
   pxPerHour,
   people,
+  compact = false,
 }: AvailabilityLayerProps) {
   const positionOf = (interval: { startMin: number; endMin: number }) => ({
     top: (interval.startMin - startHour * 60) * (pxPerHour / 60),
@@ -214,6 +227,7 @@ export default function AvailabilityLayer({
             top={top}
             height={height}
             people={people}
+            compact={compact}
           />
         );
       })}

@@ -76,10 +76,12 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // Capturing the referral here rather than in the page means it survives
-  // without JavaScript and is written before anything renders. A Server
-  // Component cannot set a cookie during render; middleware can.
-  if (pathname === "/join") {
+  // Invite links are the landing page with a `?ref=`; `/join` is the old shape,
+  // redirected in `next.config.ts` and still handled here in case a stale link
+  // reaches middleware first. Capturing the referral here rather than in the
+  // page means it survives without JavaScript and is written before anything
+  // renders — a Server Component cannot set a cookie during render.
+  if (pathname === "/" || pathname === "/join") {
     const referral = sanitizeReferral(request.nextUrl.searchParams.get("ref"));
     if (referral) {
       supabaseResponse.cookies.set(REFERRAL_COOKIE, referral, {
@@ -102,8 +104,8 @@ export const config = {
     // the card should be, and the preview quietly disappears.
     //
     // Static media belongs outside the gate for the same reason: the landing
-    // page is what logged-out visitors see, so its demo video would be
-    // redirected to `/` and the phone would sit there empty. Keep the video
+    // page is what logged-out visitors see, so an asset it references would be
+    // redirected to `/` and the page would render without it. Keep these
     // extensions in step with anything added under `public/`.
     "/((?!_next/static|_next/image|api/og|opengraph-image|twitter-image|icon|apple-icon|favicon.ico|robots.txt|sitemap.xml|manifest.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|mp4|webm)$).*)",
   ],

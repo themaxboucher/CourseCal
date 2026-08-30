@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { formatTime } from "@/lib/utils/schedule";
-import { eventColors, lightEventColors } from "@/constants";
+import { darkEventColors, eventColors, lightEventColors } from "@/constants";
 import { AlertFilled } from "@/components/icons";
 import {
   type AnyEvent,
@@ -24,6 +24,15 @@ interface EventProps {
   event: AnyEvent;
   style?: React.CSSProperties;
   className?: string;
+  /**
+   * Keeps the phone treatment — small type, tight padding, no class-type label
+   * — whatever the viewport. Every upgrade below is gated on viewport width,
+   * but what a block actually has to fit is its column: the landing page hero
+   * gives the grid half the page, so its columns are as narrow as a phone's
+   * while the viewport is still `md`, and desktop type there costs the course
+   * code its room and wraps a 50-minute block's times out of its own height.
+   */
+  compact?: boolean;
   isWallpaper?: boolean;
   wallpaperTheme?: ThemeType;
   eventInfo?: EventInfoType;
@@ -33,6 +42,7 @@ export default function EventBlock({
   event,
   style,
   className,
+  compact = false,
   isWallpaper = false,
   wallpaperTheme = "light",
   eventInfo = "location",
@@ -40,9 +50,18 @@ export default function EventBlock({
 }: EventProps) {
   const color = getEventColor(event);
   const courseTitle = getCourseTitle(event);
+  // A wallpaper's blocks are a few pixels tall and already carry their own
+  // scale, so it reaches the same place from the other direction.
+  const roomy = !isWallpaper && !compact;
 
-  const colorPalette =
-    isWallpaper && wallpaperTheme === "light" ? lightEventColors : eventColors;
+  // A wallpaper carries its own theme, so its palette can't come from the
+  // `dark` variant — that follows the app's theme, which would leave a dark
+  // wallpaper wearing light colors whenever the app is in light mode.
+  const colorPalette = isWallpaper
+    ? wallpaperTheme === "dark"
+      ? darkEventColors
+      : lightEventColors
+    : eventColors;
   const colorClass = color
     ? (colorPalette[color as keyof typeof colorPalette] ??
       colorPalette.fallback)
@@ -53,7 +72,8 @@ export default function EventBlock({
       className={cn(
         "absolute left-0 right-0 mx-[0.08rem] border-[1.5px]",
         "text-xs font-medium z-20 relative",
-        !isWallpaper && "md:mx-0.5 sm:p-2",
+        !isWallpaper && "md:mx-0.5",
+        roomy && "sm:p-2",
         isWallpaper
           ? "rounded-sm px-[0.15rem] py-[0.1rem] my-[0.1rem]"
           : "rounded-lg p-[0.3rem]",
@@ -76,7 +96,7 @@ export default function EventBlock({
         <div
           className={cn(
             "w-full",
-            !isWallpaper && "md:space-y-1",
+            roomy && "md:space-y-1",
             isWallpaper ? "space-y-0" : "space-y-0.5",
           )}
         >
@@ -85,7 +105,7 @@ export default function EventBlock({
               <div
                 className={cn(
                   "font-bold truncate",
-                  !isWallpaper && "md:text-xs",
+                  roomy && "md:text-xs",
                   isWallpaper ? "text-[6px]" : "text-xxs",
                 )}
               >
@@ -95,14 +115,14 @@ export default function EventBlock({
               <div
                 className={cn(
                   "font-bold truncate",
-                  !isWallpaper && "md:text-xs",
+                  roomy && "md:text-xs",
                   isWallpaper ? "text-[6px]" : "text-xxs",
                 )}
               >
                 {courseTitle}
               </div>
             )}
-            {event.type && (
+            {event.type && !compact && (
               <div
                 className={cn(
                   "hidden text-xxs opacity-75 capitalize",
@@ -116,8 +136,12 @@ export default function EventBlock({
           <div
             className={cn(
               "opacity-75 flex justify-start items-center gap-0.5 flex-wrap tracking-tight",
-              !isWallpaper && "md:text-xs",
-              isWallpaper ? "text-[5.5px]" : "text-xxs",
+              roomy && "md:text-xs",
+              isWallpaper
+                ? "text-[5.5px]"
+                : compact
+                  ? "text-[8px] leading-tight sm:text-[10px]"
+                  : "text-xxs",
             )}
           >
             {isWallpaper && eventInfo === "location" ? (

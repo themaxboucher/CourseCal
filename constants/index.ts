@@ -10,6 +10,7 @@ import {
   SnowflakeFilled,
   SunFilled,
 } from "@/components/icons";
+import type { ScheduleEvent } from "@/lib/utils/availability";
 
 export const icons = {
   Loading3Filled,
@@ -70,6 +71,23 @@ export const eventColors = {
   pink: "bg-pink-500 border-pink-300 dark:bg-pink-700 dark:border-pink-900 text-white hover:bg-pink-500 hover:dark:bg-pink-700",
   fallback:
     "bg-zinc-500 border-zinc-300 dark:bg-zinc-700 dark:border-zinc-900 text-white hover:bg-zinc-500 hover:dark:bg-zinc-700",
+};
+
+/**
+ * Wallpaper palettes are picked by the wallpaper's own theme prop, not the
+ * `dark` variant, so a dark wallpaper renders with dark colors even while the
+ * app around it is in light mode (and vice versa).
+ */
+export const darkEventColors = {
+  red: "bg-red-700 border-red-900 text-white",
+  orange: "bg-orange-700 border-orange-900 text-white",
+  yellow: "bg-yellow-500 border-yellow-700 text-white",
+  green: "bg-green-700 border-green-900 text-white",
+  cyan: "bg-cyan-700 border-cyan-900 text-white",
+  blue: "bg-blue-700 border-blue-900 text-white",
+  purple: "bg-purple-700 border-purple-900 text-white",
+  pink: "bg-pink-700 border-pink-900 text-white",
+  fallback: "bg-zinc-700 border-zinc-900 text-white",
 };
 
 export const lightEventColors = {
@@ -185,72 +203,46 @@ export const backgroundOptions: {
   },
 ];
 
-// Mock display events used on the marketing/landing page. These follow the
-// `LocalEvent` shape (snake_case, no joined course object) so they render
-// the same way as guest-mode IndexedDB events.
-export const displayEvents1: LocalEvent[] = [
+/**
+ * The landing page hero's schedule: one week of classes presented as the
+ * visitor's own, and three friends to overlay it with.
+ *
+ * Every class here sits between 09:00 and 15:50 so `getTimeRange` resolves to
+ * its 9am–3pm floor — the grid stays exactly seven rows tall whichever friends
+ * are selected, instead of growing a row and shifting the hero as somebody is
+ * toggled on. Each event carries a course code and a type, so `EventBlock`'s
+ * missing-data badge never fires on a schedule nobody can fix.
+ */
+export const heroUserEvents: LocalEvent[] = [
   {
-    course_code: "ENDG 319",
-    course: null,
-    type: "lecture",
-    days: ["monday", "wednesday", "friday"],
-    start_time: "08:00",
-    end_time: "08:50",
-    location: "Engineering Block C 70",
-    course_color: "blue",
-    term: null,
-    recurrence: "weekly",
-  },
-  {
-    course_code: "ENDG 319",
-    course: null,
-    type: "tutorial",
-    days: ["tuesday"],
-    start_time: "08:00",
-    end_time: "09:15",
-    location: "Science Theatres 143",
-    course_color: "blue",
-    term: null,
-    recurrence: "weekly",
-  },
-  {
-    course_code: "ECON 201",
-    course: null,
-    type: "tutorial",
-    days: ["thursday"],
-    start_time: "08:30",
-    end_time: "09:20",
-    location: "Social Science 113",
-    course_color: "red",
-    term: null,
-    recurrence: "weekly",
-  },
-  {
-    course_code: "ENEL 353",
+    id: 1,
+    course_code: "CPSC 331",
     course: null,
     type: "lecture",
     days: ["monday", "wednesday", "friday"],
     start_time: "09:00",
     end_time: "09:50",
     location: "Science Theatres 141",
-    course_color: "yellow",
+    course_color: "blue",
     term: null,
     recurrence: "weekly",
   },
   {
-    course_code: "ECON 201",
+    id: 2,
+    course_code: "MATH 267",
     course: null,
     type: "lecture",
     days: ["tuesday", "thursday"],
-    start_time: "09:30",
-    end_time: "10:45",
+    start_time: "10:00",
+    end_time: "11:15",
     location: "Murray Fraser Hall 162",
-    course_color: "red",
+    course_color: "pink",
     term: null,
     recurrence: "weekly",
   },
   {
-    course_code: "ENSF 337",
+    id: 3,
+    course_code: "ENGG 233",
     course: null,
     type: "lecture",
     days: ["monday", "wednesday", "friday"],
@@ -262,198 +254,159 @@ export const displayEvents1: LocalEvent[] = [
     recurrence: "weekly",
   },
   {
-    course_code: "ENEL 353",
+    id: 4,
+    course_code: "CPSC 355",
+    course: null,
+    type: "lab",
+    days: ["wednesday"],
+    start_time: "13:00",
+    end_time: "14:50",
+    location: "Math Sciences 521",
+    course_color: "yellow",
+    term: null,
+    recurrence: "weekly",
+  },
+  {
+    id: 5,
+    course_code: "CPSC 331",
     course: null,
     type: "tutorial",
-    days: ["monday"],
-    start_time: "12:00",
-    end_time: "12:50",
-    location: "Science Theatres 145",
-    course_color: "yellow",
-    term: null,
-    recurrence: "weekly",
-  },
-  {
-    course_code: "ENSF 300",
-    course: null,
-    type: "lecture",
-    days: ["tuesday", "thursday"],
-    start_time: "12:30",
-    end_time: "13:45",
-    location: "Info & Communication Tech 319",
-    course_color: "green",
-    term: null,
-    recurrence: "weekly",
-  },
-  {
-    course_code: "ENSF 300",
-    course: null,
-    type: "lab",
-    days: ["monday"],
-    start_time: "15:00",
-    end_time: "16:50",
-    location: "Info & Communication Tech 319",
-    course_color: "green",
-    term: null,
-    recurrence: "weekly",
-  },
-  {
-    course_code: "ENEL 353",
-    course: null,
-    type: "lab",
-    days: ["tuesday"],
-    start_time: "15:30",
-    end_time: "18:15",
-    location: "Engineering Block G 130",
-    course_color: "yellow",
-    term: null,
-    recurrence: "weekly",
-  },
-  {
-    course_code: "ENSF 337",
-    course: null,
-    type: "lab",
     days: ["friday"],
-    start_time: "15:00",
-    end_time: "16:50",
-    location: "Off-Site Web-Based",
-    course_color: "orange",
+    start_time: "14:00",
+    end_time: "14:50",
+    location: "Math Sciences 337",
+    course_color: "blue",
     term: null,
-    recurrence: "weekly",
+    recurrence: "biweekly",
   },
 ];
 
-export const displayEvents2: LocalEvent[] = [
+/**
+ * A friend in the hero rail. Their classes are only ever read by
+ * `buildAvailability` — the grid draws them as anonymous busy blocks, never as
+ * course blocks — so they carry the times and nothing else. Inventing a
+ * location and a colour for something that cannot render would only be data to
+ * keep in step later.
+ */
+export interface HeroFriend {
+  /**
+   * Stable and arbitrary. Only reaches `getColorFromId`, which colours the
+   * initial shown if the avatar below ever fails to load.
+   */
+  id: string;
+  name: string;
+  /** Served straight from `public/`. */
+  avatar: string;
+  events: ScheduleEvent[];
+}
+
+export const heroFriends: HeroFriend[] = [
   {
-    course_code: "PHYS 259",
-    course: null,
-    type: "lecture",
-    days: ["wednesday"],
-    start_time: "08:00",
-    end_time: "10:45",
-    location: "Engineering Block G 24",
-    course_color: "cyan",
-    term: null,
-    recurrence: "weekly",
+    id: "hero-rex",
+    name: "Rex",
+    avatar: "/profile-photos/rex.png",
+    events: [
+      {
+        days: ["monday", "wednesday", "friday"],
+        start_time: "10:00",
+        end_time: "10:50",
+        recurrence: "weekly",
+      },
+      {
+        days: ["tuesday", "thursday"],
+        start_time: "09:00",
+        end_time: "10:15",
+        recurrence: "weekly",
+      },
+      {
+        days: ["tuesday"],
+        start_time: "13:00",
+        end_time: "14:50",
+        recurrence: "weekly",
+      },
+      {
+        days: ["monday", "wednesday", "friday"],
+        start_time: "13:00",
+        end_time: "13:50",
+        recurrence: "weekly",
+      },
+      {
+        days: ["thursday"],
+        start_time: "11:30",
+        end_time: "12:20",
+        recurrence: "weekly",
+      },
+    ],
   },
   {
-    course_code: "ENGG 212",
-    course: null,
-    type: "lecture",
-    days: ["thursday"],
-    start_time: "08:00",
-    end_time: "10:45",
-    location: "Info & Communication Tech 114",
-    course_color: "red",
-    term: null,
-    recurrence: "weekly",
+    id: "hero-cera",
+    name: "Cera",
+    avatar: "/profile-photos/cera.png",
+    events: [
+      {
+        days: ["monday", "wednesday", "friday"],
+        start_time: "09:00",
+        end_time: "09:50",
+        recurrence: "weekly",
+      },
+      {
+        days: ["tuesday", "thursday"],
+        start_time: "12:30",
+        end_time: "13:45",
+        recurrence: "weekly",
+      },
+      {
+        days: ["friday"],
+        start_time: "10:00",
+        end_time: "11:50",
+        recurrence: "weekly",
+      },
+      // The one biweekly on a friend, and the only source of a *visible*
+      // tentative slot: a biweekly class is left out of the busy blocks, so
+      // the time it covers renders as a striped sky gap rather than as grey.
+      {
+        days: ["monday"],
+        start_time: "13:00",
+        end_time: "14:50",
+        recurrence: "biweekly",
+      },
+      {
+        days: ["wednesday"],
+        start_time: "14:00",
+        end_time: "14:50",
+        recurrence: "weekly",
+      },
+    ],
   },
   {
-    course_code: "ENGG 200",
-    course: null,
-    type: "lecture",
-    days: ["friday"],
-    start_time: "08:00",
-    end_time: "10:45",
-    location: "Info & Communication Tech 217",
-    course_color: "blue",
-    term: null,
-    recurrence: "weekly",
-  },
-  {
-    course_code: "ENGG 200",
-    course: null,
-    type: "lab",
-    days: ["monday", "tuesday"],
-    start_time: "09:00",
-    end_time: "09:50",
-    location: "Info & Communication Tech 217",
-    course_color: "blue",
-    term: null,
-    recurrence: "weekly",
-  },
-  {
-    course_code: "MATH 277",
-    course: null,
-    type: "lab",
-    days: ["monday"],
-    start_time: "10:00",
-    end_time: "10:50",
-    location: "Info & Communication Tech 114",
-    course_color: "pink",
-    term: null,
-    recurrence: "weekly",
-  },
-  {
-    course_code: "PHYS 259",
-    course: null,
-    type: "lab",
-    days: ["tuesday"],
-    start_time: "10:00",
-    end_time: "10:50",
-    location: "Engineering Block G 03",
-    course_color: "cyan",
-    term: null,
-    recurrence: "weekly",
-  },
-  {
-    course_code: "ENGG 202",
-    course: null,
-    type: "lecture",
-    days: ["wednesday"],
-    start_time: "11:00",
-    end_time: "12:50",
-    location: "Info & Communication Tech 217",
-    course_color: "purple",
-    term: null,
-    recurrence: "weekly",
-  },
-  {
-    course_code: "MATH 277",
-    course: null,
-    type: "lecture",
-    days: ["friday"],
-    start_time: "11:00",
-    end_time: "12:50",
-    location: "Engineering Block G 24",
-    course_color: "pink",
-    term: null,
-    recurrence: "weekly",
-  },
-  {
-    course_code: "ENGG 202",
-    course: null,
-    type: "tutorial",
-    days: ["monday", "tuesday"],
-    start_time: "12:00",
-    end_time: "12:45",
-    location: "Engineering Block E 123",
-    course_color: "purple",
-    term: null,
-    recurrence: "weekly",
-  },
-  {
-    course_code: "ENGG 200",
-    course: null,
-    type: "seminar",
-    days: ["tuesday"],
-    start_time: "14:00",
-    end_time: "14:50",
-    location: "Engineering Block G 24",
-    course_color: "blue",
-    term: null,
-    recurrence: "weekly",
-  },
-  {
-    course_code: "ENGG 212",
-    course: null,
-    type: "lab",
-    days: ["monday", "tuesday"],
-    start_time: "15:00",
-    end_time: "15:45",
-    location: "Engineering Block G 224",
-    course_color: "red",
-    term: null,
-    recurrence: "weekly",
+    id: "hero-terry",
+    name: "Terry",
+    avatar: "/profile-photos/terry.png",
+    events: [
+      {
+        days: ["tuesday", "thursday"],
+        start_time: "09:30",
+        end_time: "10:45",
+        recurrence: "weekly",
+      },
+      {
+        days: ["monday"],
+        start_time: "11:00",
+        end_time: "12:50",
+        recurrence: "weekly",
+      },
+      {
+        days: ["wednesday"],
+        start_time: "09:00",
+        end_time: "11:50",
+        recurrence: "weekly",
+      },
+      {
+        days: ["monday", "wednesday", "friday"],
+        start_time: "15:00",
+        end_time: "15:50",
+        recurrence: "weekly",
+      },
+    ],
   },
 ];

@@ -9,28 +9,18 @@ const nextConfig: NextConfig = {
     "/api/og/invite": ["./lib/og/**"],
     "/opengraph-image": ["./lib/og/**"],
   },
+  // Invites used to point at a bespoke `/join` page. They are now just the
+  // landing page, but the old links are already sitting in group chats, so
+  // send them on with their `?ref=` intact (Next forwards the query when the
+  // destination has none of its own). Unfurlers follow the redirect, so those
+  // links keep their invite card too.
+  async redirects() {
+    return [{ source: "/join", destination: "/", permanent: true }];
+  },
   experimental: {
     serverActions: {
       bodySizeLimit: "10mb",
     },
-  },
-  // Files under `public/` are served no-cache by default, so the demo video and
-  // its poster get refetched on every visit. Their names are not content
-  // hashed, so keep the browser copy to a day and let the CDN hold it — a
-  // re-encode is picked up within a day rather than being pinned for a year.
-  async headers() {
-    return [
-      {
-        source: "/video/:path*",
-        headers: [
-          {
-            key: "Cache-Control",
-            value:
-              "public, max-age=86400, s-maxage=31536000, stale-while-revalidate=604800",
-          },
-        ],
-      },
-    ];
   },
 };
 

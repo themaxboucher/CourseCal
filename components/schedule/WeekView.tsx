@@ -43,6 +43,14 @@ interface WeekViewProps {
    * otherwise a friend's 8am lab lands above the top of the grid.
    */
   rangeEvents?: { start_time: string; end_time: string }[];
+  /** Renders the grid's blocks at their phone scale — see `EventBlock.compact`. */
+  compact?: boolean;
+  /**
+   * Drops the hour gutter down the left. The blocks carry their own times, so
+   * a grid that is only there to be read at a glance — the landing page hero —
+   * can spend that width on the day columns instead.
+   */
+  hideTimeColumn?: boolean;
 }
 
 export default function WeekView({
@@ -54,6 +62,8 @@ export default function WeekView({
   freeSlots,
   people = {},
   rangeEvents,
+  compact = false,
+  hideTimeColumn = false,
 }: WeekViewProps) {
   // Calculate dynamic time range based on events
   const { startHour, endHour } = useMemo(
@@ -96,10 +106,14 @@ export default function WeekView({
     <div className="w-full max-w-[75rem] mx-auto">
       {/* Schedule grid */}
       <div
-        className="grid grid-cols-6"
-        style={{ gridTemplateColumns: "auto 1fr 1fr 1fr 1fr 1fr" }}
+        className={cn("grid", hideTimeColumn ? "grid-cols-5" : "grid-cols-6")}
+        style={
+          hideTimeColumn
+            ? undefined
+            : { gridTemplateColumns: "auto 1fr 1fr 1fr 1fr 1fr" }
+        }
       >
-        <div />
+        {!hideTimeColumn && <div />}
         {/* Time column header */}
         {weekdays.map((day, index) => (
           <div
@@ -114,26 +128,30 @@ export default function WeekView({
           </div>
         ))}
         {/* Time column */}
-        <div className="hidden md:block">
-          {timeSlots.map((time) => (
-            <div
-              key={time}
-              className="h-16 px-2 py-1 text-xs font-medium text-muted-foreground text-right text-nowrap tracking-tight"
-            >
-              {time}
+        {!hideTimeColumn && (
+          <>
+            <div className="hidden md:block">
+              {timeSlots.map((time) => (
+                <div
+                  key={time}
+                  className="h-16 px-2 py-1 text-xs font-medium text-muted-foreground text-right text-nowrap tracking-tight"
+                >
+                  {time}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-        <div className="md:hidden">
-          {timeSlotsShort.map((time) => (
-            <div
-              key={time}
-              className="h-16 py-0.5 pr-0.5 text-xxxs font-medium text-muted-foreground text-right text-nowrap tracking-tight"
-            >
-              {time}
+            <div className="md:hidden">
+              {timeSlotsShort.map((time) => (
+                <div
+                  key={time}
+                  className="h-16 py-0.5 pr-0.5 text-xxxs font-medium text-muted-foreground text-right text-nowrap tracking-tight"
+                >
+                  {time}
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </>
+        )}
         {/* Day columns */}
         {weekdays.map((day, dayIndex) => (
           <div
@@ -162,6 +180,7 @@ export default function WeekView({
                 startHour={startHour}
                 pxPerHour={64}
                 people={people}
+                compact={compact}
               />
             )}
 
@@ -193,6 +212,7 @@ export default function WeekView({
                 <EventBlock
                   key={event.id}
                   event={event}
+                  compact={compact}
                   style={{
                     position: "absolute",
                     ...withBlockGap(top, height),

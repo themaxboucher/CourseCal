@@ -1,6 +1,5 @@
 import type { NextRequest } from "next/server";
 import { renderOgCard } from "@/lib/og/card";
-import { INVITE_DESCRIPTION } from "@/lib/site";
 import { sanitizeReferral } from "@/lib/utils/referral";
 
 // The card reads its fonts and mascot off disk, which the edge runtime cannot do.
@@ -10,7 +9,7 @@ export const runtime = "nodejs";
  * The card behind a shared invite link.
  *
  * It lives in a route handler rather than a `opengraph-image` file because the
- * referral rides in the query string (`/join?ref=…`) and the file convention is
+ * referral rides in the query string (`/?ref=…`) and the file convention is
  * only handed route params.
  *
  * The username is taken from the URL and never looked up. Two reasons: `users`
@@ -26,8 +25,7 @@ export async function GET(request: NextRequest) {
   return renderOgCard({
     eyebrow: "Invite from a friend",
     headline: referral
-      ? `@${referral} wants to compare schedules.`
-      : "Compare schedules with your friends.",
-    body: INVITE_DESCRIPTION,
+      ? `@${referral} wants to compare schedules`
+      : "Compare your schedule with friends",
   });
 }

@@ -254,14 +254,12 @@ export default function Schedule({
 
   return (
     <>
-      {isLoggedIn && (
-        <FriendRail
-          friends={railFriends}
-          isLoggedIn={isLoggedIn}
-          onToggle={toggleFriend}
-          termLabel={`${selectedTerm.season} ${selectedTerm.year}`}
-        />
-      )}
+      <FriendRail
+        friends={railFriends}
+        isLoggedIn={isLoggedIn}
+        onToggle={toggleFriend}
+        termLabel={`${selectedTerm.season} ${selectedTerm.year}`}
+      />
 
       <div className="flex items-center justify-between pb-4">
         {isLoggedIn && (

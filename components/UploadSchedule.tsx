@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   analyzeScheduleImage,
   type ScheduleAnalysisResult,
@@ -37,8 +37,15 @@ export default function UploadSchedule({
   const [result, setResult] = useState<ScheduleAnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  // `null` until the first client render, so the paste hint never flashes the
+  // wrong modifier key on hydration.
+  const [isMac, setIsMac] = useState<boolean | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    setIsMac(/Mac/.test(navigator.userAgent));
+  }, []);
 
   const clearFileInput = () => {
     if (fileInputRef.current) {
@@ -104,9 +111,9 @@ export default function UploadSchedule({
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // Shared by all three input paths: the file picker, drag and drop, and paste.
+  const processFile = (file: File) => {
+    if (isLoading) return;
 
     if (!file.type.startsWith("image/")) {
       setResult({ success: false, error: "Please select an image file" });
@@ -116,12 +123,53 @@ export default function UploadSchedule({
 
     const reader = new FileReader();
     reader.onload = () => {
-      const base64 = reader.result as string;
-
       setResult(null);
-      analyze(base64);
+      analyze(reader.result as string);
     };
     reader.readAsDataURL(file);
+  };
+
+  // Lets the window-level paste listener reach the latest `processFile` without
+  // resubscribing on every render.
+  const processFileRef = useRef(processFile);
+  useEffect(() => {
+    processFileRef.current = processFile;
+  });
+
+  useEffect(() => {
+    const handlePaste = (e: ClipboardEvent) => {
+      // Paste only fires on the focused editable element, so the listener has to
+      // sit on `window` for Cmd+V to work anywhere on the page — which means
+      // stepping aside when the user is genuinely typing somewhere.
+      const target = e.target as HTMLElement | null;
+      if (
+        target?.isContentEditable ||
+        ["INPUT", "TEXTAREA"].includes(target?.tagName ?? "")
+      ) {
+        return;
+      }
+
+      // A screenshot on the clipboard arrives as a `file` item, the same `File`
+      // the picker and drop handler produce.
+      const item = Array.from(e.clipboardData?.items ?? []).find(
+        (i) => i.kind === "file" && i.type.startsWith("image/"),
+      );
+      if (!item) return;
+
+      const file = item.getAsFile();
+      if (!file) return;
+
+      e.preventDefault();
+      processFileRef.current(file);
+    };
+
+    window.addEventListener("paste", handlePaste);
+    return () => window.removeEventListener("paste", handlePaste);
+  }, []);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) processFile(file);
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -147,20 +195,7 @@ export default function UploadSchedule({
     setIsDragging(false);
 
     const file = e.dataTransfer.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      setResult({ success: false, error: "Please select an image file" });
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64 = reader.result as string;
-      setResult(null);
-      analyze(base64);
-    };
-    reader.readAsDataURL(file);
+    if (file) processFile(file);
   };
 
   return (
@@ -191,7 +226,7 @@ export default function UploadSchedule({
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           className={cn(
-            "hidden lg:flex group w-full h-54 border-2 border-input border-dashed hover:border-ring hover:bg-ring/5 ring-white rounded-xl flex-col items-center justify-center gap-4 text-muted-foreground transition-colors cursor-pointer",
+            "hidden lg:flex group w-full h-54 border-2 border-input border-dashed hover:border-ring hover:bg-ring/5 hover:text-ring ring-white rounded-2xl flex-col items-center justify-center gap-4 text-muted-foreground transition-colors cursor-pointer",
             isDragging && "border-ring bg-ring/5",
           )}
         >
@@ -206,7 +241,14 @@ export default function UploadSchedule({
               ) : (
                 <div className="flex flex-col items-center justify-center gap-4">
                   <span>Upload a screenshot of your schedule</span>
-                  <Button>Choose file</Button>
+                  <div className="flex flex-col items-center gap-2">
+                    <Button>Choose file</Button>
+                    {isMac !== null && (
+                      <span className="text-xs text-muted-foreground/70 group-hover:text-ring/70">
+                        or paste with {isMac ? "⌘V" : "Ctrl+V"}
+                      </span>
+                    )}
+                  </div>
                 </div>
               )}
             </>
