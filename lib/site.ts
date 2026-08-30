@@ -15,7 +15,7 @@ export const SITE_NAME = "CourseCal";
 export const SITE_DESCRIPTION =
   "Easily compare your University of Calgary schedule with friends and find time when everyone’s free.";
 
-/** Second line of the invite card, and the description on `/join`. */
+/** Second line of the invite card, and the description on an invite link. */
 export const INVITE_DESCRIPTION =
   "Upload your UCalgary schedule, add your friends, and CourseCal shows when everyone’s free.";
 

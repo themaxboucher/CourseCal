@@ -1,13 +1,81 @@
+import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { LandingNavbar } from "@/components/landing-page/LandingNavbar";
 import { Footer } from "@/components/landing-page/Footer";
 import UploadSchedule from "@/components/UploadSchedule";
 import { TextAnimate } from "@/components/ui/text-animate";
 import AnimatedContent from "@/components/ui/AnimatedContent";
 import HeroSchedule from "@/components/landing-page/HeroSchedule";
+import { getLoggedInUser } from "@/lib/actions/users.actions";
+import { INVITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
+import { sanitizeReferral } from "@/lib/utils/referral";
 
 export const dynamic = "force-dynamic";
 
-export default async function Home() {
+interface HomeProps {
+  searchParams: Promise<{ ref?: string }>;
+}
+
+/**
+ * Invite links are just the landing page with a `?ref=`, so the unfurl has to
+ * live here. An invite is pasted into iMessage, Instagram and Discord far more
+ * often than it is opened cold, so the card is most of the pitch: with a `ref`
+ * it says who sent it, without one the page keeps the plain site metadata from
+ * the root layout.
+ *
+ * The `ref` is echoed straight from the URL into the title and the card — see
+ * `app/api/og/invite/route.tsx` for why that is safe and why the display name
+ * behind it is not. The canonical stays the bare `/` the layout sets, so the
+ * invites do not read as a thousand thin copies of the landing page.
+ */
+export async function generateMetadata({
+  searchParams,
+}: HomeProps): Promise<Metadata> {
+  const referral = sanitizeReferral((await searchParams).ref);
+  if (!referral) return {};
+
+  const title = `@${referral} invited you to ${SITE_NAME}`;
+  const image = `/api/og/invite?ref=${encodeURIComponent(referral)}`;
+
+  return {
+    title: { absolute: title },
+    description: INVITE_DESCRIPTION,
+    openGraph: {
+      type: "website",
+      siteName: SITE_NAME,
+      title,
+      description: INVITE_DESCRIPTION,
+      url: "/",
+      locale: "en_CA",
+      images: [{ url: image, width: 1200, height: 630, alt: title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: INVITE_DESCRIPTION,
+      images: [{ url: image, alt: title }],
+    },
+  };
+}
+
+export default async function Home({ searchParams }: HomeProps) {
+  const referral = sanitizeReferral((await searchParams).ref);
+
+  // `proxy.ts` has already written the referral to a cookie by the time this
+  // renders, so a logged-out visitor just gets the landing page and picks the
+  // referrer back up during onboarding. Somebody who is already signed in has
+  // no use for the pitch — the useful destination is whoever shared the link.
+  if (referral) {
+    const user = await getLoggedInUser();
+    if (user) {
+      redirect(
+        user.has_completed_onboarding
+          ? `/u/${referral}`
+          : "/onboarding/profile",
+      );
+    }
+  }
+
   return (
     <>
       <LandingNavbar />

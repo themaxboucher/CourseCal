@@ -12,7 +12,7 @@ export default function InviteLink({ username }: { username: string }) {
   const [url] = useState(() =>
     typeof window === "undefined"
       ? ""
-      : `${window.location.origin}/join?ref=${username}`,
+      : `${window.location.origin}/?ref=${username}`,
   );
 
   const canShare =

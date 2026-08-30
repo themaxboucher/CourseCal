@@ -9,7 +9,7 @@ export const runtime = "nodejs";
  * The card behind a shared invite link.
  *
  * It lives in a route handler rather than a `opengraph-image` file because the
- * referral rides in the query string (`/join?ref=…`) and the file convention is
+ * referral rides in the query string (`/?ref=…`) and the file convention is
  * only handed route params.
  *
  * The username is taken from the URL and never looked up. Two reasons: `users`

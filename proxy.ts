@@ -76,10 +76,12 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // Capturing the referral here rather than in the page means it survives
-  // without JavaScript and is written before anything renders. A Server
-  // Component cannot set a cookie during render; middleware can.
-  if (pathname === "/join") {
+  // Invite links are the landing page with a `?ref=`; `/join` is the old shape,
+  // redirected in `next.config.ts` and still handled here in case a stale link
+  // reaches middleware first. Capturing the referral here rather than in the
+  // page means it survives without JavaScript and is written before anything
+  // renders — a Server Component cannot set a cookie during render.
+  if (pathname === "/" || pathname === "/join") {
     const referral = sanitizeReferral(request.nextUrl.searchParams.get("ref"));
     if (referral) {
       supabaseResponse.cookies.set(REFERRAL_COOKIE, referral, {
