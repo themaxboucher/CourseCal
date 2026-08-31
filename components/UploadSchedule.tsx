@@ -227,12 +227,17 @@ export default function UploadSchedule({
           onDrop={handleDrop}
           className={cn(
             "hidden lg:flex group w-full h-54 border-2 border-input border-dashed hover:border-ring hover:bg-ring/5 hover:text-ring ring-white rounded-2xl flex-col items-center justify-center gap-4 text-muted-foreground transition-colors cursor-pointer",
-            isDragging && "border-ring bg-ring/5",
+            isDragging && "border-ring bg-ring/5 text-ring",
           )}
         >
           {!isLoading ? (
             <>
-              <div className="flex items-center justify-center rounded-2xl bg-muted/50 group-hover:bg-ring/5 group-hover:text-ring p-3">
+              <div
+                className={cn(
+                  "flex items-center justify-center rounded-2xl bg-muted/50 group-hover:bg-ring/5 group-hover:text-ring p-3",
+                  isDragging && "bg-ring/5 text-ring",
+                )}
+              >
                 <CalendarAddFilled className="size-6" />
               </div>
 
