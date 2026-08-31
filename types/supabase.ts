@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -79,6 +79,48 @@ export type Database = {
           title?: string
         }
         Relationships: []
+      }
+      email_notifications: {
+        Row: {
+          created_at: string
+          friendship_id: number | null
+          id: number
+          provider_id: string | null
+          recipient: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          friendship_id?: number | null
+          id?: number
+          provider_id?: string | null
+          recipient: string
+          type: string
+        }
+        Update: {
+          created_at?: string
+          friendship_id?: number | null
+          id?: number
+          provider_id?: string | null
+          recipient?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_notifications_friendship_fkey"
+            columns: ["friendship_id"]
+            isOneToOne: false
+            referencedRelation: "friendships"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "email_notifications_recipient_fkey"
+            columns: ["recipient"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       events: {
         Row: {
@@ -221,6 +263,7 @@ export type Database = {
           avatar: string | null
           created_at: string
           email: string
+          email_friend_requests: boolean
           has_been_welcomed: boolean
           has_completed_onboarding: boolean
           id: string
@@ -233,6 +276,7 @@ export type Database = {
           avatar?: string | null
           created_at?: string
           email: string
+          email_friend_requests?: boolean
           has_been_welcomed?: boolean
           has_completed_onboarding?: boolean
           id: string
@@ -245,6 +289,7 @@ export type Database = {
           avatar?: string | null
           created_at?: string
           email?: string
+          email_friend_requests?: boolean
           has_been_welcomed?: boolean
           has_completed_onboarding?: boolean
           id?: string
