@@ -13,6 +13,8 @@ const PUBLIC_ROUTES = [
   "/verify",
   "/check-email",
   "/auth/confirm",
+  "/unsubscribe",
+  "/api/unsubscribe",
 ];
 
 export async function proxy(request: NextRequest) {

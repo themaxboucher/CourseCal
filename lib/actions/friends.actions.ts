@@ -1,6 +1,8 @@
 "use server";
 
+import { after } from "next/server";
 import { createClient } from "../supabase/server";
+import { sendFriendRequestEmail } from "../emails/friend-request";
 import {
   type FriendActionResult,
   type FriendRequest,
@@ -250,9 +252,11 @@ export async function sendFriendRequest(
   if (viewerId === addresseeId) return { ok: false, reason: "self" };
 
   const supabase = await createClient();
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from("friendships")
-    .insert({ requester: viewerId, addressee: addresseeId, status: "pending" });
+    .insert({ requester: viewerId, addressee: addresseeId, status: "pending" })
+    .select("id")
+    .single();
 
   if (error) {
     // 23505 is `friendships_pair_key` — a row for this pair already exists in
@@ -267,6 +271,19 @@ export async function sendFriendRequest(
     console.error(error);
     return { ok: false, reason: "unknown" };
   }
+
+  // Notifying the addressee is not part of sending the request. It runs after
+  // the response so the button stops spinning as soon as the row is committed,
+  // and it swallows its own failures so a bad API key or a rejected address
+  // cannot undo a friend request that already exists.
+  after(() =>
+    sendFriendRequestEmail({
+      friendshipId: data.id,
+      requesterId: viewerId,
+      addresseeId,
+    }),
+  );
+
   return { ok: true };
 }
 

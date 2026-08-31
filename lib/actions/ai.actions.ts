@@ -2,7 +2,7 @@
 
 import { OpenRouter } from "@openrouter/sdk";
 import { headers } from "next/headers";
-import { ratelimit } from "../ratelimit";
+import { aiRatelimit } from "../ratelimit";
 import { buildings } from "@/constants/buildings";
 
 const openrouter = new OpenRouter({
@@ -141,7 +141,7 @@ export async function analyzeScheduleImage(
     const headersList = await headers();
     const ip = headersList.get("x-forwarded-for") ?? "127.0.0.1";
 
-    const { success: withinLimit } = await ratelimit.limit(ip);
+    const { success: withinLimit } = await aiRatelimit.limit(ip);
 
     if (!withinLimit) {
       return {

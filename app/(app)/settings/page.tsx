@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Navbar } from "@/components/Navbar";
 import DeleteAccount from "@/components/settings/DeleteAccount";
+import EmailNotifications from "@/components/settings/EmailNotifications";
 import { LogoutButton } from "@/components/settings/LogoutButton";
 import UpdateProfileForm from "@/components/settings/UpdateProfileForm";
 import { ThemeSelector } from "@/components/ThemeSelector";
@@ -64,6 +65,10 @@ export default async function SettingsPage() {
           <div className="space-y-4">
             <h2 className="text-lg font-medium">Profile</h2>
             <UpdateProfileForm user={user} />
+          </div>
+          <div className="space-y-4">
+            <h2 className="text-lg font-medium">Email notifications</h2>
+            <EmailNotifications friendRequests={user.email_friend_requests} />
           </div>
           <div className="space-y-4">
             <h2 className="text-lg font-medium">Appearance</h2>

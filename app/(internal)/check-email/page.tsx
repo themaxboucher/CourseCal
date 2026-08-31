@@ -27,10 +27,10 @@ export default async function CheckEmailPage({
               ? "Almost there! Check your email."
               : "A login link has been sent to your email!"}
           </h1>
-          <p className="text-sm text-muted-foreground text-center">
+          <p className="text-sm text-muted-foreground text-center text-pretty">
             {isSignup
-              ? "Click the link in your email to finish creating your account."
-              : "Click the link in your email to login."}
+              ? "Click the link in your email to finish creating your account. It can take up to a minute for the email to arrive."
+              : "Click the link in your email to login. It can take up to a minute for the email to arrive."}
           </p>
         </div>
         <div className="hidden md:flex justify-center">
