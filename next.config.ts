@@ -17,6 +17,29 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [{ source: "/join", destination: "/", permanent: true }];
   },
+  // PostHog is served from our own origin so that content blockers, which key
+  // off the vendor's hostname, do not quietly drop every event. The two asset
+  // paths must stay above the catch-all: Next matches these in order, and a
+  // catch-all first would send the script bundles to the event endpoint.
+  async rewrites() {
+    return [
+      {
+        source: "/ingest/static/:path*",
+        destination: "https://us-assets.i.posthog.com/static/:path*",
+      },
+      {
+        source: "/ingest/array/:path*",
+        destination: "https://us-assets.i.posthog.com/array/:path*",
+      },
+      {
+        source: "/ingest/:path*",
+        destination: "https://us.i.posthog.com/:path*",
+      },
+    ];
+  },
+  // PostHog's ingestion API wants the trailing slash that Next would otherwise
+  // redirect away.
+  skipTrailingSlashRedirect: true,
   experimental: {
     serverActions: {
       bodySizeLimit: "10mb",
