@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { formatTime } from "@/lib/utils/schedule";
+import { formatTime, hatch } from "@/lib/utils/schedule";
 import { darkEventColors, eventColors, lightEventColors } from "@/constants";
 import { AlertFilled } from "@/components/icons";
 import {
@@ -9,16 +9,6 @@ import {
   getCourseTitle,
   getEventColor,
 } from "@/lib/utils/events";
-
-/**
- * Diagonal stripes for events that only happen every other week. Reads as
- * "not every week" without dimming the block, and matches the hatch
- * AvailabilityLayer draws over a friend's classes. The stripe width shrinks
- * on wallpapers, where blocks are only a few pixels tall.
- */
-function hatch(stripePx: number): string {
-  return `repeating-linear-gradient(45deg, transparent 0 ${stripePx}px, color-mix(in srgb, currentColor 25%, transparent) ${stripePx}px ${stripePx * 2}px)`;
-}
 
 interface EventProps {
   event: AnyEvent;

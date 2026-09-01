@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { formatTime, withBlockGap } from "@/lib/utils/schedule";
+import { formatTime, hatch, withBlockGap } from "@/lib/utils/schedule";
 import type { BusyBlock, SharedSlot } from "@/lib/utils/availability";
 
 export interface AvailabilityPerson {
@@ -19,10 +19,7 @@ interface AvailabilityLayerProps {
 }
 
 /** Fine diagonal stripes: the "somebody is in class here" mark. */
-const HATCH: React.CSSProperties = {
-  backgroundImage:
-    "repeating-linear-gradient(45deg, transparent 0 5px, color-mix(in srgb, currentColor 50%, transparent) 5px 10px)",
-};
+const HATCH: React.CSSProperties = { backgroundImage: hatch(5, 50) };
 
 /**
  * The same stripes at EventBlock's width, for a slot that is only free on
@@ -30,10 +27,7 @@ const HATCH: React.CSSProperties = {
  * the grid says "this one depends on the week" in one vocabulary, whether the
  * time reads as taken or as free.
  */
-const THICK_HATCH: React.CSSProperties = {
-  backgroundImage:
-    "repeating-linear-gradient(45deg, transparent 0 18px, color-mix(in srgb, currentColor 20%, transparent) 18px 36px)",
-};
+const THICK_HATCH: React.CSSProperties = { backgroundImage: hatch(18, 20) };
 
 function minutesToLabel(minutes: number, includeAmPm = true): string {
   const hours = Math.floor(minutes / 60);
@@ -63,8 +57,7 @@ function describeSlot(
 
   const span = `${minutesToLabel(slot.startMin)} – ${minutesToLabel(slot.endMin)}`;
   const length = durationLabel(slot.endMin - slot.startMin);
-  const caveat = slot.tentative ? " — only on the weeks nobody has class" : "";
-  return `Free ${span} · ${length}${list ? ` — ${list}` : ""}${caveat}`;
+  return `Free ${span} · ${length}${list ? ` — ${list}` : ""}`;
 }
 
 function describeBlock(
