@@ -237,6 +237,21 @@ export const generateTimeSlots = (
 export const BLOCK_GAP_CLASS = "[--block-gap:1px] md:[--block-gap:2px]";
 
 /**
+ * Diagonal stripes, the one hatch every striped block in the grid is drawn
+ * from: a biweekly class, a free slot that only exists on the weeks somebody's
+ * biweekly class is off, and a friend's busy stretch all wear it, and
+ * `ScheduleLegend` draws its swatches from it too, so a legend swatch cannot
+ * drift from the block it explains.
+ *
+ * Stripes are `currentColor`, so the mark takes the colour of whatever it is
+ * laid over. Width and strength are the caller's: a wallpaper's blocks are a
+ * few pixels tall and a legend swatch smaller still, so the stripes have to
+ * shrink with them to read as stripes at all.
+ */
+export const hatch = (stripePx: number, opacityPercent: number = 25): string =>
+  `repeating-linear-gradient(45deg, transparent 0 ${stripePx}px, color-mix(in srgb, currentColor ${opacityPercent}%, transparent) ${stripePx}px ${stripePx * 2}px)`;
+
+/**
  * Positions a block short of the time it occupies by the gap, half at either
  * end, so two touching blocks come to rest a full gap apart while each stays
  * centred on its own hour.

@@ -10,6 +10,7 @@ import { UploadDialog } from "@/components/UploadDialog";
 import WeekView from "./WeekView";
 import FriendRail, { type RailFriend } from "./FriendRail";
 import OverlapSettings from "./OverlapSettings";
+import ScheduleLegend from "./ScheduleLegend";
 import type { AvailabilityPerson } from "./AvailabilityLayer";
 import { WallpaperDialog } from "@/components/wallpaper/WallpaperDialog";
 import {
@@ -321,6 +322,7 @@ export default function Schedule({
               isGuest={!isLoggedIn}
               onEventSaved={refreshLocalEvents}
             />
+            <ScheduleLegend />
           </div>
         </div>
       </div>
