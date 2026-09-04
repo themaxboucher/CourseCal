@@ -23,7 +23,7 @@ export default async function UploadPage() {
         </p>
       </div>
       <div className="w-full max-w-[30rem] space-y-4">
-        <UploadSchedule source="onboarding" />
+        <UploadSchedule surface="onboarding" />
       </div>
     </div>
   );
