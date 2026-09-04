@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import ProfileCard from "@/components/friends/ProfileCard";
 import InviteLink from "./InviteLink";
 import { completeOnboarding } from "@/lib/actions/onboarding.actions";
+import { captureEvent } from "@/lib/posthog-client";
 import type {
   Profile,
   RelationshipStatus,
@@ -57,7 +58,19 @@ export default function FriendsStep({
   async function finish() {
     setFinishing(true);
     try {
-      await completeOnboarding();
+      // Only a saved flag is a finished onboarding: the action swallows its own
+      // failures, and the proxy sends anyone it did not save for straight back
+      // to this step.
+      const { ok } = await completeOnboarding();
+      if (ok) {
+        captureEvent("onboarding_completed", {
+          had_referrer: Boolean(referrer),
+          // Mirrors what this step already uses to choose between "Continue"
+          // and "Skip for now". How many were added is better counted from the
+          // `friend_request_sent` events the cards above emit.
+          added_anyone: addedCount > 0,
+        });
+      }
       router.push("/schedule");
     } catch (error) {
       console.error(error);

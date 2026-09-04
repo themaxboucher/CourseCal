@@ -13,6 +13,7 @@ import type { Profile } from "@/lib/utils/profiles";
 import { Button } from "../ui/button";
 import { AuthDialog } from "@/components/auth/AuthDialog";
 import { useState } from "react";
+import { captureEvent } from "@/lib/posthog-client";
 
 export interface RailFriend {
   profile: Profile;
@@ -89,7 +90,20 @@ export default function FriendRail({
           <button
             key={profile.id}
             type="button"
-            onClick={() => onToggle(profile.username)}
+            onClick={() => {
+              // Overlaying a friend is the point of the product, so this is
+              // what "active" means for retention. Only the turn-on counts —
+              // clearing one is not a comparison — and the tile is disabled
+              // without a schedule, so there is no empty overlay to record.
+              if (!selected) {
+                captureEvent("schedule_compared", {
+                  overlaid_count:
+                    friends.filter((friend) => friend.selected).length + 1,
+                  friend_count: friends.length,
+                });
+              }
+              onToggle(profile.username);
+            }}
             aria-pressed={selected}
             title={
               hasSchedule ? label : `${label} has no schedule for ${termLabel}`

@@ -19,7 +19,9 @@ export type AnalyticsEvent =
   | "schedule_upload_failed"
   | "user_signed_up"
   | "friend_request_sent"
-  | "friend_request_accepted";
+  | "friend_request_accepted"
+  | "schedule_compared"
+  | "onboarding_completed";
 
 function isLoaded() {
   return posthog.__loaded;
