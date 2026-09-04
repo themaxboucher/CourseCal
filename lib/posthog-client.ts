@@ -7,8 +7,30 @@ export type IdentifiedUser = Pick<
   "id" | "email" | "name" | "username" | "major"
 >;
 
+/**
+ * Every custom event the app sends.
+ *
+ * Spelled out here rather than left as a bare string at the call sites because
+ * a misspelled name fails silently: PostHog accepts the event and files it
+ * under a name no insight is watching.
+ */
+export type AnalyticsEvent = "schedule_uploaded" | "schedule_upload_failed";
+
 function isLoaded() {
   return posthog.__loaded;
+}
+
+/**
+ * Properties have to stay free of PII — no addresses, no names, nothing the
+ * user typed. That belongs on the person profile, which `identifyUser` sets.
+ */
+export function captureEvent(
+  event: AnalyticsEvent,
+  properties?: Record<string, string | number | boolean | null>,
+) {
+  if (!isLoaded()) return;
+
+  posthog.capture(event, properties);
 }
 
 export function identifyUser({ id, ...properties }: IdentifiedUser) {
