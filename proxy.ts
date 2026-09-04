@@ -100,15 +100,8 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Crawlers fetch the metadata files and the generated preview images with
-    // no session, so those paths have to stay outside the auth gate above.
-    // Otherwise every unfurl of a shared invite link gets a 307 to `/` where
-    // the card should be, and the preview quietly disappears.
-    //
-    // Static media belongs outside the gate for the same reason: the landing
-    // page is what logged-out visitors see, so an asset it references would be
-    // redirected to `/` and the page would render without it. Keep these
-    // extensions in step with anything added under `public/`.
-    "/((?!_next/static|_next/image|api/og|opengraph-image|twitter-image|icon|apple-icon|favicon.ico|robots.txt|sitemap.xml|manifest.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|mp4|webm)$).*)",
+    // These bypass the auth gate above: crawlers, static assets, and PostHog's
+    // tunnel are fetched without a session, so a 307 to `/` would break them.
+    "/((?!_next/static|_next/image|api/og|ingest|opengraph-image|twitter-image|icon|apple-icon|favicon.ico|robots.txt|sitemap.xml|manifest.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|mp4|webm)$).*)",
   ],
 };
