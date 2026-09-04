@@ -75,6 +75,7 @@ export default function FriendsStep({
           <ProfileCard
             profile={referrer}
             status={referrerStatus}
+            surface="onboarding"
             linkToProfile={false}
             onActionComplete={() => setAddedCount((count) => count + 1)}
           />
@@ -90,6 +91,7 @@ export default function FriendsStep({
                 key={suggestion.id}
                 profile={suggestion}
                 status={relationships[suggestion.id] ?? "none"}
+                surface="onboarding"
                 // Falls back to the card's own "@username · major" line when
                 // there is no shared course or mutual friend to point at.
                 subtitle={reasonFor(suggestion, termLabel) || undefined}
@@ -110,6 +112,7 @@ export default function FriendsStep({
                 key={profile.id}
                 profile={profile}
                 status={relationships[profile.id] ?? "none"}
+                surface="onboarding"
                 linkToProfile={false}
                 onActionComplete={() => setAddedCount((count) => count + 1)}
               />

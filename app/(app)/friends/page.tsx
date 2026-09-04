@@ -129,7 +129,12 @@ async function FriendsTab() {
   return (
     <div className="space-y-2">
       {friends.map((profile) => (
-        <ProfileCard key={profile.id} profile={profile} status="friends" />
+        <ProfileCard
+          key={profile.id}
+          profile={profile}
+          status="friends"
+          surface="friends_page"
+        />
       ))}
     </div>
   );
@@ -161,6 +166,7 @@ async function RequestsTab() {
               key={request.friendshipId}
               profile={request.profile}
               status="incoming_pending"
+              surface="friends_page"
             />
           ))}
         </div>
@@ -173,6 +179,7 @@ async function RequestsTab() {
               key={request.friendshipId}
               profile={request.profile}
               status="outgoing_pending"
+              surface="friends_page"
             />
           ))}
         </div>
@@ -217,6 +224,7 @@ async function DiscoverTab({
               key={profile.id}
               profile={profile}
               status={relationships[profile.id] ?? "none"}
+              surface="directory"
             />
           ))}
         </div>

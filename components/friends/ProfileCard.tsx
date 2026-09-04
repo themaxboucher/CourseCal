@@ -1,13 +1,15 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import UserAvatar from "../UserAvatar";
-import FriendButton from "./FriendButton";
+import FriendButton, { type FriendSurface } from "./FriendButton";
 import { cn } from "@/lib/utils";
 import type { Profile, RelationshipStatus } from "@/lib/utils/profiles";
 
 interface ProfileCardProps {
   profile: Profile;
   status: RelationshipStatus;
+  /** Passed straight to the card's `FriendButton`. */
+  surface: FriendSurface;
   subtitle?: ReactNode;
   linkToProfile?: boolean;
   onActionComplete?: (status: RelationshipStatus) => void;
@@ -16,6 +18,7 @@ interface ProfileCardProps {
 export default function ProfileCard({
   profile,
   status,
+  surface,
   subtitle,
   linkToProfile = true,
   onActionComplete,
@@ -66,6 +69,7 @@ export default function ProfileCard({
       <FriendButton
         userId={profile.id}
         status={status}
+        surface={surface}
         className="relative mr-2"
         onActionComplete={onActionComplete}
       />
