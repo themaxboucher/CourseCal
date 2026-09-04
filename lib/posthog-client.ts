@@ -18,6 +18,7 @@ export type AnalyticsEvent =
   | "schedule_uploaded"
   | "schedule_upload_failed"
   | "user_signed_up"
+  | "user_logged_in"
   | "friend_request_sent"
   | "friend_request_accepted"
   | "schedule_compared"

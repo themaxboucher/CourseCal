@@ -13,17 +13,8 @@ import {
 import { createEvents, getEvents } from "@/lib/actions/events.actions";
 import { getLoggedInUser } from "@/lib/actions/users.actions";
 import { localToDBEvents } from "@/lib/utils/upload";
-import { captureEvent, identifyUser } from "@/lib/posthog-client";
 
 const INVALID_LINK_MESSAGE = "Invalid login link. Please request a new one.";
-
-/**
- * How recent `users.created_at` has to be for this verification to count as a
- * signup rather than a login. Comfortably longer than the gap between the row
- * being created and the emailed link being opened, and far shorter than the
- * age of any returning user's row.
- */
-const NEW_ACCOUNT_WINDOW_MS = 10 * 60 * 1000;
 
 // Separate component that uses useSearchParams() - must be wrapped in Suspense
 // This is required in Next.js 15 to handle client-side rendering bailout properly
@@ -84,29 +75,6 @@ function VerifyContent() {
 
         // If indexeddb events don't exist and server events don't exist,
         // the user will have to upload their schedule during onboarding
-
-        // Identity is asserted here rather than left to the layout of the page
-        // we are about to redirect to, because the event below has to land on
-        // the person and not on the anonymous visitor who arrived.
-        const { id, email, name, username, major } = user;
-        identifyUser({ id, email, name, username, major });
-
-        // This page redeems signup and login links alike, and the token says
-        // nothing about which it was: the intent stayed behind on
-        // `/check-email`, and the link is often opened on a different device
-        // than it was requested from. The age of the row is the one signal
-        // that survives — a returning user's is days old at the very least.
-        const isNewAccount =
-          Date.now() - new Date(user.created_at).getTime() <
-          NEW_ACCOUNT_WINDOW_MS;
-        if (isNewAccount) {
-          // Separates the two entry paths on the signup itself: a schedule
-          // already in IndexedDB means they uploaded from the landing page
-          // before there was an account to attach it to.
-          captureEvent("user_signed_up", {
-            had_local_schedule: hasLocalEvents,
-          });
-        }
 
         setStatus("success");
 
