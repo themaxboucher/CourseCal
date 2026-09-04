@@ -18,22 +18,17 @@ import { createEvents } from "@/lib/actions/events.actions";
 import { markUserCompletedOnboarding } from "@/lib/actions/users.actions";
 import type { Tables } from "@/types/supabase";
 import { getRelevantTerm } from "@/lib/utils/schedule";
+import { captureEvent } from "@/lib/posthog-client";
+
+/** Where in the app this uploader is mounted. */
+export type UploadSurface = "landing" | "onboarding" | "dialog";
 
 interface UploadScheduleProps {
   term?: Tables<"terms"> | null;
-  /**
-   * True for the upload step inside onboarding. The friends step that follows
-   * is what completes onboarding, so this upload must not do it early —
-   * otherwise `proxy.ts` bounces the user out of `/onboarding/*` before they
-   * ever see it.
-   */
-  isOnboardingStep?: boolean;
+  surface: UploadSurface;
 }
 
-export default function UploadSchedule({
-  term,
-  isOnboardingStep = false,
-}: UploadScheduleProps) {
+export default function UploadSchedule({ term, surface }: UploadScheduleProps) {
   const [result, setResult] = useState<ScheduleAnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -62,6 +57,12 @@ export default function UploadSchedule({
       setResult(analysisResult);
 
       if (!analysisResult.success || !analysisResult.isSchedule) {
+        captureEvent("schedule_upload_failed", {
+          surface,
+          // A rejected screenshot and a failed call look the same to the user
+          // but mean opposite things: one is a bad upload, the other is us.
+          reason: analysisResult.success ? "not_a_schedule" : "analysis_failed",
+        });
         clearFileInput();
         return;
       }
@@ -87,7 +88,17 @@ export default function UploadSchedule({
         await saveLocalEvents(localEvents);
       }
 
-      if (isOnboardingStep) {
+      captureEvent("schedule_uploaded", {
+        surface,
+        is_authenticated: Boolean(user),
+        // A logged-out upload lives in IndexedDB until the account that claims
+        // it exists — `app/(internal)/verify/page.tsx` is what moves it.
+        persisted: user ? "db" : "local",
+        event_count: analysisResult.events.length,
+        term_id: effectiveTerm.id,
+      });
+
+      if (surface === "onboarding") {
         router.push("/onboarding/friends");
         return;
       }
@@ -101,6 +112,10 @@ export default function UploadSchedule({
       router.push("/schedule?uploadSuccess=true");
     } catch (error) {
       console.error("Failed to save schedule:", error);
+      captureEvent("schedule_upload_failed", {
+        surface,
+        reason: "save_failed",
+      });
       setResult({
         success: false,
         error: "Failed to save schedule. Please try again.",
@@ -116,6 +131,10 @@ export default function UploadSchedule({
     if (isLoading) return;
 
     if (!file.type.startsWith("image/")) {
+      captureEvent("schedule_upload_failed", {
+        surface,
+        reason: "not_an_image",
+      });
       setResult({ success: false, error: "Please select an image file" });
       clearFileInput();
       return;

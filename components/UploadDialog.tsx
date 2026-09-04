@@ -31,7 +31,7 @@ export function UploadDialog({ term }: UploadDialogProps) {
           </p>
         </div>
         <div className="w-full sm:min-w-[28rem] space-y-4">
-          <UploadSchedule term={term} />
+          <UploadSchedule term={term} surface="dialog" />
         </div>
       </DialogContent>
     </Dialog>

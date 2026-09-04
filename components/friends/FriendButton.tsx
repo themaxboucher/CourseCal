@@ -26,6 +26,14 @@ import {
   type FriendActionResult,
   type RelationshipStatus,
 } from "@/lib/utils/profiles";
+import { type AnalyticsEvent, captureEvent } from "@/lib/posthog-client";
+
+/** Where in the app a button is mounted. */
+export type FriendSurface =
+  | "onboarding"
+  | "directory"
+  | "profile"
+  | "friends_page";
 
 const COMPACT_BUTTON =
   "sm:h-8 sm:w-auto sm:gap-1.5 sm:px-3 sm:has-[>svg]:px-2.5";
@@ -33,6 +41,12 @@ const COMPACT_BUTTON =
 interface FriendButtonProps {
   userId: string;
   status: RelationshipStatus;
+  /**
+   * Reported with the analytics events, so an add made during onboarding — the
+   * one the activation funnel counts — can be told from one made later out of
+   * the directory or off somebody's profile.
+   */
+  surface: FriendSurface;
   className?: string;
   /** Fires after a successful change, so a parent can react to it. */
   onActionComplete?: (status: RelationshipStatus) => void;
@@ -41,6 +55,7 @@ interface FriendButtonProps {
 export default function FriendButton({
   userId,
   status: serverStatus,
+  surface,
   className,
   onActionComplete,
 }: FriendButtonProps) {
@@ -60,6 +75,7 @@ export default function FriendButton({
     action: () => Promise<FriendActionResult>,
     nextStatus: RelationshipStatus,
     successMessage: string,
+    event?: AnalyticsEvent,
   ) {
     setBusy(true);
     try {
@@ -72,6 +88,7 @@ export default function FriendButton({
         router.refresh();
         return;
       }
+      if (event) captureEvent(event, { surface });
       setOverride({ from: serverStatus, to: nextStatus });
       onActionComplete?.(nextStatus);
       toast(successMessage, {
@@ -105,6 +122,7 @@ export default function FriendButton({
                 () => acceptFriendRequest(userId),
                 "friends",
                 "You're now friends",
+                "friend_request_accepted",
               )
             }
           >
@@ -176,7 +194,12 @@ export default function FriendButton({
       className={cn(COMPACT_BUTTON, className)}
       disabled={busy}
       onClick={() =>
-        run(() => sendFriendRequest(userId), "outgoing_pending", "Request sent")
+        run(
+          () => sendFriendRequest(userId),
+          "outgoing_pending",
+          "Request sent",
+          "friend_request_sent",
+        )
       }
     >
       {busy ? spinner : <UserAddFilled className="size-5 sm:size-4" />}

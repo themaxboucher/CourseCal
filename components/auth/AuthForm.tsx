@@ -15,6 +15,7 @@ import {
   type AuthIntent,
   type SendMagicLinkResult,
 } from "@/lib/actions/auth.actions";
+import { captureEvent } from "@/lib/posthog-client";
 
 const EMAIL_DOMAIN = "@ucalgary.ca";
 
@@ -54,7 +55,11 @@ export default function AuthForm({ type }: { type: AuthIntent }) {
     },
   });
 
-  async function submit(email: string, intent: AuthIntent) {
+  async function submit(
+    email: string,
+    intent: AuthIntent,
+    viaLoginFallback = false,
+  ) {
     setLoading(true);
     setError(null);
     try {
@@ -62,6 +67,13 @@ export default function AuthForm({ type }: { type: AuthIntent }) {
       if (!result.ok) {
         setError(result.reason);
         return;
+      }
+      if (intent === "signup") {
+        captureEvent("user_signed_up", {
+          via_login_fallback: viaLoginFallback,
+        });
+      } else {
+        captureEvent("user_logged_in");
       }
       router.push(`/check-email?intent=${intent}`);
     } catch {
@@ -78,7 +90,7 @@ export default function AuthForm({ type }: { type: AuthIntent }) {
   // The login path refuses to create accounts, so offer the user a one-click
   // way to sign up with the address they already typed.
   async function signUpInstead() {
-    await submit(toEmail(form.getValues("username")), "signup");
+    await submit(toEmail(form.getValues("username")), "signup", true);
   }
 
   return (

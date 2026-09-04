@@ -108,7 +108,7 @@ export default async function Home({ searchParams }: HomeProps) {
                 distance={50}
                 delay={0.5}
               >
-                <UploadSchedule />
+                <UploadSchedule surface="landing" />
               </AnimatedContent>
             </div>
           </div>

@@ -101,7 +101,11 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
                 <Link href="/settings">Edit profile</Link>
               </Button>
             ) : (
-              <FriendButton userId={profile.id} status={status} />
+              <FriendButton
+                userId={profile.id}
+                status={status}
+                surface="profile"
+              />
             )}
           </div>
 
