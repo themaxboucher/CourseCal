@@ -4,6 +4,7 @@ import { logout } from "@/lib/actions/auth.actions";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { ExitFilled } from "@/components/icons";
+import { resetUser } from "@/lib/posthog-client";
 
 export function LogoutButton() {
   const router = useRouter();
@@ -11,6 +12,7 @@ export function LogoutButton() {
   const handleLogout = async () => {
     try {
       await logout();
+      resetUser();
       router.push("/");
     } catch (error) {
       console.error(error); // TODO: Remove this

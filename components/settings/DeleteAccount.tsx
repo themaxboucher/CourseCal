@@ -24,6 +24,7 @@ import {
   Loading3Filled,
 } from "@/components/icons";
 import { deleteAccount } from "@/lib/actions/users.actions";
+import { resetUser } from "@/lib/posthog-client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -48,6 +49,7 @@ export default function DeleteAccount() {
     setLoading(true);
     try {
       await deleteAccount();
+      resetUser();
 
       toast("Account deleted", {
         icon: <CheckCircleFilled className="text-green-500 size-5" />,
