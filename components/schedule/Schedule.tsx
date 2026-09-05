@@ -72,7 +72,8 @@ export default function Schedule({
   const [minDurationMin, setMinDurationMin] = useState(
     DEFAULT_MIN_SLOT_MINUTES,
   );
-  const [betweenClassesOnly, setBetweenClassesOnly] = useState(false);
+  const [betweenViewerClasses, setBetweenViewerClasses] = useState(false);
+  const [betweenOthersClasses, setBetweenOthersClasses] = useState(false);
 
   // Refresh local events from IndexedDB
   const refreshLocalEvents = useCallback(async () => {
@@ -209,7 +210,8 @@ export default function Schedule({
     return {
       ...buildAvailability(participants, {
         minDurationMin,
-        betweenClassesOnly,
+        betweenViewerClasses,
+        betweenOthersClasses,
         dayStartMin: startHour * 60,
         // `endHour` is the hour label of the last row, which covers the hour
         // after it — so the grid ends at endHour + 1.
@@ -224,7 +226,8 @@ export default function Schedule({
     selectedTermServerEvents,
     termFriendEvents,
     minDurationMin,
-    betweenClassesOnly,
+    betweenViewerClasses,
+    betweenOthersClasses,
   ]);
 
   const participantPeople = useMemo(() => {
@@ -280,8 +283,10 @@ export default function Schedule({
             <OverlapSettings
               minDurationMin={minDurationMin}
               onMinDurationChange={setMinDurationMin}
-              betweenClassesOnly={betweenClassesOnly}
-              onBetweenClassesOnlyChange={setBetweenClassesOnly}
+              betweenViewerClasses={betweenViewerClasses}
+              onBetweenViewerClassesChange={setBetweenViewerClasses}
+              betweenOthersClasses={betweenOthersClasses}
+              onBetweenOthersClassesChange={setBetweenOthersClasses}
             />
           )}
           {!hasEvents ? (
