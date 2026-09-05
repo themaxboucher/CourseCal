@@ -79,6 +79,8 @@ export default function WeekView({
     [startHour, endHour],
   );
 
+  const isComparing = Boolean(busyBlocks && freeSlots);
+
   // Group events by day of week using the days array
   const eventsByDay = events.reduce(
     (acc, event) => {
@@ -201,6 +203,7 @@ export default function WeekView({
                   events={events}
                   user={user}
                   isGuest={isGuest}
+                  dimmed={isComparing}
                   onEventsChange={onEventsChange}
                   style={{
                     position: "absolute",
@@ -213,6 +216,7 @@ export default function WeekView({
                   key={event.id}
                   event={event}
                   compact={compact}
+                  dimmed={isComparing}
                   style={{
                     position: "absolute",
                     ...withBlockGap(top, height),

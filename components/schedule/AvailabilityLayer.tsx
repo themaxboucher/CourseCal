@@ -104,7 +104,7 @@ function FreeSlot({
         // Matches EventBlock's footprint so a free slot lines up with the
         // classes above and below it rather than sitting a few pixels off.
         "absolute left-0 right-0 mx-[0.08rem] md:mx-0.5",
-        "z-0 overflow-hidden rounded-xl p-[0.3rem] text-xs font-medium text-sky-500",
+        "z-30 overflow-hidden rounded-lg p-[0.3rem] text-xs font-medium text-sky-500",
         roomy && "sm:p-2",
         "pointer-events-auto ring-2 ring-inset ring-ring/70",
         "bg-sky-200/90 dark:bg-sky-900/90",

@@ -17,6 +17,7 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import EventBlock from "./EventBlock";
 import type { Tables } from "@/types/supabase";
 import type { AnyEvent } from "@/lib/utils/events";
+import { cn } from "@/lib/utils";
 
 interface EventProps {
   event: AnyEvent;
@@ -24,6 +25,7 @@ interface EventProps {
   events?: AnyEvent[];
   user?: Tables<"users"> | null;
   isGuest?: boolean;
+  dimmed?: boolean;
   onEventsChange?: () => void;
 }
 
@@ -33,6 +35,7 @@ export default function Event({
   events = [],
   user,
   isGuest = false,
+  dimmed = false,
   onEventsChange,
 }: EventProps) {
   return (
@@ -44,7 +47,11 @@ export default function Event({
             <EventBlock
               event={event}
               style={style}
-              className="cursor-pointer hover:opacity-95 transition-opacity"
+              dimmed={dimmed}
+              className={cn(
+                "cursor-pointer transition-opacity",
+                dimmed ? "hover:opacity-100" : "hover:opacity-95",
+              )}
             />
           </PopoverTrigger>
           <PopoverContent
@@ -72,7 +79,11 @@ export default function Event({
             <EventBlock
               event={event}
               style={style}
-              className="cursor-pointer hover:opacity-95 transition-opacity"
+              dimmed={dimmed}
+              className={cn(
+                "cursor-pointer transition-opacity",
+                dimmed ? "hover:opacity-100" : "hover:opacity-95",
+              )}
             />
           </DrawerTrigger>
           <DrawerContent className="border-[1.5px]">
