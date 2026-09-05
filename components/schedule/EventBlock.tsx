@@ -14,15 +14,8 @@ interface EventProps {
   event: AnyEvent;
   style?: React.CSSProperties;
   className?: string;
-  /**
-   * Keeps the phone treatment — small type, tight padding, no class-type label
-   * — whatever the viewport. Every upgrade below is gated on viewport width,
-   * but what a block actually has to fit is its column: the landing page hero
-   * gives the grid half the page, so its columns are as narrow as a phone's
-   * while the viewport is still `md`, and desktop type there costs the course
-   * code its room and wraps a 50-minute block's times out of its own height.
-   */
   compact?: boolean;
+  dimmed?: boolean;
   isWallpaper?: boolean;
   wallpaperTheme?: ThemeType;
   eventInfo?: EventInfoType;
@@ -33,6 +26,7 @@ export default function EventBlock({
   style,
   className,
   compact = false,
+  dimmed = false,
   isWallpaper = false,
   wallpaperTheme = "light",
   eventInfo = "location",
@@ -64,6 +58,7 @@ export default function EventBlock({
         "text-xs font-medium z-20 relative",
         !isWallpaper && "md:mx-0.5",
         roomy && "sm:p-2",
+        dimmed && "saturate-0",
         isWallpaper
           ? "rounded-sm px-[0.15rem] py-[0.1rem] my-[0.1rem]"
           : "rounded-lg p-[0.3rem]",

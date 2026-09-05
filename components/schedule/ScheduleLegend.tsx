@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { InformationFilled } from "@/components/icons";
-import { Button } from "@/components/ui/button";
 import {
   HoverCard,
   HoverCardContent,
@@ -46,15 +44,18 @@ export default function ScheduleLegend() {
   return (
     <HoverCard open={open} onOpenChange={setOpen} openDelay={100}>
       <HoverCardTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-muted-foreground"
-          aria-label="What the striped blocks mean"
+        <button
+          type="button"
           onClick={() => setOpen(true)}
+          aria-label="What the striped blocks mean"
+          className={cn(
+            "size-9 md:size-8 shrink-0 rounded-md border-[1.5px] shadow-xs font-bold text-white text-lg cursor-help",
+            eventColors.fallback,
+          )}
+          style={{ backgroundImage: hatch(SWATCH_STRIPE_PX) }}
         >
-          <InformationFilled className="size-4" />
-        </Button>
+          ?
+        </button>
       </HoverCardTrigger>
 
       <HoverCardContent align="end" className="w-74 space-y-3">

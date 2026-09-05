@@ -80,10 +80,18 @@ export interface AvailabilityOptions {
   /** Free stretches shorter than this are not worth surfacing. */
   minDurationMin?: number;
   /**
-   * Restrict free time to the window where everyone is already on campus —
-   * between their first and last class of that day.
+   * Restrict free time to the window where the viewer is already on campus —
+   * between their own first and last class of that day.
    */
-  betweenClassesOnly?: boolean;
+  betweenViewerClasses?: boolean;
+  /**
+   * Restrict free time to the window where everyone *but* the viewer is
+   * already on campus — the overlap of their first-to-last-class spans.
+   *
+   * Independent of `betweenViewerClasses`: set both to ask for time that is
+   * between classes for the whole group.
+   */
+  betweenOthersClasses?: boolean;
   /** The grid's visible range. Blocks and slots are clipped to it. */
   dayStartMin: number;
   dayEndMin: number;
@@ -238,8 +246,8 @@ function onCampusSpan(day: DayIntervals): Interval | null {
  *
  * Blocks are clipped to the visible grid window so they can be positioned
  * directly. Free time is computed inside a possibly narrower window — see
- * `betweenClassesOnly` — which is why the two are derived separately rather
- * than one from the other.
+ * `betweenViewerClasses` and `betweenOthersClasses` — which is why the two are
+ * derived separately rather than one from the other.
  */
 export function buildAvailability(
   participants: Participant[],
@@ -247,7 +255,8 @@ export function buildAvailability(
 ): Availability {
   const {
     minDurationMin = DEFAULT_MIN_SLOT_MINUTES,
-    betweenClassesOnly = false,
+    betweenViewerClasses = false,
+    betweenOthersClasses = false,
     dayStartMin,
     dayEndMin,
     viewerId,
@@ -311,9 +320,26 @@ export function buildAvailability(
       });
     }
 
-    const freeWindow = betweenClassesOnly
-      ? intersectIntervals(sharedOnCampusWindow(perPerson), gridWindow)
-      : gridWindow;
+    // Each toggle narrows the window independently, so setting both asks for
+    // time that is between classes on both sides rather than either one.
+    let freeWindow = gridWindow;
+    if (betweenViewerClasses) {
+      const viewerDay = viewerId ? perPerson.get(viewerId) : undefined;
+      freeWindow = intersectIntervals(
+        freeWindow,
+        onCampusWindow(viewerDay ? [viewerDay] : []),
+      );
+    }
+    if (betweenOthersClasses) {
+      freeWindow = intersectIntervals(
+        freeWindow,
+        onCampusWindow(
+          [...perPerson]
+            .filter(([id]) => id !== viewerId)
+            .map(([, entry]) => entry),
+        ),
+      );
+    }
 
     // Everything nobody is definitely in class for. A biweekly class does not
     // take the time away, it only makes the answer depend on the week — so it
@@ -353,22 +379,24 @@ export function buildAvailability(
 }
 
 /**
- * The stretch where everyone with classes that day is already on campus.
+ * The stretch where every one of `days` is already on campus: the overlap of
+ * their first-class-to-last-class spans.
  *
- * People with no classes that day are skipped rather than treated as absent:
- * a friend with no Friday lecture is free all Friday, and should not wipe out
- * a gap that genuinely works for everyone else. When nobody has classes there
- * is no "between classes" to speak of, so the window is empty.
+ * A free day is not a day spent between classes — with no lecture to be early
+ * for or to stay back after, the time asks for a trip to campus like any other
+ * evening. So one classless day empties the window rather than being waved
+ * through as unconstrained, and so does an empty list: with nobody on campus
+ * there is no "between classes" to speak of.
  */
-function sharedOnCampusWindow(
-  perPerson: Map<string, DayIntervals>,
-): Interval[] {
+function onCampusWindow(days: DayIntervals[]): Interval[] {
+  if (days.length === 0) return [];
+
   const spans: Interval[] = [];
-  for (const day of perPerson.values()) {
+  for (const day of days) {
     const span = onCampusSpan(day);
-    if (span) spans.push(span);
+    if (!span) return [];
+    spans.push(span);
   }
-  if (spans.length === 0) return [];
 
   const startMin = Math.max(...spans.map((span) => span.startMin));
   const endMin = Math.min(...spans.map((span) => span.endMin));

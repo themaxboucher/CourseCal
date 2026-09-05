@@ -23,16 +23,20 @@ import { useState, useEffect } from "react";
 interface OverlapSettingsProps {
   minDurationMin: number;
   onMinDurationChange: (minutes: number) => void;
-  betweenClassesOnly: boolean;
-  onBetweenClassesOnlyChange: (value: boolean) => void;
+  betweenViewerClasses: boolean;
+  onBetweenViewerClassesChange: (value: boolean) => void;
+  betweenOthersClasses: boolean;
+  onBetweenOthersClassesChange: (value: boolean) => void;
 }
 
 /** What counts as a usable shared gap is the viewer's call, not ours. */
 export default function OverlapSettings({
   minDurationMin,
   onMinDurationChange,
-  betweenClassesOnly,
-  onBetweenClassesOnlyChange,
+  betweenViewerClasses,
+  onBetweenViewerClassesChange,
+  betweenOthersClasses,
+  onBetweenOthersClassesChange,
 }: OverlapSettingsProps) {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -75,15 +79,29 @@ export default function OverlapSettings({
 
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-1">
-          <Label htmlFor="between-classes">Between classes only</Label>
+          <Label htmlFor="between-your-classes">Between your classes</Label>
           <p className="text-xs text-muted-foreground">
-            Only count time while everyone is already on campus.
+            Only count time while you are already on campus.
           </p>
         </div>
         <Switch
-          id="between-classes"
-          checked={betweenClassesOnly}
-          onCheckedChange={onBetweenClassesOnlyChange}
+          id="between-your-classes"
+          checked={betweenViewerClasses}
+          onCheckedChange={onBetweenViewerClassesChange}
+        />
+      </div>
+
+      <div className="flex items-start justify-between gap-4">
+        <div className="space-y-1">
+          <Label htmlFor="between-their-classes">Between their classes</Label>
+          <p className="text-xs text-muted-foreground">
+            Only count time while everyone else is already on campus.
+          </p>
+        </div>
+        <Switch
+          id="between-their-classes"
+          checked={betweenOthersClasses}
+          onCheckedChange={onBetweenOthersClassesChange}
         />
       </div>
     </>

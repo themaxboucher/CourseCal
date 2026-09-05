@@ -11,6 +11,7 @@ import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import ShinyText from "./ui/ShinyText";
+import { WordRotate } from "./ui/word-rotate";
 import { getLoggedInUser } from "@/lib/actions/users.actions";
 import { getTerms } from "@/lib/actions/terms.actions";
 import { parsedToDBEvents, parsedToLocalEvents } from "@/lib/utils/upload";
@@ -22,6 +23,38 @@ import { captureEvent } from "@/lib/posthog-client";
 
 /** Where in the app this uploader is mounted. */
 export type UploadSurface = "landing" | "onboarding" | "dialog";
+
+/**
+ * Cycled while the AI reads the screenshot, roughly in the order the model
+ * works through the schedule. Module-level so the rotation interval isn't
+ * restarted on every render.
+ */
+const ANALYZING_PHRASES = [
+  "Analyzing schedule",
+  "Extracting classes",
+  "Identifying courses",
+  "Reading class times",
+  "Finding locations",
+  "Building your calendar",
+  "Making things pretty",
+];
+
+/** Rotating status text shown in place of the idle upload prompt. */
+function AnalyzingText() {
+  return (
+    <WordRotate
+      words={ANALYZING_PHRASES}
+      duration={3000}
+      motionProps={{
+        initial: { opacity: 0, y: -12 },
+        animate: { opacity: 1, y: 0 },
+        exit: { opacity: 0, y: 12 },
+        transition: { duration: 0.25, ease: "easeOut" },
+      }}
+      renderWord={(phrase) => <ShinyText text={phrase} speed={1.5} />}
+    />
+  );
+}
 
 interface UploadScheduleProps {
   term?: Tables<"terms"> | null;
@@ -279,7 +312,7 @@ export default function UploadSchedule({ term, surface }: UploadScheduleProps) {
           ) : (
             <>
               <Loading3Filled className="size-8 animate-spin text-primary" />
-              <ShinyText text="Analyzing schedule" speed={1.5} />
+              <AnalyzingText />
             </>
           )}
         </div>
@@ -298,7 +331,7 @@ export default function UploadSchedule({ term, surface }: UploadScheduleProps) {
         ) : (
           <div className="flex flex-col items-center justify-center gap-3 text-muted-foreground lg:hidden">
             <Loading3Filled className="size-6 text-primary animate-spin" />
-            <ShinyText text="Analyzing schedule" speed={1.5} />
+            <AnalyzingText />
           </div>
         )}
       </div>
